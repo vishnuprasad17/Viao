@@ -1,6 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { initializeDatabase } from './database/configDB';
+import adminRoutes from './features/admin/routes/auth.routes'
+import userRoutes from './features/user/routes/auth.routes'
+import vendorRoutes from './features/vendor/routes/vendor.routes'
+import cors from 'cors';
 
 dotenv.config();
 initializeDatabase();
@@ -8,6 +12,11 @@ initializeDatabase();
 const app = express();
 
 app.use(express.json());
+app.use(cors());
+
+app.use('/api' , adminRoutes);
+app.use('/api' , userRoutes);
+app.use('/api' , vendorRoutes);
 
 const PORT = process.env.PORT;
 
