@@ -14,8 +14,10 @@ export const AdminAuthController = {
         return;
       }
 
-      const admin = await adminLogin(res, email, password);
-      res.status(200).json(admin);
+      const { token, adminData, message} = await adminLogin(email, password);
+      res.cookie('jwtToken', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+
+      res.status(200).json({token, adminData, message});
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "Server error.." });

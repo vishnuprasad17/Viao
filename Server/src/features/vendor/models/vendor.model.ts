@@ -14,7 +14,7 @@ const VendorSchema: Schema = new Schema({
     isVerified:{type:Boolean},
     verificationRequest:{type:Boolean},
     totalBooking:{type:Number},
-    Vendor_type:{type:Schema.Types.ObjectId,required:true},
+    vendorType:{type:Schema.Types.ObjectId, ref: 'VendorType'},
     isActive:{type:Boolean}
 
 });

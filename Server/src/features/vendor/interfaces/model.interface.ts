@@ -14,6 +14,6 @@ export interface IVendorDocument extends Document {
     isVerified:boolean;
     verificationRequest:boolean;
     totalBooking:number;
-    vendor_type:Schema.Types.ObjectId;
+    vendorType:Schema.Types.ObjectId;
     isActive:boolean;
 }

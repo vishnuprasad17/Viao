@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { findAdminByEmail } from '../data-access/auth.repo';
-import { Response } from 'express';
+import { IAdminLoginResponse } from '../interfaces/auth.interface';
 
-export const adminLogin = async (res: Response, email: string, password: string): Promise<object> => {
+export const adminLogin = async (email: string, password: string): Promise<IAdminLoginResponse> => {
   try {
     const existingAdmin = await findAdminByEmail(email);
     if (!existingAdmin) {
@@ -15,8 +15,8 @@ export const adminLogin = async (res: Response, email: string, password: string)
       throw new Error('Incorrect password');
     }
 
-    const token = jwt.sign({ _id: existingAdmin._id }, process.env.JWT_SECRET!)
-    return {message:"Login successfull",token:token};
+    const token = jwt.sign({ _id: existingAdmin._id }, process.env.JWT_SECRET!, { expiresIn: '1h'})
+    return { token, adminData: existingAdmin, message: "Successfully logged in.." };
   } catch (error) {
     throw error;
   }

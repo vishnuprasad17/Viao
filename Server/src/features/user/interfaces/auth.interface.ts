@@ -8,4 +8,9 @@ export interface IUserLoginRequest {
     email: string;
     password: string;
   }
+export interface IUserLoginResponse {
+  token: string;
+  userData: object; 
+  message: string;
+}
   

@@ -5,9 +5,9 @@ import { VendorController } from '../controllers/auth';
 const router = express.Router();
 
 
-router.post('vendor/signup' , VendorController.vendorSignup);
-router.post('vendor/login' , VendorController.VendorLogin)
-router.post('vendor/logout' , VendorController.VendorLogout)
+router.post('/vendor/signup' , VendorController.vendorSignup);
+router.post('/vendor/login' , VendorController.VendorLogin)
+router.get('/vendor/logout' , VendorController.VendorLogout)
 
 
 
