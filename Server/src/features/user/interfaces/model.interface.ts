@@ -4,5 +4,6 @@ export interface IUserDocument extends Document {
     password : string;
     name : string;
     phone : number;
-    isActive:boolean;
+    isActive : boolean;
+    refreshToken : string;
 }

@@ -1,19 +1,24 @@
+import { BaseRepository } from "../../../shared/data-access/base.repo";
 import { IVendorDocument } from "../interfaces/model.interface";
 import Vendor from "../models/vendor.model";
 
-export const createVendor = async (vendorData : Partial<IVendorDocument>): Promise<IVendorDocument> => {
+class VendorRepository extends BaseRepository<IVendorDocument>{
+  constructor(){
+    super(Vendor)
+  }
+
+  async UpdateVendorPassword(password:string , mail:string){
     try {
-      return await Vendor.create(vendorData);
+      const result = await Vendor.updateOne({ email: mail }, { password: password });
+      if (result.modifiedCount === 1) {
+        return { success: true, message: "Vendor Password updated successfully." };
+      } else {
+        return { success: false, message: "Vendor not found or password not updated." };
+      }
     } catch (error) {
       throw error;
     }
-  };
+  }
+}
 
-
-export const findvendorByEmail = async (email: string): Promise<IVendorDocument | null> => {
-    try {
-      return await Vendor.findOne({ email });
-    } catch (error) {
-      throw error;
-    }
-};
+export default new VendorRepository()

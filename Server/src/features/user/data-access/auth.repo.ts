@@ -1,19 +1,30 @@
 import User from "../models/user.model";
 import { IUserDocument } from "../interfaces/model.interface";
+import { BaseRepository } from "../../../shared/data-access/base.repo";
 
+class UserRepository extends BaseRepository<IUserDocument> {
+  constructor() {
+    super(User);
+  }
 
-export const createUser = async (userData: Partial<IUserDocument>): Promise<IUserDocument> => {
+  async UpdatePassword(password: string, mail: string) {
     try {
-      return await User.create(userData);
+      const result = await User.updateOne(
+        { email: mail },
+        { password: password }
+      );
+      if (result.modifiedCount === 1) {
+        return { success: true, message: "Password updated successfully." };
+      } else {
+        return {
+          success: false,
+          message: "User not found or password not updated.",
+        };
+      }
     } catch (error) {
       throw error;
     }
-  };
+  }
+}
 
-  export const findUserByEmail = async (email: string): Promise<IUserDocument | null> => {
-    try {
-      return await User.findOne({ email });
-    } catch (error) {
-      throw error;
-    }
-  };
+export default new UserRepository();

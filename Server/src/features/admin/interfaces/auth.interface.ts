@@ -4,6 +4,7 @@ export interface IAdminLoginRequest {
   }
 
 export interface IAdminLoginResponse {
+    refreshToken: string;
     token: string;
     adminData: object; 
     message: string;

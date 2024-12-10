@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 import { IVendorDocument } from '../interfaces/model.interface';
 
 const VendorSchema: Schema = new Schema({
@@ -12,9 +12,8 @@ const VendorSchema: Schema = new Schema({
     coverpic:{type:String},
     reviews:{type:Object},
     isVerified:{type:Boolean},
-    verificationRequest:{type:Boolean},
     totalBooking:{type:Number},
-    vendorType:{type:Schema.Types.ObjectId, ref: 'VendorType'},
+    vendor_type:{type:Types.ObjectId},
     isActive:{type:Boolean}
 
 });

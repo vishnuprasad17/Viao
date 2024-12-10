@@ -10,6 +10,13 @@ export const userSignupSchema = Joi.object({
     'string.min': 'Password must be at least 6 characters.',
     'string.empty': 'Password is required.',
   }),
+  confirm_password: Joi.string()
+    .valid(Joi.ref('password'))
+    .required()
+    .messages({
+      'any.only': 'Passwords do not match.',
+      'string.empty': 'Confirm password is required.',
+    }),
   name: Joi.string().min(3).required().messages({
     'string.min': 'Name must be at least 3 characters.',
     'string.empty': 'Name is required.',

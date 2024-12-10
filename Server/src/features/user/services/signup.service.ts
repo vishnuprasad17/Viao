@@ -1,25 +1,37 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { createUser , findUserByEmail } from '../data-access/auth.repo';
+import { Response } from 'express';
+import userRepository from "../data-access/auth.repo"
+import { BaseError } from '../../../shared/error/base.error';
 
 
 
-
-export const signup = async (email:string ,password:string, name:string , phone:number): Promise<object> => {
+class UserSignupService {
+  async signup (email:string ,password:string, name:string , phone:number, res:Response): Promise<object> {
     try {
-      const existingUser = await findUserByEmail(email);
+      const existingUser = await userRepository.findByEmail(email);
       if (existingUser) {
-        throw new Error('User already exists');
+        throw new BaseError('User already exists', 404);
       }
 
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       const isActive:boolean = true;
-      const newUser = await createUser({ email , password: hashedPassword , name , phone , isActive });
+      const newUser = await userRepository.create({ email , password: hashedPassword , name , phone , isActive });
 
-      const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET!);
-      return {token:token,user:newUser};
+      const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET!,{expiresIn:'15d'});
+      res.cookie("jwtUser",token,{
+        maxAge:15*24*60*60*1000,
+        httpOnly:true,
+        sameSite:"strict",
+        secure: process.env.NODE_ENV === "production"
+    })
+    return {user:newUser};
     } catch (error) {
-      throw error;
+      console.log("Error during signup:", error);
+      throw new BaseError("Failed to signup. Please try again", 500);
     }
   };
+}
+
+export default new UserSignupService();

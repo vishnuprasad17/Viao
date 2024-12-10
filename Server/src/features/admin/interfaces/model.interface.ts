@@ -4,4 +4,5 @@ export interface IAdminDocument extends Document {
     password: string;
     createdAt: Date;
     isAdmin: boolean;
+    refreshToken?: string;
   }

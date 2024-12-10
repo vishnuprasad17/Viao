@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node backend/src/app.ts",
-    "server": "nodemon backend/src/app.ts",
-    "client": "npm run dev --prefix frontend",
+    "start": "node Server/src/app.ts",
+    "server": "npm run dev --prefix Server",
+    "client": "npm run dev --prefix Client",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Vishnu Prasad",

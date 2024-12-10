@@ -9,8 +9,9 @@ export interface IUserLoginRequest {
     password: string;
   }
 export interface IUserLoginResponse {
-  token: string;
   userData: object; 
   message: string;
+  token: string;
+  refreshToken: string;
 }
   
