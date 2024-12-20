@@ -9,7 +9,7 @@ import {
 } from "@material-tailwind/react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../../config/api/axiosinstance";
+import { gLogin, login } from "../../../config/services/authApi";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserInfo } from "../../../redux/slices/UserSlice";
 import UserRootState from "../../../redux/rootstate/UserState";
@@ -17,8 +17,8 @@ import { validate } from "../../../validations/common/loginVal";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { USER } from "../../../config/routes/user.routes";
-import { VENDOR } from "../../../config/routes/vendor.routes";
+import { USER } from "../../../config/routes/userRoutes";
+import { VENDOR } from "../../../config/routes/vendorRoutes";
 
 const client_id = import.meta.env.VITE_CLIENT_ID || "";
 
@@ -37,6 +37,7 @@ const UserLogin = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const role = "user";
 
   useEffect(() => {
     if (user) {
@@ -48,19 +49,20 @@ const UserLogin = () => {
     initialValues,
     validate,
     onSubmit: (values) => {
-      console.log(values);
-      axiosInstance
-        .post("/login", values)
-        .then((response) => {
-          localStorage.setItem("userToken", response.data.token);
-          localStorage.setItem("userRefresh", response.data.refreshToken);
-          dispatch(setUserInfo(response.data.userData));
-          toast.success("Successfully logged in...!");
+      login(role, values)
+        .then((data) => {
+          console.log(data);
+
+
+          console.log(data.userData);
+
+          dispatch(setUserInfo(data.userData));
+          toast.success(data.message);
           navigate(`${USER.HOME}`);
         })
         .catch((error) => {
+          toast.error(error.response?.data?.message);
           console.log(error);
-          toast.error(error.response.data.message);
         });
     },
   });
@@ -186,14 +188,12 @@ const UserLogin = () => {
                 shape="circle"
                 size="large"
                 onSuccess={(response) => {
-                  axiosInstance
-                    .post("/google/login", response)
-                    .then((res) => {
-                      console.log(res, "google @");
-                      if (res.data) {
-                        console.log(res.data);
-                        // localStorage.setItem("studentToken",res.data.token)//for setting token in local storage
-                        dispatch(setUserInfo(res.data.userData));
+                  gLogin("login", role, response)
+                    .then((data) => {
+                      console.log(data, "google @");
+                      if (data) {
+                        //console.log(data);
+                        dispatch(setUserInfo(data.userData));
                         toast.success("Successfully logged in...!");
                         navigate(`${USER.HOME}`);
                       }

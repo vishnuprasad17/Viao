@@ -8,12 +8,12 @@ import {
 } from "@material-tailwind/react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { axiosInstanceAdmin } from "../../../config/api/axiosinstance";
+import { login } from "../../../config/services/authApi";
 import { useSelector, useDispatch } from "react-redux";
 import { setAdminInfo } from "../../../redux/slices/AdminSlice";
 import AdminRootState from "../../../redux/rootstate/AdminState";
 import { validate } from "../../../validations/common/loginVal";
-import { ADMIN } from "../../../config/routes/admin.routes";
+import { ADMIN } from "../../../config/routes/adminRoutes";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 
@@ -34,6 +34,7 @@ const AdminLogin = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const role = "admin";
 
   useEffect(() => {
     if (admin) {
@@ -45,22 +46,19 @@ const AdminLogin = () => {
     initialValues,
     validate,
     onSubmit: (values) => {
-      axiosInstanceAdmin
-        .post("/login", values)
-        .then((response) => {
-          console.log(response);
+      login(role, values)
+        .then((data) => {
+          console.log(data);
 
-          console.log(response.data);
-          localStorage.setItem("adminToken", response.data.token);
-          localStorage.setItem("refreshToken", response.data.refreshToken);
 
-          console.log(response.data.adminData);
+          console.log(data.adminData);
 
-          dispatch(setAdminInfo(response.data.adminData));
+          dispatch(setAdminInfo(data.adminData));
+          toast.success(data.message);
           navigate(`${ADMIN.DASHBOARD}`);
         })
         .catch((error) => {
-          toast.error(error.response.data.message);
+          toast.error(error.response?.data?.message);
           console.log("here", error);
         });
     },

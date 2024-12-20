@@ -11,13 +11,12 @@ import { Link,useNavigate} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import UserRootState from "../../../redux/rootstate/UserState";
-import { axiosInstance } from "../../../config/api/axiosinstance";
+import { gLogin, signup } from "../../../config/services/authApi";
 import { toast } from "react-toastify";
 import { validate } from "../../../validations/user/userRegisterVal";
 import { GoogleOAuthProvider , GoogleLogin } from "@react-oauth/google";
-import { USER } from "../../../config/routes/user.routes";
-import { VENDOR } from "../../../config/routes/vendor.routes";
-
+import { USER } from "../../../config/routes/userRoutes";
+import { VENDOR } from "../../../config/routes/vendorRoutes";
 const client_id = import.meta.env.VITE_CLIENT_ID || '';
 
 
@@ -42,6 +41,8 @@ const UserSignup= () => {
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState<UserFormValues>(initialValues);
 
+  const role = "user";
+
   const navigate=useNavigate()
 
   useEffect(() => {
@@ -63,18 +64,17 @@ const UserSignup= () => {
     setFormErrors(errors)
     console.log(Object.values(errors))
     if (Object.values(errors).every((error) => error === "")) {
-      axiosInstance
-        .post("/signup", formValues, { withCredentials: true })
-        .then((response) => {
-          console.log(response);
-          if (response.data.email) {
-            toast.success(response.data.message);
+      signup(role, formValues, { withCredentials: true })
+        .then((data) => {
+          console.log(data);
+          if (data.email) {
+            toast.success(data.message);
             navigate(`${USER.VERIFY}`);
           }
         })
         .catch((error) => {
+          console.log("signup error", error.data.message);
           toast.error(error.response.data.message)
-          console.log("here", error.data.message);
         });
     }
   };
@@ -205,11 +205,12 @@ const UserSignup= () => {
               theme="outline"
               shape="circle"
               size="large"
+              text="signup_with"
               onSuccess={response => {
-                axiosInstance.post('/google/register' , response).then((res) => {
-                  console.log(res)
-                  if(res.data.message) {
-                    toast.success(res.data.message);
+                gLogin("signup", role, response).then((data) => {
+                  console.log(data)
+                  if(data.message) {
+                    toast.success(data.message);
                     navigate(`${USER.LOGIN}`);
                   }
                 })

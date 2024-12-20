@@ -1,45 +1,47 @@
-import { NextFunction, Request , Response } from "express";
+import { Request, Response, NextFunction } from 'express';
 
+const otpValidityMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+  const otpData = req.session.otp;
 
-export const userOtpExpire = (req: Request, res: Response, next: NextFunction) => {
-    const now = Date.now();
-    if (req.session.user && req.session.user.otpCode && req.session.user.otpSetTimestamp) {
-        const timeElapsed = now - req.session.user.otpSetTimestamp;
-        if (timeElapsed >= 120000) { 
-            req.session.user.otpCode = undefined;
-            req.session.user.otpSetTimestamp = undefined;
-            console.log("Expired OTP code cleaned up");
-        }
-    }
-    next();
+  // Check if OTP exists in the session
+  if (!otpData) {
+    res.status(400).json({ error: 'OTP not found in session. Please request a new OTP.' });
+    return;
+  }
+
+  const currentTime = Date.now();
+  const otpTimestamp = otpData.otpSetTimestamp;
+
+  // Check if OTP is expired (120 seconds)
+  if (currentTime - otpTimestamp > 120 * 1000) {
+    console.log('OTP expired');
+    req.session.otp.isExpired = true; // Mark OTP as expired
+  } else {
+    req.session.otp.isExpired = false; // OTP is still valid
+  }
+
+  // Proceed to the handler
+  next();
 };
 
-//forgot-password
-export const emailVerifyOtp = (req: Request, res: Response, next: NextFunction) => {
-    const now = Date.now();
-    if (req.session.otp && req.session.otp.otp && req.session.otp.otpSetTimestamp) {
-        const timeElapsed = now - req.session.otp.otpSetTimestamp;
-        if (timeElapsed >= 120000) { // Check if 1 minute has passed
-            // Expire OTP code
-            req.session.otp.otp = undefined;
-            req.session.otp.otpSetTimestamp = undefined;
-            console.log("Expired OTP code cleaned up");
-        }
-    }
-    next();
-};
+const signupOtpValidityMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+  const role = req.role;
+  const otpData = role === "user" ? req.session.user : req.session.vendor;
 
+  if (!otpData) {
+    res.status(400).json({ error: 'OTP not found in session. Please request a new OTP or Signup again.' });
+    return;
+  }
 
-export const vendorOtpExpire = (req: Request, res: Response, next: NextFunction) => {
-    const now = Date.now();
-    if (req.session.vendorData && req.session.vendorData.otpCode && req.session.vendorData.otpSetTimestamp) {
-        const timeElapsed = now - req.session.vendorData.otpSetTimestamp;
-        if (timeElapsed >= 120000) { // Check if 1 minute has passed
-            // Expire OTP code
-            req.session.vendorData.otpCode = undefined;
-            req.session.vendorData.otpSetTimestamp = undefined;
-            console.log("Expired OTP code cleaned up");
-        }
-    }
-    next();
-};
+  const currentTime = Date.now();
+  const otpTimestamp = otpData.otpSetTimestamp;
+
+  if (currentTime - otpTimestamp > 120 * 1000) {
+    console.log('OTP expired');
+    otpData.isExpired = true;
+  } else {
+    otpData.isExpired = false; // OTP is still valid
+  }
+}
+
+export { otpValidityMiddleware, signupOtpValidityMiddleware };

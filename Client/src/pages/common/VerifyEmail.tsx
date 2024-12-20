@@ -9,14 +9,14 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { axiosInstance, axiosInstanceVendor } from "../../config/api/axiosinstance";
+import { otpResend, verifyEmail } from "../../config/services/authApi";
 import { setUserInfo } from "../../redux/slices/UserSlice";
 import { setVendorInfo } from "../../redux/slices/VendorSlice";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import { validate } from "../../validations/common/otpValidation";
-import { USER } from "../../config/routes/user.routes";
-import { VENDOR } from "../../config/routes/vendor.routes";
+import { USER } from "../../config/routes/userRoutes";
+import { VENDOR } from "../../config/routes/vendorRoutes";
 
 interface FormValues {
   otp: string;
@@ -60,11 +60,10 @@ const VerifyEmail = () => {
     onSubmit: (values) => {
       {
         location.pathname === VENDOR.VERIFY
-          ? axiosInstanceVendor
-              .post("/verify", values, { withCredentials: true })
-              .then((response) => {
-                console.log(response.data);
-                dispatch(setVendorInfo(response.data.vendor));
+          ? verifyEmail("vendor", values, { withCredentials: true })
+              .then((data) => {
+                console.log(data);
+                dispatch(setVendorInfo(data.vendor));
                 toast.success("Successfully registered..!");
                 navigate(`${VENDOR.DASHBOARD}`);
               })
@@ -72,11 +71,10 @@ const VerifyEmail = () => {
                 toast.error(error.response.data.message);
                 console.log("here", error);
               })
-          : axiosInstance
-              .post("/verify", values, { withCredentials: true })
-              .then((response) => {
-                console.log(response);
-                dispatch(setUserInfo(response.data.user));
+          : verifyEmail("user", values, { withCredentials: true })
+              .then((data) => {
+                console.log(data);
+                dispatch(setUserInfo(data.user));
                 toast.success("Successfully registered..!");
                 navigate(`${USER.HOME}`);
               })
@@ -91,21 +89,19 @@ const VerifyEmail = () => {
 
   const handleResendOtp=async()=>{
     location.pathname === VENDOR.VERIFY
-          ? axiosInstanceVendor
-              .get("/resendOtp",{ withCredentials: true })
-              .then((response) => {
+          ? otpResend("vendor",{ withCredentials: true })
+              .then((data) => {
                 startTimer();
-                console.log(response);
+                console.log(data);
                 
-                toast.success(response.data.message);
+                toast.success(data.message);
                 
               })
               .catch((error) => {
                 toast.error(error.response.data.error);
                 console.log("here", error);
               })
-          : axiosInstance
-              .get("/resendOtp", { withCredentials: true })
+          : otpResend("user", { withCredentials: true })
               .then((response) => {
                 startTimer();
                 console.log(response);

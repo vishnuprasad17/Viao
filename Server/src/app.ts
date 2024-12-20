@@ -1,15 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { initializeDatabase } from './database/configDB';
-import adminRoutes from './features/admin/routes/auth.routes'
-import userRoutes from './features/user/routes/auth.routes'
-import vendorRoutes from './features/vendor/routes/vendor.routes'
+import routes from './routes'
 import cors from 'cors';
-import { userOtpExpire, emailVerifyOtp, vendorOtpExpire } from './shared/middlewares/otp.expiration';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { Request,Response,NextFunction } from 'express';
 import path from 'path';
+import { globalErrorHandler } from './shared/middlewares/error-handler';
 
 
 const app = express();
@@ -35,9 +33,6 @@ app.use(
   );
 
 app.use(cookieParser());
-app.use(userOtpExpire);
-app.use(emailVerifyOtp);
-app.use(vendorOtpExpire);
 
 app.use((err:any, req:Request, res:Response, next:NextFunction) => {
   if (err.name === 'UnauthorizedError') {
@@ -45,14 +40,12 @@ app.use((err:any, req:Request, res:Response, next:NextFunction) => {
   }
 });
 
+app.use('/api' , routes);
+app.use(globalErrorHandler);
 
 app.get('*',(req:Request,res:Response) =>{
   res.sendFile(path.join(__dirname,'../../Client/index.html'))
 })
-
-app.use('/api' , adminRoutes);
-app.use('/api' , userRoutes);
-app.use('/api' , vendorRoutes);
 
 const PORT = process.env.PORT;
 

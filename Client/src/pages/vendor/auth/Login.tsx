@@ -9,15 +9,15 @@ import {
 } from "@material-tailwind/react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { axiosInstanceVendor } from "../../../config/api/axiosinstance";
+import { login } from "../../../config/services/authApi";
 import { useSelector, useDispatch } from "react-redux";
 import { setVendorInfo } from "../../../redux/slices/VendorSlice";
 import VendorRootState from "../../../redux/rootstate/VendorState";
 import { useFormik } from "formik";
 import { validate } from "../../../validations/common/loginVal";
 import { toast } from "react-toastify";
-import { USER } from "../../../config/routes/user.routes";
-import { VENDOR } from "../../../config/routes/vendor.routes";
+import { USER } from "../../../config/routes/userRoutes";
+import { VENDOR } from "../../../config/routes/vendorRoutes";
 interface FormValues {
   email: string;
   password: string;
@@ -35,6 +35,7 @@ const VendorLoginForm = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const role = "vendor";
 
   useEffect(() => {
     if (vendor) {
@@ -46,19 +47,20 @@ const VendorLoginForm = () => {
     initialValues,
     validate,
     onSubmit: (values) => {
-      axiosInstanceVendor
-        .post("/login", values)
-        .then((response) => {
-          console.log(response);
-          toast.success("Successfully logged in!")
-          localStorage.setItem("vendorToken",response.data.token);
-          localStorage.setItem("vendorRefresh",response.data.refreshToken);
-          dispatch(setVendorInfo(response.data.vendorData));
+      login(role, values)
+        .then((data) => {
+          console.log(data);
+
+
+          console.log(data.vendorData);
+
+          dispatch(setVendorInfo(data.vendorData));
+          toast.success(data.message);
           navigate(`${VENDOR.DASHBOARD}`);
         })
         .catch((error) => {
-          toast.error(error.response.data.message);
-          console.log("here", error);
+          toast.error(error.response?.data?.message);
+          console.log(error);
         });
     },
   });

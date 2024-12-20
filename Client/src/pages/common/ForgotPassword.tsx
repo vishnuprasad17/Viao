@@ -7,14 +7,14 @@ import {
   Input,
   Button,
 } from "@material-tailwind/react";
-import { axiosInstance, axiosInstanceVendor } from "../../config/api/axiosinstance";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import { validateEmailValue, validateOTP } from "../../validations/common/forgotPassword";
+import { forgotPwdOtp, pwdOtpResend, verifyForgotPwdOtp } from "../../config/services/authApi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { USER } from "../../config/routes/user.routes";
-import { VENDOR } from "../../config/routes/vendor.routes";
+import { USER } from "../../config/routes/userRoutes";
+import { VENDOR } from "../../config/routes/vendorRoutes";
 
 interface EmailValue {
   email: string;
@@ -58,28 +58,26 @@ const ForgotPassword = () => {
     onSubmit: (values) => {
       {
         location.pathname === VENDOR.FORGOT_PWD
-          ? axiosInstanceVendor
-              .post("/vendor-getotp", values, { withCredentials: true })
-              .then((response) => {
+          ? forgotPwdOtp("vendor", values, { withCredentials: true })
+              .then((data) => {
                 startOtpTimer();
                 setOtpButtonClicked(true);
-                console.log(response);
-                toast.success(response.data.message);
+                console.log(data);
+                toast.success(data.message);
               })
               .catch((error) => {
-                toast.error(error.response.data.error);
+                toast.error(error.response?.data?.error);
                 console.log("here", error);
               })
-          : axiosInstance
-              .post("/getotp", values, { withCredentials: true })
-              .then((response) => {
-                console.log(response);
+          : forgotPwdOtp("user", values, { withCredentials: true })
+              .then((data) => {
+                console.log(data);
                 startOtpTimer();
                 setOtpButtonClicked(true);
-                toast.success(response.data.message);
+                toast.success(data.message);
               })
               .catch((error) => {
-                toast.error(error.response.data.error);
+                toast.error(error.response?.data?.error);
                 console.log("here", error);
               });
       }
@@ -92,22 +90,20 @@ const ForgotPassword = () => {
     onSubmit: (values) => {
       {
         location.pathname === VENDOR.FORGOT_PWD
-          ? axiosInstanceVendor
-              .post("/verifyVendorotp", values, { withCredentials: true })
-              .then((response) => {
-                console.log(response);
-                toast.success(response.data.message);
+          ? verifyForgotPwdOtp("vendor", values, { withCredentials: true })
+              .then((data) => {
+                console.log(data);
+                toast.success(data.message);
                 navigate(`${VENDOR.RESET_PWD}`);
               })
               .catch((error) => {
                 toast.error(error.response.data.error);
                 console.log("here", error);
               })
-          : axiosInstance
-              .post("/verify-otp", values, { withCredentials: true })
-              .then((response) => {
-                console.log(response);
-                toast.success(response.data.message);
+          : verifyForgotPwdOtp("user", values, { withCredentials: true })
+              .then((data) => {
+                console.log(data);
+                toast.success(data.message);
                 navigate(`${USER.RESET_PWD}`);
               })
               .catch((error) => {
@@ -119,32 +115,22 @@ const ForgotPassword = () => {
   });
 
 
-  const handleResendOtp=async()=>{
-    location.pathname === VENDOR.VERIFY
-          ? axiosInstanceVendor
-              .get("/pwd-resendOtp",{ withCredentials: true })
-              .then((response) => {
-                startOtpTimer();
-                console.log(response);
-                toast.success(response.data.message);
-                
-              })
-              .catch((error) => {
-                toast.error(error.response.data.message);
-                console.log("here", error);
-              })
-          : axiosInstance
-              .get("/pwd-resendOtp", { withCredentials: true })
-              .then((response) => {
-                startOtpTimer();
-                console.log(response);
-                toast.success(response.data.message);
-              })
-              .catch((error) => {
-                toast.error(error.response.data.message);
-                console.log("here", error);
-              });
-  }
+  const handleResendOtp = async () => {
+    console.log("Current pathname:", location.pathname);
+    const userType = location.pathname === VENDOR.VERIFY ? "vendor" : "user";
+    console.log("User type:", userType);
+  
+    pwdOtpResend(userType, { withCredentials: true })
+      .then((data) => {
+        console.log("API Success Response:", data);
+        startOtpTimer();
+        toast.success(data.message);
+      })
+      .catch((error) => {
+        console.error("API Error:", error.response?.data || error.message);
+        toast.error(error.response?.data?.message || "Something went wrong! please refresh the page");
+      });
+  } 
 
   return (
     <div className="w-full h-screen flex flex-col md:flex-row items-start">

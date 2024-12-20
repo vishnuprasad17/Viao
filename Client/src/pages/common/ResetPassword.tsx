@@ -9,10 +9,10 @@ import {
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { validate } from "../../validations/common/resetPassword";
-import { axiosInstance, axiosInstanceVendor } from "../../config/api/axiosinstance";
+import { resetPwd } from "../../config/services/authApi";
 import { useLocation,useNavigate } from 'react-router-dom';
-import { USER } from "../../config/routes/user.routes";
-import { VENDOR } from "../../config/routes/vendor.routes";
+import { USER } from "../../config/routes/userRoutes";
+import { VENDOR } from "../../config/routes/vendorRoutes";
 
 interface FormValues {
   password: string;
@@ -35,22 +35,20 @@ const ResetPassword = () => {
       console.log(values);
       {
         location.pathname === VENDOR.RESET_PWD
-          ? axiosInstanceVendor
-              .post("/reset-password", values, { withCredentials: true })
-              .then((response) => {
+          ? resetPwd("vendor", values, { withCredentials: true })
+              .then((data) => {
                 
-                toast.success(response.data.message);
+                toast.success(data.message);
                 navigate(`${VENDOR.LOGIN}`);
               })
               .catch((error) => {
                 toast.error(error.response.data.error);
                 console.log("here", error);
               })
-          : axiosInstance
-              .post("/reset-password", values, { withCredentials: true })
-              .then((response) => {
-                console.log(response);
-                toast.success(response.data.message);
+          : resetPwd("user", values, { withCredentials: true })
+              .then((data) => {
+                console.log(data);
+                toast.success(data.message);
                 navigate(`${USER.LOGIN}`);
               })
               .catch((error) => {

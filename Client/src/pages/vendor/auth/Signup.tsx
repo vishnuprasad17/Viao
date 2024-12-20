@@ -11,11 +11,11 @@ import {
 } from "@material-tailwind/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { axiosInstanceVendor } from "../../../config/api/axiosinstance";
+import { signup } from "../../../config/services/authApi";
 import { toast } from "react-toastify";
 import { validate } from "../../../validations/vendor/registerVal";
-import { USER } from "../../../config/routes/user.routes";
-import { VENDOR } from "../../../config/routes/vendor.routes";
+import { USER } from "../../../config/routes/userRoutes";
+import { VENDOR } from "../../../config/routes/vendorRoutes";
 import { useSelector } from "react-redux";
 import VendorRootState from "../../../redux/rootstate/VendorState";
 
@@ -43,7 +43,7 @@ const VendorSignupForm = () => {
   );
   
   const [formValues, setFormValues] = useState(initialValues);
-  const [vendor_type, setVendorType] = useState<string>("Photography");
+  const vendor_type= "Photography";
   const [formErrors, setFormErrors] = useState<VendorFormValues>({
     name: "",
     email: "",
@@ -77,12 +77,11 @@ const VendorSignupForm = () => {
     
     if (Object.values(errors).every((error) => error === "")) {
       console.log(formValues);
-      axiosInstanceVendor
-        .post("/signup", {...formValues,vendor_type}, { withCredentials: true })
-        .then((response) => {
-          console.log(response);
-          if (response.data.email) {
-            toast.success(response.data.message);
+      signup("vendor", {...formValues,vendor_type}, { withCredentials: true })
+        .then((data) => {
+          console.log(data);
+          if (data.email) {
+            toast.success(data.message);
             navigate(`${VENDOR.VERIFY}`);
           }
         })
@@ -169,16 +168,8 @@ const VendorSignupForm = () => {
               >
                 <Option>
                       Photography
-                    </Option>
-                    </Select>
-              {/* </Select> {vendorTypeError ? (
-                <p
-                  className="text-sm"
-                  style={{ color: "red", marginBottom: -10, marginTop: -10 }}
-                >
-                  {vendorTypeError}
-                </p>
-              ) : null} */}
+                </Option>
+            </Select>
               <Input
                 label="City"
                 onChange={handleChange}
