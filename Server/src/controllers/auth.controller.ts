@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import authService from "../services/auth.service";
+import { authService } from "../services";
 import { BaseError } from "../shared/error/base.error";
 import generateOtp from "../shared/utils/generate.otp";
 import { DecodedData } from "../interfaces/user.interface";

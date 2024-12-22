@@ -7,7 +7,7 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
   const message = err instanceof BaseError ? err.message : "Internal Server Error";
 
   logger.error(`Error Context: ${err.context || "Unknown"} - ${message}`, { stack: err.stack });
-  //console.log(`Error Context: ${err.context || "Unknown"} - ${message}`, { stack: err.stack });
+  console.log(`Error Context: ${err.context || "Unknown"} - ${message}`, { stack: err.stack });
   
   res.status(statusCode).json({ message });
 };

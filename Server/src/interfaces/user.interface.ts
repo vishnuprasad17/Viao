@@ -4,8 +4,11 @@ export interface IUserDocument extends Document {
     password : string;
     name : string;
     phone : number;
-    isActive : boolean;
-    refreshToken : string;
+    isActive:boolean;
+    imageUrl:string;
+    favourite:Array<string>;
+    wallet:number;
+    refreshToken:string;
 }
 
 export interface DecodedData {

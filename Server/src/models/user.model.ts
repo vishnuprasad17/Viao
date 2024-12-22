@@ -5,9 +5,12 @@ const UserSchema: Schema = new Schema({
     email :{type:String , required:true, unique:true},
     password:{type:String, required:true} , 
     name :{type:String , required:true} ,
-    phone :{type:Number},
+    phone :{type:Number },
     isActive :{type:Boolean , required:true},
-    refreshToken:{type:String}
+    imageUrl:{type:String},
+    favourite:{type:Array},
+    wallet:{type:Number,default:0},
+    refreshToken: { type: String }
 
 },{timestamps:true});
 

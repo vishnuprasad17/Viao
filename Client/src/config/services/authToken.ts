@@ -23,7 +23,3 @@
       throw error;
     }
   };
-  export const clearTokens = (role: string) => {
-    localStorage.removeItem(`${role}Token`);
-    localStorage.removeItem(`${role}Refresh`);
-  };

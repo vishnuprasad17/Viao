@@ -20,6 +20,15 @@ export class BaseRepository<T extends mongoose.Document>{
         return await newItem.save();
     }
 
+    async update(id:string,data:Partial<T>):Promise<T|null>{
+        return await this.model.findByIdAndUpdate(id,data)
+    }
+
+
+    async delete(id:string):Promise<T|null>{
+        return await this.model.findByIdAndDelete(id);
+    }
+
     async findOne(condition: Record<string, unknown>): Promise<T | null> {
         return await this.model.findOne(condition);
     }
