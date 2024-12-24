@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import { ADMIN } from "../../config/routes/admin.routes";
+import { ADMIN } from "../../config/routes/adminRoutes";
 import { PowerIcon } from "@heroicons/react/24/outline";
-import { axiosInstanceAdmin } from "../../config/api/axiosinstance";
 import { logout } from "../../redux/slices/AdminSlice";
 import { useDispatch } from "react-redux";
 import { Typography } from "@material-tailwind/react";
+import { logoutFn } from "../../config/services/authApi";
+import { toast } from "react-toastify";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,10 +25,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    axiosInstanceAdmin
-      .get("/logout")
+    logoutFn("admin")
       .then(() => {
-        dispatch(logout()); // Assuming you want to clear admin info on logout
+        dispatch(logout());
+        toast.success("Logged out successfully...")
         navigate(`${ADMIN.LOGIN}`);
       })
       .catch((error) => {
@@ -100,10 +101,65 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </span>
               </li>
             </Link>
-            
+            <Link to={ADMIN.USERS}>
+              <li
+                className={`${path.pathname == ADMIN.USERS ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white  text-sm items-center gap-x-4 
+              mt-2
+              `}
+              >
+                <i className="fa-solid fa-users"></i>
+                <span
+                  className={`${!open && "hidden"} origin-left duration-200`}
+                >
+                  Users
+                </span>
+              </li>
+            </Link>
+            <Link to={ADMIN.VENDORS}>
+              <li
+                className={`${path.pathname == ADMIN.VENDORS || path.pathname == ADMIN.VENDOR ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
+              mt-2
+              `}
+              >
+                <i className="fa-solid fa-user-tie"></i>
+                <span
+                  className={`${!open && "hidden"} origin-left duration-200`}
+                >
+                  Vendors
+                </span>
+              </li>
+            </Link>
+            <Link to={ADMIN.WALLET}>
+              <li
+                className={`${path.pathname == ADMIN.WALLET ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
+              mt-2
+              `}
+              >
+                <i className="fa-solid fa-wallet"></i>
+                <span
+                  className={`${!open && "hidden"} origin-left duration-200`}
+                >
+                  Wallet
+                </span>
+              </li>
+            </Link>
+            <Link to={ADMIN.INBOX}>
+              <li
+                className={`${path.pathname == ADMIN.INBOX ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
+              mt-2
+              `}
+              >
+                <i className="fa-solid fa-bell"></i>
+                <span
+                  className={`${!open && "hidden"} origin-left duration-200`}
+                >
+                  Notifications
+                </span>
+              </li>
+            </Link>
 
             <button
-              className={`text-gray-300 bg-pink-400 flex  rounded-md px-4 py-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
+              className={`text-gray-300 bg-blue-900 flex  rounded-md px-4 py-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
               mt-6
               `}
             >

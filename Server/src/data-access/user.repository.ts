@@ -1,5 +1,6 @@
 import User from "../models/user.model";
 import { IUserDocument } from "../interfaces/user.interface";
+import { Document } from 'mongoose';
 import vendor from "../models/vendor.model";
 import { BaseRepository } from "../shared/data-access/base.repo";
 
@@ -53,6 +54,23 @@ class UserRepository extends BaseRepository<IUserDocument> {
       );
 
       
+  }
+
+  async findAllUsers(
+    page: number,
+    limit: number,
+    search: string
+  ): Promise<Document[] | null> {
+    try {
+      const query = search ? { name: { $regex: new RegExp(search, "i") } } : {};
+      const users = await User.find(query)
+        .skip((page - 1) * limit)
+        .limit(limit);
+
+      return users;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

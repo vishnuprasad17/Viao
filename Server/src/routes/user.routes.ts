@@ -21,8 +21,8 @@ router.post("/verify-otp", otpValidityMiddleware, AuthController.VerifyOtpForPas
 router.post("/reset-password", setRole("user"), signupOtpValidityMiddleware, AuthController.ResetPassword);
 router.get('/logout', setRole("user"), AuthController.logout)
 router.post("/refresh-token", setRole("user"), AuthController.createRefreshToken);
-router.post("/user/google/login", AuthController.googleLogin);
-router.post("/user/google/register", AuthController.googleRegister);
+router.post("/google/login", AuthController.googleLogin);
+router.post("/google/register", AuthController.googleRegister);
 
 router.post("/send-message",UserController.contactMessage)
 

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import dotenv from "dotenv";
+import user from"../models/user.model";
 import { asyncHandler } from "../shared/middlewares/async-handler";
 import { userService } from "../services";
 import crypto from "crypto";
@@ -116,6 +117,36 @@ class UserController {
         res.status(400).json({ message: "No vendors in favorites." });
       }
   })
+
+  allUsers = asyncHandler("AllUsers")(async (req: Request, res: Response): Promise<void> => {
+    console.log("get")
+      const { page = 1, limit = 6, search = "" } = req.query;
+      const pageNumber = parseInt(page as string, 10);
+      const limitNumber = parseInt(limit as string, 10);
+
+      const users = await userService.getUsers(pageNumber, limitNumber, search.toString());
+      const totalUsers = await userService.getUsersCount();
+
+      res.status(200).json({ users, totalUsers });
+    
+  })
+
+  Toggleblock = asyncHandler("AllUsers")(async (req: Request, res: Response): Promise<void> => {
+      const userId: string | undefined = req.query.userId as string | undefined;
+      if (!userId) {
+        res.status(400).json({ message: "User ID is missing or invalid." });
+        return;
+      }
+      await userService.toggleUserBlock(userId);
+      let process = await user.findOne({ _id: userId });
+      let status = !process?.isActive ? "blocked" : "unblocked"
+      res.status(200).json({
+        message: `User ${status} successfully.`,
+        process: !process?.isActive ? "block" : "unblock",
+      });
+    
+  })
+
 }
 
 export default new UserController();
