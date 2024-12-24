@@ -49,6 +49,11 @@ async updateProfile(
     if (!existingUser) {
       throw new BaseError("User not found", 404);
     }
+
+    if (!existingUser.isActive) {
+      throw new BaseError("Can't perfom action right now. Please refresh.", 401);
+    }
+
     const update = {
       name: name || existingUser.name,
       phone: phone || existingUser.phone,
@@ -69,6 +74,10 @@ async checkCurrentPassword(currentPassword: string, userId: string) {
 
     if (!existingUser) {
       throw new BaseError("User not found", 404);
+    }
+
+    if(!existingUser.isActive) {
+      throw new BaseError("Something went wrong. Please refresh.", 401);
     }
 
     const passwordMatch = await bcrypt.compare(
@@ -138,6 +147,41 @@ async deleteFromFavorite(userId: string, vendorId: string) {
   } catch (error) {
     console.error("Error in FavoriteVendors:", error)
     throw error;
+  }
+}
+
+async getUsers(page: number, limit: number, search: string) {
+  try {
+    const users = await userRepository.findAllUsers(page, limit, search);
+    return users;
+  } catch (error) {
+    console.error("Error in getUsers:", error)
+    throw new BaseError("Failed to get users.", 500);
+  }
+}
+
+async getUsersCount() {
+  try {
+    const total = await userRepository.countDocuments();
+    return total;
+  } catch (error) {
+    console.error("Error in getUsersCount:", error)
+    throw new BaseError("Failed to get users count.", 500); 
+  }
+}
+
+async toggleUserBlock(userId: string): Promise<void> {
+  try {
+    const user = await userRepository.getById(userId);
+    if (!user) {
+      throw new BaseError("User not found.", 404)
+    }
+
+    user.isActive = !user.isActive; // Toggle the isActive field
+    await user.save();
+  } catch (error) {
+    console.error("Error in toggleUserBlock:", error)
+    throw new BaseError("Failed to toggle user block.", 500);
   }
 }
 

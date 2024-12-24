@@ -1,5 +1,7 @@
-import { Document, Schema } from "mongoose";
+import { Document } from "mongoose";
 export interface IVendorType extends Document {
-    _id:Schema.Types.ObjectId;
     type:string;
+    status:boolean;
+    image:string;
+    imageUrl:string;
 }

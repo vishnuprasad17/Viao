@@ -238,7 +238,7 @@ class AuthService {
               return { user: newUser };
             } catch (error) {
               console.error("Error in googleSignup:", error);
-              throw new BaseError("Failed to sign up with Google.", 500);
+              throw error;
             }
           }
         

@@ -188,7 +188,7 @@ const UserLogin = () => {
                 shape="circle"
                 size="large"
                 onSuccess={(response) => {
-                  gLogin("login", role, response)
+                  gLogin("login", response)
                     .then((data) => {
                       console.log(data, "google @");
                       if (data) {

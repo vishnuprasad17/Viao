@@ -207,7 +207,7 @@ const UserSignup= () => {
               size="large"
               text="signup_with"
               onSuccess={response => {
-                gLogin("signup", role, response).then((data) => {
+                gLogin("signup", response).then((data) => {
                   console.log(data)
                   if(data.message) {
                     toast.success(data.message);
@@ -215,8 +215,8 @@ const UserSignup= () => {
                   }
                 })
                 .catch((error) => {
-                  console.log(error)
-                  toast.error(error.response.data.error)
+                  console.log("error", error)
+                  toast.error("User already exists. Please signin")
                 })
               }}
               />

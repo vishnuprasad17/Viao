@@ -1,5 +1,5 @@
 import { Breadcrumbs, Typography } from "@material-tailwind/react";
-import { VENDOR } from "../../../config/routes/vendor.routes";
+import { VENDOR } from "../../../config/routes/vendorRoutes";
 
 interface BreadcrumbProps {
   pageName: string;

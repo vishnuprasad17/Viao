@@ -11,11 +11,12 @@ import {
 } from "@material-tailwind/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signup } from "../../../config/services/authApi";
+import { getTypes, signup } from "../../../config/services/authApi";
 import { toast } from "react-toastify";
 import { validate } from "../../../validations/vendor/registerVal";
 import { USER } from "../../../config/routes/userRoutes";
 import { VENDOR } from "../../../config/routes/vendorRoutes";
+import { VendorType } from "../../../interfaces/commonTypes";
 import { useSelector } from "react-redux";
 import VendorRootState from "../../../redux/rootstate/VendorState";
 
@@ -41,9 +42,10 @@ const VendorSignupForm = () => {
   const vendor = useSelector(
     (state: VendorRootState) => state.vendor.vendordata
   );
-  
+  const [vendorTypes, setvendorTypes] = useState<VendorType[]>([]);
   const [formValues, setFormValues] = useState(initialValues);
-  const vendor_type= "Photography";
+  const [vendor_type, setVendorType] = useState<string>("");
+  const [vendorTypeError,setVendorTypeError]=useState("");
   const [formErrors, setFormErrors] = useState<VendorFormValues>({
     name: "",
     email: "",
@@ -70,10 +72,25 @@ const VendorSignupForm = () => {
     }
   }, []);
 
+  useEffect(() => {
+    getTypes()
+      .then((response) => {
+        console.log(response);
+        setvendorTypes(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
+  }, []);
+
   const submitHandler = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const errors = validate(formValues);
     setFormErrors(errors);
+    if(vendor_type.length==0){
+      setVendorTypeError("Choose Type")
+      return
+    }
     
     if (Object.values(errors).every((error) => error === "")) {
       console.log(formValues);
@@ -161,15 +178,35 @@ const VendorSignupForm = () => {
               <Select
                 label="Vendor Type"
                 name="vendor_type"
-                className="bg-gray-200 bg-opacity-50"
+                value={vendor_type}
+                onChange={(e)=>{
+                  setVendorType(e!);
+                  setVendorTypeError("")
+                }}
+                className="bg-white bg-opacity-50"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
+                key={vendor_type} // Add this line
               >
-                <Option>
-                      Photography
-                </Option>
-            </Select>
+                {vendorTypes.map((val, index) =>
+                  val.status ? (
+                    <Option value={val.type} key={index}>
+                      {val.type}
+                    </Option>
+                  ) : (
+                    ""
+                  )
+                )}
+              </Select>
+              {vendorTypeError ? (
+                <p
+                  className="text-sm"
+                  style={{ color: "red", marginBottom: -10, marginTop: -10 }}
+                >
+                  {vendorTypeError}
+                </p>
+              ) : null}
               <Input
                 label="City"
                 onChange={handleChange}

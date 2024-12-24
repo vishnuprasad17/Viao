@@ -14,9 +14,9 @@ export const login = async (role: string, credentials: any) => {
   }
 };
 
-export const gLogin = async (purpose: string, role: string, response: any) => {
+export const gLogin = async (purpose: string, response: any) => {
     const endpoint = purpose === "login" ? '/google/login' : '/google/register';
-    const authApi = createAxiosInstance(role);
+    const authApi = createAxiosInstance("user");
     try {
         const res = await authApi.post(endpoint, response);
         return res.data;
@@ -102,6 +102,17 @@ export const pwdOtpResend = async (role: string, config: any) => {
     const response = await authApi.get('/pwd-resendOtp', config);
     console.log(response.data)
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+//Vendor Types
+export const getTypes = async () => {
+  const authApi = createAxiosInstance("vendor");
+  try {
+    const response = await authApi.get('/vendor-types');
+    return response;
   } catch (error) {
     throw error;
   }

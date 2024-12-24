@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { initializeDatabase } from './database/configDB';
+import { initializeDatabase } from './config/database';
 import routes from './routes'
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
