@@ -16,14 +16,10 @@ export const USER = {
     INBOX: "/notifications",
 
     CHAT: "/chat",
-    LIVE: "/live",
-  
     //home
     HOME: "/",
     VENDORS: "/vendors",
     VIEW_VENDOR: "/view-vendor",
-    BOOK_EVENT: "/book-event",
-    PAYMENT_SUCCESS: "/payment-success",
     ABOUT:"/about",
     CONTACT:"/contact",
   };
