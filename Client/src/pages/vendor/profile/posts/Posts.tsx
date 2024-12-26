@@ -8,7 +8,7 @@ import { deletePost, getPost } from "../../../../config/services/venderApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Pagination from "../../../../components/common/Pagination";
-import { VENDOR } from "../../../../config/routes/vendorRoutes";
+import { VENDOR } from "../../../../config/routes/vendor.routes";
 import { Post } from "../../../../interfaces/postTypes";
 import { Typography } from "@material-tailwind/react";
 import Layout from "../../../../layout/vendor/Layout";

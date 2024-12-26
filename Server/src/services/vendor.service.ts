@@ -188,6 +188,16 @@ class VendorService {
       }
     }
 
+    async getAllLocations() {
+      try {
+        const data = await vendorRepository.findAllLocations();
+        return data;
+      } catch (error) {
+        console.error("Error in getAllLocations:", error);
+        throw new BaseError("Failed to get all locations.", 500);
+      }
+    }
+
 }
 
 export default new VendorService();

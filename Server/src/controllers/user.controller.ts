@@ -147,6 +147,28 @@ class UserController {
     
   })
 
+  AddFavVendor = asyncHandler("AddFavouriteVendor")(async (req: Request, res: Response): Promise<void> => {
+      const vendorId: string = req.query.vendorId as string;
+      const userId: string = req.query.userId as string;
+    
+      if (!vendorId) {
+        res.status(400).json({ error: "Invalid vendor id." });
+      }
+      if (!userId) {
+        res.status(400).json({ error: "Invalid user id." });
+      }
+       
+          
+      const data = await userService.FavoriteVendor(vendorId, userId);
+      const userData=await userService.findUser(userId)
+    
+      if (data) {
+        res.status(200).json({ message: "vendor added to Favorite list..",fav:true ,userData});
+      } else {
+        res.status(200).json({ message: "vendor removed from favorites",fav:false,userData });
+      }    
+    })
+
 }
 
 export default new UserController();

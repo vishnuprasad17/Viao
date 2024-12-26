@@ -106,6 +106,10 @@ class VendorRepository extends BaseRepository<IVendorDocument>{
       throw error;
     }
   }
+
+  async findAllLocations(){
+    return await Vendor.distinct('city');
+  }
 }
 
 export default new VendorRepository();

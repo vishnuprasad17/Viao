@@ -203,13 +203,19 @@ class VendorController {
         message: `Vendor ${status} successfully.`,
         process: !process?.isActive ? "block" : "unblock",
       });
-  })
+    })
 
     updateVerifyStatus = asyncHandler("UpdateVerifyStatus")(async (req: Request, res: Response): Promise<void> => {
         const vendorId: string = req.body.vendorId as string;
         const status = req.body.status;
         const result = await vendorService.changeVerifyStatus(vendorId, status);
         res.status(200).json({ result, message: "Status updated successfully!" });
+    })
+
+    getLocations = asyncHandler("GetLocations")(async (req: Request, res: Response): Promise<void> => {
+        const Locations = await vendorService.getAllLocations();
+        res.status(200).json({ locations: Locations });
+      
     })
 };
 

@@ -185,6 +185,42 @@ async toggleUserBlock(userId: string): Promise<void> {
   }
 }
 
+async FavoriteVendor(vendorId: string, userId: string) {
+  try {
+    const user = await userRepository.getById(userId);
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    if (user.favourite.includes(vendorId)) {
+      const index = user.favourite.indexOf(vendorId);
+      user.favourite.splice(index, 1);
+      await user.save();
+      return false;
+    }
+    user.favourite.push(vendorId);
+    await user.save();
+
+    return true;
+  } catch (error) {
+    console.error("Error in addToFavorites service:", error);
+    throw new Error("Failed to add vendor to favorites.");
+  }
+}
+
+async findUser(userId: string) {
+  try {
+    const user = await userRepository.getById(userId);
+    if (!user) {
+      throw new BaseError("User not found.", 404);
+    }
+    return user;
+  } catch (error) {
+    console.error("Error in findUser:", error);
+    throw new BaseError("Failed to find user.", 500);
+  }
+}
+
 }
 
 export default new UserService();

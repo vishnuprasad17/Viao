@@ -33,6 +33,26 @@ import { createAxiosInstance } from "./axiosInstance";
     }
   };
 
+  const getVendor = async (id: string, config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get(`/getvendor?vendorid=${id}`, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const addToFavourite = async (id: string, userId: any, config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.post(`/add-favorite-vendor?vendorId=${id}&userId=${userId}`, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 //Contact
 const contact = async (formValues: any, config: any) => {
   const authApi = createAxiosInstance("user");

@@ -28,7 +28,10 @@ router.post("/send-message",UserController.contactMessage)
 //Home
 router.get("/getvendors", VendorController.getAllVendors);
 router.get("/vendor-types", VendorTypeController.getVendorTypes);
+router.get("/get-locations",VendorController.getLocations);
 router.get("/posts", PostController.getPosts);
+router.get("/getvendor", VendorController.getVendor);
+router.post("/add-favorite-vendor", UserController.AddFavVendor);
 //Profile
 router.put("/update-profile", upload.single("image"), UserController.updateProfile)
 router.post("/update-password", UserController.updatePassword);
