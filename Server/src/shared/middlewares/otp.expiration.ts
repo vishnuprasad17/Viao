@@ -29,6 +29,7 @@ const signupOtpValidityMiddleware = (req: Request, res: Response, next: NextFunc
   const otpData = role === "user" ? req.session.user : req.session.vendor;
 
   if (!otpData) {
+    console.log("No data")
     res.status(400).json({ error: 'OTP not found in session. Please request a new OTP or Signup again.' });
     return;
   }
@@ -42,6 +43,7 @@ const signupOtpValidityMiddleware = (req: Request, res: Response, next: NextFunc
   } else {
     otpData.isExpired = false; // OTP is still valid
   }
+  next();
 }
 
 export { otpValidityMiddleware, signupOtpValidityMiddleware };

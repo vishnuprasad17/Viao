@@ -40,4 +40,8 @@ export class BaseRepository<T extends mongoose.Document>{
     async findByEmail(email: string): Promise<T | null> {
         return await this.model.findOne({ email });
     }
+
+    async findByPhone(phone:number): Promise<T | null> {
+        return await this.model.findOne({ phone });
+    }
 }

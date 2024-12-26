@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { BaseError } from "../shared/error/base.error";
 import { ILoginResponse } from "../interfaces/auth.interface";
 import userRepository from "../data-access/user.repository";
+import vendortypeRepository from "../data-access/vendortype.repository";
 
 function generateToken(id: string, secret: string): string {
   return jwt.sign({ _id: id }, secret, { expiresIn: "15d" });
@@ -41,7 +42,8 @@ class AuthService {
   ): Promise<object> {
     try {
       const existing = await repository.findByEmail(email);
-      if (existing) {
+      const existingPhone = await repository.findByPhone;
+      if (existing || existingPhone) {
         throw new BaseError(`${role} already exists`, 409);
       }
 
@@ -78,7 +80,7 @@ class AuthService {
         const verificationRequest = false;
         const totalBooking = 0;
 
-        const vendorType = await repository.findByType(vendor_type);
+        const vendorType = await vendortypeRepository.findByType(vendor_type);
 
         // Create new vendor
         const newVendor = await repository.create({
