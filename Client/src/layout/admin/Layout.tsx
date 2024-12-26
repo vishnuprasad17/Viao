@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import { ADMIN } from "../../config/routes/adminRoutes";
+import { ADMIN } from "../../config/routes/admin.routes";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import { logout } from "../../redux/slices/AdminSlice";
 import { useDispatch } from "react-redux";

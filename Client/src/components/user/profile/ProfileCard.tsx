@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { setUserInfo } from "../../../redux/slices/UserSlice";
-import { USER } from "../../../config/routes/userRoutes";
+import { USER } from "../../../config/routes/user.routes";
 import { updateProfile } from "../../../config/services/userApi";
 
 interface FormInputs {

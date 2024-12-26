@@ -1,4 +1,3 @@
-
 import ReactDOM from 'react-dom/client';
 import ErrorBoundary from './pages/ErrorBoundary';
 import App from './App';
@@ -16,7 +15,11 @@ import VendorApp from './pages/vendor/VendorApp';
 import AdminApp from './pages/admin/AdminApp';
 import Dashboard from './pages/admin/profile/Dashboard';
 import AdminLogin from './pages/admin/auth/Login';
+import VendorsList from './pages/admin/profile/VendorsList';
+import VendorTypes from './pages/admin/profile/VendorTypes';
+import UsersList from './pages/admin/profile/UsersList';
 import AdminPrivateRoute from './pages/admin/AdminPrivateRoute';
+import VendorProfile from './components/admin/vendorList/VendorProfile';
 import { ADMIN } from './config/routes/admin.routes';
 import React from 'react';
 
@@ -37,6 +40,10 @@ const router = createBrowserRouter(
         {/* Admin Private Routes */}
         <Route path="" element={<AdminPrivateRoute />}>
           <Route path={ADMIN.DASHBOARD} element={<Dashboard />} />
+          <Route path={ADMIN.VENDORS} element={<VendorsList />} />
+          <Route path={ADMIN.VENDOR_TYPES} element={<VendorTypes />} />
+          <Route path={ADMIN.USERS} element={<UsersList />} />
+          <Route path={ADMIN.VENDOR} element={<VendorProfile />} />
         </Route>
       </Route>
 

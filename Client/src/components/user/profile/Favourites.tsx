@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Pagination from '../../common/Pagination';
-import { USER } from '../../../config/routes/userRoutes';
+import { USER } from '../../../config/routes/user.routes';
 interface Favourite {
   _id: string;
   coverpicUrl:string;

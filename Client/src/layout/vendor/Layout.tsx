@@ -1,7 +1,7 @@
 import React, {useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import { VENDOR } from "../../config/routes/vendorRoutes";
+import { VENDOR } from "../../config/routes/vendor.routes";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { logout } from "../../redux/slices/VendorSlice";
 import { useDispatch, useSelector } from "react-redux";

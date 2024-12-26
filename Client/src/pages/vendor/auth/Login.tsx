@@ -16,8 +16,8 @@ import VendorRootState from "../../../redux/rootstate/VendorState";
 import { useFormik } from "formik";
 import { validate } from "../../../validations/common/loginVal";
 import { toast } from "react-toastify";
-import { USER } from "../../../config/routes/userRoutes";
-import { VENDOR } from "../../../config/routes/vendorRoutes";
+import { USER } from "../../../config/routes/user.routes";
+import { VENDOR } from "../../../config/routes/vendor.routes";
 interface FormValues {
   email: string;
   password: string;

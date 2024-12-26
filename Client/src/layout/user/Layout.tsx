@@ -1,7 +1,7 @@
 import React, {  useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import { USER } from "../../config/routes/userRoutes";
+import { USER } from "../../config/routes/user.routes";
 import {
   BookmarkIcon,
   HeartIcon,

@@ -13,7 +13,7 @@ import VendorRootState from "../../../redux/rootstate/VendorState";
 import { validate } from "../../../validations/common/changePwdValidation";
 import { updatePassword } from "../../../config/services/venderApi";
 import Breadcrumb from "../../../components/vendor/Breadcrumbs/Breadcrumb";
-import { VENDOR } from "../../../config/routes/vendorRoutes";
+import { VENDOR } from "../../../config/routes/vendor.routes";
 import Layout from "../../../layout/vendor/Layout";
 
   

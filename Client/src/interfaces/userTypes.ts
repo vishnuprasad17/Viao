@@ -6,5 +6,7 @@ export interface UserData{
     phone : number;
     isActive:boolean;
     imageUrl:string;
+    favourite:string[];
+    wallet:number;
     refreshToken:string;
 }

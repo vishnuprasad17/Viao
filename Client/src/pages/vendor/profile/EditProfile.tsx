@@ -6,7 +6,7 @@ import { getVendor, updateProfile } from "../../../config/services/venderApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Breadcrumb from "../../../components/vendor/Breadcrumbs/Breadcrumb";
-import { VENDOR } from "../../../config/routes/vendorRoutes";
+import { VENDOR } from "../../../config/routes/vendor.routes";
 import Layout from "../../../layout/vendor/Layout";
 
 const initialFormState = {

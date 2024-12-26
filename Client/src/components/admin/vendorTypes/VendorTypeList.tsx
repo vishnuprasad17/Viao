@@ -4,7 +4,7 @@ import { deleteVendorTypes, getVendorTypes } from '../../../config/services/admi
 import { useNavigate } from 'react-router-dom';
 import EditTypeModal from './EditTypeModal';
 import DeleteTypeModal from './DeleteTypeModal';
-import { ADMIN } from '../../../config/routes/adminRoutes';
+import { ADMIN } from '../../../config/routes/admin.routes';
 import { VendorType } from '../../../interfaces/commonTypes';
 
 

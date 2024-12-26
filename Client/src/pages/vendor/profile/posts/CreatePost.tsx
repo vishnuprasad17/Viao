@@ -15,7 +15,7 @@ import {
 import VendorRootState from "../../../../redux/rootstate/VendorState";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { VENDOR } from "../../../../config/routes/vendorRoutes";
+import { VENDOR } from "../../../../config/routes/vendor.routes";
 import Layout from "../../../../layout/vendor/Layout";
 
 const CreatePost = () => {

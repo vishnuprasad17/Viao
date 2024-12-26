@@ -13,8 +13,8 @@ import { validateEmailValue, validateOTP } from "../../validations/common/forgot
 import { forgotPwdOtp, pwdOtpResend, verifyForgotPwdOtp } from "../../config/services/authApi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { USER } from "../../config/routes/userRoutes";
-import { VENDOR } from "../../config/routes/vendorRoutes";
+import { USER } from "../../config/routes/user.routes";
+import { VENDOR } from "../../config/routes/vendor.routes";
 
 interface EmailValue {
   email: string;

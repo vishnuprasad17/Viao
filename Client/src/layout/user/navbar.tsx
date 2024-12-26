@@ -27,7 +27,7 @@ import UserState from "../../redux/rootstate/UserState";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/UserSlice";
 import { useNavigate } from "react-router-dom";
-import { USER } from "../../config/routes/userRoutes";
+import { USER } from "../../config/routes/user.routes";
 import NotificationIcon from "../../components/home/NotificationIcon";
 import { logoutFn } from "../../config/services/authApi";
 

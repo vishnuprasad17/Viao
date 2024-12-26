@@ -5,7 +5,7 @@ const ScrollToTopBtn: React.FC = () => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
-    if (window.pageYOffset > 300) {
+    if (window.scrollY > 300) {
       setVisible(true);
     } else {
       setVisible(false);

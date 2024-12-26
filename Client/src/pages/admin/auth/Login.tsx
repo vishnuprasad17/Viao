@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setAdminInfo } from "../../../redux/slices/AdminSlice";
 import AdminRootState from "../../../redux/rootstate/AdminState";
 import { validate } from "../../../validations/common/loginVal";
-import { ADMIN } from "../../../config/routes/adminRoutes";
+import { ADMIN } from "../../../config/routes/admin.routes";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 

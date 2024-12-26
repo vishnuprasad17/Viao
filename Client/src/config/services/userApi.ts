@@ -2,6 +2,37 @@ import { UserData } from './../../interfaces/userTypes';
 import { createAxiosInstance } from "./axiosInstance";
 
 
+//Vendor Types
+  const getVendorTypes = async (config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get('/vendor-types', config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getVendors = async (config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get(`/getvendors?page=${""}&search=${""}&category=${""}&location=${""}&sort=${""}`, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getVendorPosts = async (id: string | null, config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get(`/posts?vendorid=${id}`, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 //Contact
 const contact = async (formValues: any, config: any) => {
   const authApi = createAxiosInstance("user");
@@ -63,6 +94,11 @@ const changePwd = async (userId: any, formValues: any, config: any) => {
 
 
   export {
+    getVendorTypes,
+    getVendors,
+    getVendorPosts,
+    getVendor,
+    addToFavourite,
     contact,
     updateProfile,
     changePwd,

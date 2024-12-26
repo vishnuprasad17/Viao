@@ -1,5 +1,5 @@
 import { Router} from 'express';
-import {AuthController, UserController} from '../controllers/';
+import {AuthController, UserController, VendorController, VendorTypeController, PostController} from '../controllers/';
 import { setRole } from '../shared/middlewares/setRole';
 import { otpValidityMiddleware, signupOtpValidityMiddleware } from '../shared/middlewares/otp.expiration';
 import multer from 'multer';
@@ -25,7 +25,10 @@ router.post("/google/login", AuthController.googleLogin);
 router.post("/google/register", AuthController.googleRegister);
 
 router.post("/send-message",UserController.contactMessage)
-
+//Home
+router.get("/getvendors", VendorController.getAllVendors);
+router.get("/vendor-types", VendorTypeController.getVendorTypes);
+router.get("/posts", PostController.getPosts);
 //Profile
 router.put("/update-profile", upload.single("image"), UserController.updateProfile)
 router.post("/update-password", UserController.updatePassword);

@@ -11,8 +11,8 @@ import { toast } from "react-toastify";
 import { validate } from "../../validations/common/resetPassword";
 import { resetPwd } from "../../config/services/authApi";
 import { useLocation,useNavigate } from 'react-router-dom';
-import { USER } from "../../config/routes/userRoutes";
-import { VENDOR } from "../../config/routes/vendorRoutes";
+import { USER } from "../../config/routes/user.routes";
+import { VENDOR } from "../../config/routes/vendor.routes";
 
 interface FormValues {
   password: string;

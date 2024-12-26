@@ -13,7 +13,7 @@ import {
   import { useNavigate } from "react-router-dom";
   import { validate } from "../../../validations/admin/vendorTypeValidation";
   import { toast } from "react-toastify";
-  import { ADMIN } from "../../../config/routes/adminRoutes";
+  import { ADMIN } from "../../../config/routes/admin.routes";
   
   interface FormValues {
     type: string;

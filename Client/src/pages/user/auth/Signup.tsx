@@ -15,8 +15,8 @@ import { gLogin, signup } from "../../../config/services/authApi";
 import { toast } from "react-toastify";
 import { validate } from "../../../validations/user/userRegisterVal";
 import { GoogleOAuthProvider , GoogleLogin } from "@react-oauth/google";
-import { USER } from "../../../config/routes/userRoutes";
-import { VENDOR } from "../../../config/routes/vendorRoutes";
+import { USER } from "../../../config/routes/user.routes";
+import { VENDOR } from "../../../config/routes/vendor.routes";
 const client_id = import.meta.env.VITE_CLIENT_ID || '';
 
 

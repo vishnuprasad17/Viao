@@ -12,7 +12,7 @@ import {
 import { getSingleVendorTypes, updateVendorTypes } from "../../../config/services/adminApi";
 import { useNavigate } from "react-router-dom";
 import { validate } from "../../../validations/admin/vendorTypeValidation";
-import { ADMIN } from "../../../config/routes/adminRoutes";
+import { ADMIN } from "../../../config/routes/admin.routes";
 
 interface Props {
   open: boolean;

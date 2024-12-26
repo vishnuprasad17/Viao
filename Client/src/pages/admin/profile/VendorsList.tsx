@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getVendors } from "../../../config/services/adminApi";
 import Pagination from "../../../components/common/Pagination";
-import { ADMIN } from "../../../config/routes/adminRoutes";
+import { ADMIN } from "../../../config/routes/admin.routes";
 import { VendorData } from "../../../interfaces/vendorTypes";
 
 

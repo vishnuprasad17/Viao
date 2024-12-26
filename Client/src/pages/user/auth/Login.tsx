@@ -17,8 +17,8 @@ import { validate } from "../../../validations/common/loginVal";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { USER } from "../../../config/routes/userRoutes";
-import { VENDOR } from "../../../config/routes/vendorRoutes";
+import { USER } from "../../../config/routes/user.routes";
+import { VENDOR } from "../../../config/routes/vendor.routes";
 
 const client_id = import.meta.env.VITE_CLIENT_ID || "";
 

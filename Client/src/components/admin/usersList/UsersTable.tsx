@@ -19,7 +19,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { logout } from "../../../redux/slices/UserSlice";
-import { ADMIN } from "../../../config/routes/adminRoutes";
+import { ADMIN } from "../../../config/routes/admin.routes";
 import { UserData } from "../../../interfaces/userTypes";
 import { useSelector } from "react-redux";
 import UserRootState from "../../../redux/rootstate/UserState";

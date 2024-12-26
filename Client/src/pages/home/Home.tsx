@@ -3,13 +3,43 @@ import {
   Card,
   CardBody,
   Typography,
+  CardHeader,
   Input,
 } from "@material-tailwind/react";
 import Footer from "../../layout/user/footer";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import SubsribeCard from "../../components/home/SubsribeCard";
+import { Link } from "react-router-dom";
+import { USER } from "../../config/routes/user.routes";
+import { VendorData } from "../../interfaces/vendorTypes";
+import { useEffect, useState } from "react";
+import { getVendors } from "../../config/services/userApi";
+import VendorTypeImages from "../../components/home/VendorTypeImages";
 
 
 function Home() {
+  const [vendors, setVendors] = useState<VendorData[]>([]);
+  const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    fetchVendors();
+    window.scrollTo(0, 0);
+  }, []);
+
+  const fetchVendors = async () => {
+    try {
+      const response = await getVendors(
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(response.data.vendorData);
+      setVendors(response.data.vendorData);
+    } catch (error) {
+      console.error("Error fetching vendors:", error);
+    }
+  };
  
 
   return (
@@ -66,6 +96,8 @@ function Home() {
                 label="Search"
                 size="lg"
                 name="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
                 crossOrigin={undefined}
@@ -74,6 +106,13 @@ function Home() {
 
             {/* "Find Vendors" button covers 100% in small screens and 20% in large screens */}
             <div className="w-full lg:w-1/5 mt-4 lg:mt-0">
+            <Link
+                to={
+                  search?.length > 0
+                    ? `${USER.VENDORS}?search=${search}`
+                    : `${USER.VENDORS}`
+                }
+              >
                 <Button
                   className="w-full bg-black"
                   placeholder={undefined}
@@ -82,6 +121,7 @@ function Home() {
                 >
                   Get Vendors
                 </Button>
+                </Link>
             </div>
           </div>
         </CardBody>
@@ -90,6 +130,16 @@ function Home() {
   </div>
 </section>
 
+
+     <section className="mt-10 mx-20 text-center">
+        <h1
+          style={{ fontFamily: "playfair display", fontSize: "30px" }}
+          className="text-center mb-20"
+        >
+          VENDOR &nbsp;TYPES &nbsp;
+        </h1>
+      <VendorTypeImages/>
+      </section>
 
      <section>
      <div className="flex flex-wrap items-start w-full h-full bg-blue-900 bg-cover bg-center mt-32 mb-20">
@@ -143,7 +193,88 @@ function Home() {
   </div>
 </section>
 
+<section className="mt-30 mx-10 items-center">
+        <h1
+          style={{ fontFamily: "playfair display", fontSize: "30px" }}
+          className="text-center mb-10"
+        >
+          TOP &nbsp;RATED &nbsp;VENDORS
+        </h1>
+        <div className="flex flex-wrap items-center w-full">
+          <div className="mx-auto md:m-10 sm:m-5 px-4 sm:grid sm:grid-cols-2 grid-cols-4 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+            {vendors?.slice(0,9).map((vendor, index) =>(
+              
+              <Card
+                key={index}
+                className="shadow-lg  shadow-gray-500/10 rounded-lg w-full mb-2"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                <Link to={`${USER.VIEW_VENDOR}?id=${vendor?._id}`}>
+                  <CardHeader
+                    floated={false}
+                    className="relative h-56"
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  >
+                    <img
+                      alt="Card Image"
+                      src={vendor.coverpicUrl?vendor.coverpicUrl:"/imgs/vendor/cover-default.jpg"}
+                      className="h-full w-full"
+                    />
+                  </CardHeader>
+                </Link>
+                <CardBody
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  >
+             
+                    {vendor.city}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color="blue-gray"
+                    className="mb-3 mt-2 font-bold"
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  >
+                      <Link to={`${USER.VIEW_VENDOR}?id=${vendor?._id}`}>
+                           {vendor.name}
+                           </Link>
+                  </Typography>
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <div className="flex items-end justify-end mr-25 mt-10">
+      <Link to={USER.VENDORS}>
+          <Button
+            variant="text"
+            size="lg"
+            className="flex items-end bg-gray text-blue-900 justify-end gap-2 mb-10 mt-4"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
+            <ArrowRightIcon className="h-5 w-5 font-bold text-light-blue-900" />
+            VIEW MORE
+          </Button>
+        </Link>
       </div>
 
       <section className="mt-12 md:mt-20">
@@ -196,6 +327,9 @@ function Home() {
             </div>
           </div>
         </div>
+      </section>
+      <section className="mt-40">
+        <SubsribeCard />
       </section>
       <div className="bg-white">
         <Footer />

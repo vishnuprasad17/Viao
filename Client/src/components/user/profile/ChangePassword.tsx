@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { validate } from "../../../validations/common/changePwdValidation";
 import { changePwd } from "../../../config/services/userApi";
 import { useState } from "react";
-import { USER } from "../../../config/routes/userRoutes";
+import { USER } from "../../../config/routes/user.routes";
 import UserRootState from "../../../redux/rootstate/UserState";
 import { useSelector } from "react-redux";
 
