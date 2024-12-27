@@ -34,8 +34,12 @@ function Home() {
         }
       );
 
+      const activeVendors = response.data.vendorData.filter(
+        (vendor: VendorData) => vendor.isActive
+      );
+
       console.log(response.data.vendorData);
-      setVendors(response.data.vendorData);
+      setVendors(activeVendors);
     } catch (error) {
       console.error("Error fetching vendors:", error);
     }
@@ -221,7 +225,7 @@ function Home() {
                   >
                     <img
                       alt="Card Image"
-                      src={vendor.coverpicUrl?vendor.coverpicUrl:"/imgs/vendor/cover-default.jpg"}
+                      src={vendor.coverpicUrl?vendor.coverpicUrl:"/imgs/vendor/default-cover.jpg.jpg"}
                       className="h-full w-full"
                     />
                   </CardHeader>

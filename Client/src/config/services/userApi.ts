@@ -53,6 +53,26 @@ import { createAxiosInstance } from "./axiosInstance";
     }
   };
 
+  const getLocations = async (config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get('/get-locations', config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getAllVendors = async (search: string, page: number, category: string[], location: string[], config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get(`/getvendors?search=${search}&page=${page}&category=${category.join(",")}&location=${location.join(",")}`, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 //Contact
 const contact = async (formValues: any, config: any) => {
   const authApi = createAxiosInstance("user");
@@ -119,6 +139,8 @@ const changePwd = async (userId: any, formValues: any, config: any) => {
     getVendorPosts,
     getVendor,
     addToFavourite,
+    getLocations,
+    getAllVendors,
     contact,
     updateProfile,
     changePwd,

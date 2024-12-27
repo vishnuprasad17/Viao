@@ -89,7 +89,7 @@ export function VendorProfile() {
         <div
           className="absolute top-0 left-0 w-full h-full scale-105"
           style={{
-            backgroundImage: `url(${vendor?.coverpicUrl || "/imgs/vendor/cover-default.jpg"})`,
+            backgroundImage: `url(${vendor?.coverpicUrl || "/imgs/vendor/default-cover.jpg.jpg"})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

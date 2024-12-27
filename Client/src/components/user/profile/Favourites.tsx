@@ -110,7 +110,7 @@ const Favourites = () => {
               onPointerLeaveCapture={undefined}
             >
               <Link to={`${USER.VIEW_VENDOR}?id=${_id}`}>
-              <img src={coverpicUrl?coverpicUrl:"/imgs/vendor/cover-default.jpg"} alt={name} />
+              <img src={coverpicUrl?coverpicUrl:"/imgs/vendor/default-cover.jpg.jpg"} alt={name} />
               </Link>
               <button
                 onClick={() => handleOpen(_id)} // Pass _id to handleOpen

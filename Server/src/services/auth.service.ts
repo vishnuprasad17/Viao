@@ -42,7 +42,7 @@ class AuthService {
   ): Promise<object> {
     try {
       const existing = await repository.findByEmail(email);
-      const existingPhone = await repository.findByPhone;
+      const existingPhone = await repository.findByPhone(phone);
       if (existing || existingPhone) {
         throw new BaseError(`${role} already exists`, 409);
       }
