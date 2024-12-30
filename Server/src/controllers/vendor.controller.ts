@@ -208,7 +208,8 @@ class VendorController {
     updateVerifyStatus = asyncHandler("UpdateVerifyStatus")(async (req: Request, res: Response): Promise<void> => {
         const vendorId: string = req.body.vendorId as string;
         const status = req.body.status;
-        const result = await vendorService.changeVerifyStatus(vendorId, status);
+        const note = req.body.note;
+        const result = await vendorService.changeVerifyStatus(vendorId, status, note);
         res.status(200).json({ result, message: "Status updated successfully!" });
     })
 
