@@ -143,9 +143,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </span>
               </li>
             </Link>
-            <Link to={ADMIN.INBOX}>
+            <Link to={ADMIN.NOTIFICATION}>
               <li
-                className={`${path.pathname == ADMIN.INBOX ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
+                className={`${path.pathname == ADMIN.NOTIFICATION ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
               mt-2
               `}
               >

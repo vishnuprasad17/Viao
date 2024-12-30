@@ -1,5 +1,6 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 export interface IAdminDocument extends Document {
+    _id: Types.ObjectId;
     email: string;
     password: string;
     createdAt: Date;

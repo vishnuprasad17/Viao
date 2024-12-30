@@ -1,5 +1,5 @@
 import { Router} from 'express';
-import {AuthController, UserController, VendorController, VendorTypeController, PostController} from '../controllers/';
+import {AuthController, UserController, VendorController, VendorTypeController, PostController, NotificationController} from '../controllers/';
 import { setRole } from '../shared/middlewares/setRole';
 import { otpValidityMiddleware, signupOtpValidityMiddleware } from '../shared/middlewares/otp.expiration';
 import multer from 'multer';
@@ -37,5 +37,9 @@ router.put("/update-profile", upload.single("image"), UserController.updateProfi
 router.post("/update-password", UserController.updatePassword);
 router.get("/get-favorite-vendor", UserController.getFavoriteVendors);
 router.delete("/delete-favorite-vendor", UserController.deleteFavoriteVendor);
+//Notification
+router.get('/user-notifications',NotificationController.getAllNotifications);
+router.patch('/toggle-read',NotificationController.toggleRead)
+router.delete("/notification",NotificationController.deleteNotification)
 
 export default router;

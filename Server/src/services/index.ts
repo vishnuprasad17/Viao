@@ -3,6 +3,7 @@ import userService from "./user.service";
 import vendorService from "./vendor.service";
 import vendorTypeService from "./type.service";
 import postService from "./post.service";
+import notificationService from "./notification.service";
 
 // Add other controllers as needed
 export {
@@ -11,4 +12,5 @@ export {
     vendorService,
     vendorTypeService,
     postService,
+    notificationService,
 };

@@ -1,5 +1,5 @@
 import { Router} from 'express';
-import {AuthController, UserController, VendorController, VendorTypeController} from "../controllers";
+import {AuthController, UserController, VendorController, VendorTypeController, NotificationController} from "../controllers";
 import { setRole } from '../shared/middlewares/setRole';
 import adminAuth from '../shared/middlewares/admin-auth';
 import multer from "multer";
@@ -25,7 +25,10 @@ router.delete('/delete-vendortype',VendorTypeController.deleteVendorType)
 router.post('/add-type' , upload.single("image"), VendorTypeController.addVendorType);
 router.get("/single-type",adminAuth,VendorTypeController.LoadSingleType)
 router.put("/update-type", upload.single("image"),VendorTypeController.updateType)
-
+//Notification
+router.get('/admin-notifications',NotificationController.getAllNotifications);
+router.patch('/toggle-read',NotificationController.toggleRead)
+router.delete("/notification",NotificationController.deleteNotification)
 
 
 export default router;

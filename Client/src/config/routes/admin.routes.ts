@@ -7,5 +7,5 @@ export const ADMIN = {
     USERS: "/admin/users",
     VENDORS: "/admin/vendors",
     WALLET: "/admin/wallet",
-    INBOX: "/admin/inbox",
+    NOTIFICATION: "/admin/notifications",
   };

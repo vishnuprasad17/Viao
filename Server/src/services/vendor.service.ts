@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import vendorRepository from "../data-access/vendor.repository";
 import { IVendorDocument } from "../interfaces/vendor.interface";
 import { BaseError } from "../shared/error/base.error";
+import adminRepository from "../data-access/admin.repository";
+import notificationRepository from "../data-access/notificationRepository";
+import { Types } from "../models/notification.model";
 
 function toTitleCase(city: string): string {
   return city.toLowerCase().split(' ').map(word => {
@@ -26,6 +29,14 @@ class VendorService {
     async verificationRequest(vendorId: string) {
     try {
       const data = await vendorRepository.requestForVerification(vendorId);
+
+      //Notification
+      const Admin = await adminRepository.findOne({});
+      const adminNotification = await notificationRepository.create({
+          recipient: Admin?._id,
+          message: `${data?.name} requested for verification!`,
+          type: Types.VERIFY,
+      });
       return data;
     } catch (error) {
       console.error("Error in verificationRequest:", error);
@@ -175,12 +186,21 @@ class VendorService {
       }
     }
 
-    async changeVerifyStatus(vendorId: string, status: string) {
+    async changeVerifyStatus(vendorId: string, status: string, note: string) {
       try {
         const data = await vendorRepository.updateVerificationStatus(
           vendorId,
           status
         );
+        const Vendor = await vendorRepository.getById(vendorId);
+        if(!Vendor) {
+          throw new BaseError("Vendor not found.", 404);
+        }
+        const vendorNotification = await notificationRepository.create({
+          recipient: Vendor._id,
+          message: status == "Accepted" ? `Your account has been Verified!` : `Verification Rejected! ${note}`,
+          type: status === "Rejected" ? Types.REJECTED : Types.VERIFIED,
+        })
         return data;
       } catch (error) {
         console.error("Error in changeVerifyStatus:", error);

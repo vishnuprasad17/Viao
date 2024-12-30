@@ -226,9 +226,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 Wallet
               </ListItem>
             </Link>
-            <Link to={`${USER.PROFILE}${USER.INBOX}`}>
+            <Link to={`${USER.PROFILE}${USER.NOTIFICATION}`}>
               <ListItem
-                className={`text-sm ${pathname==`${USER.PROFILE}${USER.INBOX}` ? "bg-gray-300" : ""}`}
+                className={`text-sm ${pathname==`${USER.PROFILE}${USER.NOTIFICATION}` ? "bg-gray-300" : ""}`}
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}

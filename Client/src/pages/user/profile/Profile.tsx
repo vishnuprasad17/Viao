@@ -23,7 +23,7 @@ const Profile: React.FC = () => {
               <Route path="/" element={<ProfileCard />} />
               <Route path={USER.CHANGE_PWD} element={<ChangePassword />} />
               <Route path={USER.FAV} element={<Favourites />} />
-              <Route path={USER.INBOX} element={<Notifications />} />
+              <Route path={USER.NOTIFICATION} element={<Notifications />} />
             </Routes>
           </div>
         </div>

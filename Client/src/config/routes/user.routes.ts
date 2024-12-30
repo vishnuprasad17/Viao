@@ -13,7 +13,7 @@ export const USER = {
     BOOKING_DETAILS: "/booking-details",
     BOOKING: "/booking",
     WALLET: "/wallet",
-    INBOX: "/notifications",
+    NOTIFICATION: "/notifications",
 
     CHAT: "/chat",
     //home

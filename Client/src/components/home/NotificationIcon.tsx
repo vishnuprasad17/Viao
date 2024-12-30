@@ -1,12 +1,22 @@
 import { Badge } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { USER } from "../../config/routes/user.routes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { notificationCount } from "../../config/services/userApi";
 
 const NotificationIcon = () => {
   const [count, setCount] = useState<number>(0);
+  useEffect(() => {
+    notificationCount()
+    .then((res) => {
+        setCount(res.data.count)
+    })
+    .catch((error)=>{
+        console.error(error.message)
+    });
+  });
   return (
-    <Link to={`${USER.PROFILE}${USER.INBOX}`}>
+    <Link to={`${USER.PROFILE}${USER.NOTIFICATION}`}>
   <div className="pr-1">
     {count! > 0 && (
       <Badge content={count}>

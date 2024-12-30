@@ -67,6 +67,7 @@
     "react-shimmer": "^3.2.0",
     "react-shimmer-effects": "^1.0.3",
     "react-toastify": "^10.0.6",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "timeago.js": "^4.0.2"
   }
 }

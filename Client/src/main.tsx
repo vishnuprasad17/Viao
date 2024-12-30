@@ -20,6 +20,7 @@ import VendorTypes from './pages/admin/profile/VendorTypes';
 import UsersList from './pages/admin/profile/UsersList';
 import AdminPrivateRoute from './pages/admin/AdminPrivateRoute';
 import VendorProfile from './components/admin/vendorList/VendorProfile';
+import Notifications from './pages/admin/profile/Notifications';
 import { ADMIN } from './config/routes/admin.routes';
 import React from 'react';
 
@@ -44,6 +45,7 @@ const router = createBrowserRouter(
           <Route path={ADMIN.VENDOR_TYPES} element={<VendorTypes />} />
           <Route path={ADMIN.USERS} element={<UsersList />} />
           <Route path={ADMIN.VENDOR} element={<VendorProfile />} />
+          <Route path={ADMIN.NOTIFICATION} element={<Notifications />} />
         </Route>
       </Route>
 

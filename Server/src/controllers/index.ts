@@ -3,6 +3,7 @@ import VendorTypeController from './vendortype.controller';
 import UserController from './user.controller';
 import VendorController from './vendor.controller';
 import PostController from './post.controller';
+import NotificationController from './notification.controller';
 
 // Add other controllers as needed
 export {
@@ -11,4 +12,5 @@ export {
     VendorController,
     VendorTypeController,
     PostController,
+    NotificationController,
 };

@@ -5,6 +5,9 @@ import { BaseError } from "../shared/error/base.error";
 import { ILoginResponse } from "../interfaces/auth.interface";
 import userRepository from "../data-access/user.repository";
 import vendortypeRepository from "../data-access/vendortype.repository";
+import adminRepository from "../data-access/admin.repository";
+import notificationRepository from "../data-access/notificationRepository";
+import { Types } from "../models/notification.model";
 
 function generateToken(id: string, secret: string): string {
   return jwt.sign({ _id: id }, secret, { expiresIn: "15d" });
@@ -43,6 +46,7 @@ class AuthService {
     try {
       const existing = await repository.findByEmail(email);
       const existingPhone = await repository.findByPhone(phone);
+      const Admin = await adminRepository.findOne({});
       if (existing || existingPhone) {
         throw new BaseError(`${role} already exists`, 409);
       }
@@ -64,6 +68,18 @@ class AuthService {
         // Generate token and set cookie
         const token = generateToken(newUser._id, process.env.JWT_SECRET!);
         setCookie(res, "jwtUser", token);
+        //Notification for Admin
+        const adminNotification = await notificationRepository.create({
+        recipient: Admin?._id,
+        message: `New user registered!`,
+        type: Types.NEW_USER,
+      });
+        //Notification for User
+        const userNotification = await notificationRepository.create({
+          recipient: newUser?._id,
+          message: `Hello ${newUser?.name}, thank you for joining us! 🌟`,
+          type: Types.WELCOME,
+        });
 
         return { user: newUser };
       } else {
@@ -98,6 +114,18 @@ class AuthService {
 
         // Generate token
         const token = generateToken(newVendor._id, process.env.JWT_SECRET!);
+        //Notification for Admin
+        const adminNotification = await notificationRepository.create({
+          recipient: Admin?._id,
+          message: `New vendor registered!`,
+          type: Types.NEW_VENDOR,
+        });
+        //Notification for Vendor
+        const vendorNotification = await notificationRepository.create({
+          recipient: newVendor?._id,
+          message: `Hello and welcome to our vendor community! 🌟`,
+          type: Types.WELCOME,
+        });
 
         return { vendor: newVendor, token };
       }

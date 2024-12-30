@@ -1,4 +1,4 @@
-import { Schema , Document } from 'mongoose';
+import { Types , Document } from 'mongoose';
 
 
 interface Lock {
@@ -7,8 +7,9 @@ interface Lock {
 }
 
 export interface IVendorDocument extends Document {
-    email : string;
-    password : string;
+    _id: Types.ObjectId;
+    email: string;
+    password: string;
     name:string;
     city:string;
     about:string;
@@ -18,13 +19,11 @@ export interface IVendorDocument extends Document {
     isVerified:boolean;
     verificationRequest:boolean;
     totalBooking:number;
-    vendor_type:Schema.Types.ObjectId;
+    vendor_type:Types.ObjectId;
     isActive:boolean;
     coverpicUrl:string;
     logoUrl:string;
     bookedDates:Array<string>;
     refreshToken:string;
-    totalRating:number;
-    locks: Lock[];
-    
+    totalRating:number;  
 }
