@@ -276,7 +276,7 @@ const EditProfile: React.FC = () => {
             <div className="flex justify-center">
               <Button
                 type="submit"
-                color="pink"
+                color="blue"
                 className="rounded-lg" // Use Tailwind CSS for rounded corners
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}

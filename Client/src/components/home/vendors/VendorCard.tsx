@@ -27,13 +27,13 @@ import { VendorData } from "../../../interfaces/vendorTypes";
               {name}
             </Typography>
             <Typography
-                        color="blue-gray"
-                        className="flex items-center gap-1.5 font-normal"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}            >
+                        className="flex items-center gap-1.5 text-orange-900 font-semibold"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}            >
+              {totalRating?totalRating:0}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="-mt-0.5 h-5 w-5 text-pink-400"
+                className="-mt-0.5 h-4 w-4 text-orange-900"
               >
                 <path
                   fillRule="evenodd"
@@ -41,7 +41,6 @@ import { VendorData } from "../../../interfaces/vendorTypes";
                   clipRule="evenodd"
                 />
               </svg>
-              {totalRating?totalRating:0}
             </Typography>
           </div>
           <Typography color="gray"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
@@ -50,7 +49,7 @@ import { VendorData } from "../../../interfaces/vendorTypes";
         </CardBody>
         <CardFooter className="pt-3 -mt-5"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         <Link to={`/view-vendor?id=${_id}`}>
-          <Button size="sm" fullWidth={true}  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+          <Button size="sm" fullWidth={true} className="bg-blue-900"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             View Profile
           </Button>
           </Link>

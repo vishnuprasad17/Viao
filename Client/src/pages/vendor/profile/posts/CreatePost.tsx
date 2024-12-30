@@ -107,14 +107,14 @@ const CreatePost = () => {
       <div className="flex justify-center flex-wrap mb-20">
         {/* Add Post Card */}
         <Card
-          className="w-full md:w-96 mx-4 my-20"
+          className="w-full bg-blue-gray-50 md:w-96 mx-4 my-20"
           placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
         >
           <CardHeader
             variant="gradient"
-            className="mb-4 grid h-28 place-items-center bg-black"
+            className="mb-4 grid h-28 place-items-center bg-blue-gray-500"
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
@@ -158,8 +158,8 @@ const CreatePost = () => {
                 crossOrigin={undefined}
               />
               <Button
-                className="bg-graydark"
                 variant="gradient"
+                color="blue"
                 type="submit"
                 fullWidth
                 placeholder={undefined}
@@ -193,6 +193,7 @@ const CreatePost = () => {
             {file && (
               <Button
                 className="float-right md:float-none mt-4 md:mt-0"
+                color="blue"
                 onClick={getCropData}
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}

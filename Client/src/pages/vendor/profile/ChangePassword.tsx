@@ -134,6 +134,7 @@ import Layout from "../../../layout/vendor/Layout";
                {formErrors.confirm_password ? <p className="text-sm" style={{color:"red",marginBottom:-10,marginTop:-10}}>{formErrors.confirm_password}</p> : null}
                <Button
                  variant="gradient"
+                 color="blue"
                  className="justify-center bg-graydark"
                  placeholder={undefined}
                  onPointerEnterCapture={undefined}

@@ -9,8 +9,6 @@ import { VendorData } from "../../../interfaces/vendorTypes";
 
 
 
-// VendorCard component remains unchanged
-
 function VendorsList() {
   const [vendors, setVendors] = useState<VendorData[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
