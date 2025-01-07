@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { getToken, getRefreshToken, refreshAuthToken } from './authToken';
+import config from '../envConfig';
 
 // Function to create an Axios instance with interceptors
 export const createAxiosInstance = (role: string) => {
-  const baseUrl = `${import.meta.env.VITE_BASE_URL}/${role}`;
+  const baseUrl = `${config.BASE_URL}/${role}`;
 
   const instance = axios.create({
     baseURL: baseUrl,

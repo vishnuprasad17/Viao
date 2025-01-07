@@ -17,7 +17,9 @@ import { validate } from "../../../validations/user/userRegisterVal";
 import { GoogleOAuthProvider , GoogleLogin } from "@react-oauth/google";
 import { USER } from "../../../config/routes/user.routes";
 import { VENDOR } from "../../../config/routes/vendor.routes";
-const client_id = import.meta.env.VITE_CLIENT_ID || '';
+import config from "../../../config/envConfig";
+
+const client_id = config.CLIENT_ID;
 
 
 interface UserFormValues {
