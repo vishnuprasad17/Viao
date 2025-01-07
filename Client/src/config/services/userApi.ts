@@ -63,10 +63,10 @@ import { createAxiosInstance } from "./axiosInstance";
     }
   };
 
-  const getAllVendors = async (search: string, page: number, category: string[], location: string[], config: any) => {
+  const getAllVendors = async (search: string, page: number, category: string[], location: string[], sort: number | undefined, config: any) => {
     const authApi = createAxiosInstance("user");
     try {
-      const response = await authApi.get(`/getvendors?search=${search}&page=${page}&category=${category.join(",")}&location=${location.join(",")}`, config);
+      const response = await authApi.get(`/getvendors?search=${search}&page=${page}&category=${category.join(",")}&location=${location.join(",")}&sort=${sort}`, config);
       return response;
     } catch (error) {
       throw error;
@@ -128,8 +128,57 @@ const changePwd = async (userId: any, formValues: any, config: any) => {
     }
   };
 
+  const notificationCount = async () => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get('/notification-count');
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
 
+  //Chat
 
+  const getVendorForChat = async (id: string | undefined) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get(`/getvendor?vendorid=${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getUserForChat = async (id: string | undefined) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get(`/getuser?userId=${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteForEveryone = async (data: any, config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.patch("/delete-for-everyone", data, config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteForMe = async (data: any, config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.patch("/delete-for-me", data, config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
 
 
 
@@ -146,5 +195,10 @@ const changePwd = async (userId: any, formValues: any, config: any) => {
     changePwd,
     getFavourites,
     deleteFavourite,
+    notificationCount,
+    getVendorForChat,
+    getUserForChat,
+    deleteForEveryone,
+    deleteForMe,
   }
 

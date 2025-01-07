@@ -169,6 +169,14 @@ class UserController {
       }    
     })
 
+    getUser = asyncHandler("GetUserForChat")(async (req: Request, res: Response): Promise<void> => {
+        
+        const userId:string = req.query.userId as string;
+  
+        const data = await userService.findUser(userId);
+        res.status(200).json(data);
+    })  
+
 }
 
 export default new UserController();

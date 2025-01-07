@@ -1,5 +1,5 @@
 import { Router} from 'express';
-import {AuthController, UserController, VendorController, VendorTypeController, PostController, NotificationController} from '../controllers/';
+import {AuthController, UserController, VendorController, VendorTypeController, PostController, NotificationController, MessageController} from '../controllers/';
 import { setRole } from '../shared/middlewares/setRole';
 import { otpValidityMiddleware, signupOtpValidityMiddleware } from '../shared/middlewares/otp.expiration';
 import multer from 'multer';
@@ -41,5 +41,10 @@ router.delete("/delete-favorite-vendor", UserController.deleteFavoriteVendor);
 router.get('/user-notifications',NotificationController.getAllNotifications);
 router.patch('/toggle-read',NotificationController.toggleRead)
 router.delete("/notification",NotificationController.deleteNotification)
+router.get("/notification-count", NotificationController.getCount);
+//Chat
+router.patch("/delete-for-everyone", MessageController.deleteAMessage);
+router.patch("/delete-for-me", MessageController.changeViewMessage);
+router.get("/getuser", UserController.getUser);
 
 export default router;

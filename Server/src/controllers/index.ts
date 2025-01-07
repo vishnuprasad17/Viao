@@ -4,6 +4,8 @@ import UserController from './user.controller';
 import VendorController from './vendor.controller';
 import PostController from './post.controller';
 import NotificationController from './notification.controller';
+import MessageController from './message.controller';
+import ConversationController from './conversation.controller';
 
 // Add other controllers as needed
 export {
@@ -13,4 +15,6 @@ export {
     VendorTypeController,
     PostController,
     NotificationController,
+    MessageController,
+    ConversationController,
 };

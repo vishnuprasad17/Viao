@@ -1,5 +1,5 @@
 import express from 'express';
-import {AuthController, VendorController, VendorTypeController, PostController, NotificationController} from '../controllers';
+import {AuthController, VendorController, VendorTypeController, PostController, NotificationController, MessageController} from '../controllers';
 import { otpValidityMiddleware, signupOtpValidityMiddleware } from '../shared/middlewares/otp.expiration';
 import { setRole } from '../shared/middlewares/setRole';
 import multer from 'multer';
@@ -47,6 +47,9 @@ router.post("/add-dates", VendorController.addDates);
 router.get('/vendor-notifications',NotificationController.getAllNotifications);
 router.patch('/toggle-read',NotificationController.toggleRead)
 router.delete("/notification",NotificationController.deleteNotification)
+//Message
+router.patch("/delete-for-everyone", MessageController.deleteAMessage);
+router.patch("/delete-for-me", MessageController.changeViewMessage);
 
 
 export default router;

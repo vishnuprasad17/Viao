@@ -95,6 +95,27 @@ const addDate = async (credential: any, config: any) => {
   }
 };
 
+//Chat
+const deleteForEveryone = async (data: any, config: any) => {
+  const authApi = createAxiosInstance("vendor");
+  try {
+    const response = await authApi.patch("/delete-for-everyone", data, config);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteForMe = async (data: any, config: any) => {
+  const authApi = createAxiosInstance("vendor");
+  try {
+    const response = await authApi.patch("/delete-for-me", data, config);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
     getVendor,
     verifyRequest,
@@ -105,4 +126,6 @@ export {
     addPost,
     getDate,
     addDate,
+    deleteForEveryone,
+    deleteForMe,
 }
