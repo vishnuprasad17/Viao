@@ -121,6 +121,10 @@ const NavbarComponent = () => {
     </ul>
   );
 
+  if (path.pathname === '/chat') {
+    return null;
+  }
+
 
   return (
     <Navbar
@@ -130,7 +134,6 @@ const NavbarComponent = () => {
       path.pathname.includes('/live') ||
       path.pathname.includes('/room/') ||
       path.pathname.includes('/book-event') ||
-      path.pathname.includes('/chat') ||
       path.pathname.includes('/payment-success') || isScrolled? 'bg-black ' : 'bg-transparent shadow-none'
     } max-w-screen w-full z-0 px-4 py-3 lg:px-8 lg:py-3 rounded-none border-none shadow-none h-18`}
       placeholder={undefined}
@@ -341,25 +344,6 @@ const NavbarComponent = () => {
                         onPointerLeaveCapture={undefined}
                       >
                         Chat
-                      </Typography>
-                    </Link>
-                  </ListItem>
-                  <ListItem
-                    className="flex items-center gap-2"
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                  >
-                    <i className="fa-solid fa-tower-broadcast"></i>
-                    <Link to={USER.LIVE}>
-                      <Typography
-                        variant="small"
-                        className="font-medium"
-                        placeholder={undefined}
-                        onPointerEnterCapture={undefined}
-                        onPointerLeaveCapture={undefined}
-                      >
-                        Live
                       </Typography>
                     </Link>
                   </ListItem>

@@ -9,16 +9,47 @@ import {
 } from '@material-tailwind/react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { sendData } from '../../../config/services/chatApi';
+import { useNavigate } from 'react-router-dom';
+import { USER } from '../../../config/routes/user.routes';
+import { toast } from 'react-hot-toast';
 
 interface ProfileButtonsProps {
+  vendorId: string | undefined;
   bookedDates:Array<string> | undefined;
+  userId: string | undefined;
 }
 
-const ProfileButtons: React.FC<ProfileButtonsProps> = ({ bookedDates }) => {
+const ProfileButtons: React.FC<ProfileButtonsProps> = ({ vendorId, bookedDates, userId }) => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
 
   const handleOpen = () => setOpen((cur) => !cur);
+
+  const handleChat =async()=>{
+    if (!userId) {
+      toast.error('Please log in.', {
+        style: {
+          background: 'red', // Red background
+          color: '#FFFFFF', // White text
+        },
+        duration: 3000,
+      });
+      return;
+    }
+    const body ={
+      senderId :userId,
+      receiverId:vendorId
+    }
+    try {
+      await sendData(body).then(()=>{
+        navigate(`${USER.CHAT}`)
+      })
+    } catch(error) {
+      console.log(error)
+    }
+  }
 
   return (
     <>
@@ -49,6 +80,7 @@ const ProfileButtons: React.FC<ProfileButtonsProps> = ({ bookedDates }) => {
         <div className="mr-1 p-3 text-center">
           <Button
             className="w-fit bg-blue-900 rounded-full"
+            onClick={handleChat}
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
