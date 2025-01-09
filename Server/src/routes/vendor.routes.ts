@@ -1,5 +1,5 @@
 import express from 'express';
-import {AuthController, VendorController, VendorTypeController, PostController, NotificationController, MessageController} from '../controllers';
+import {AuthController, VendorController, VendorTypeController, PostController, NotificationController, MessageController, BookingController} from '../controllers';
 import { otpValidityMiddleware, signupOtpValidityMiddleware } from '../shared/middlewares/otp.expiration';
 import { setRole } from '../shared/middlewares/setRole';
 import multer from 'multer';
@@ -43,6 +43,7 @@ router.delete("/posts/:id", PostController.deletePost);
 router.post("/add-post", upload.single("image"), PostController.addNewPost);
 router.get("/load-dates", VendorController.loadDates);
 router.post("/add-dates", VendorController.addDates);
+router.get("/booking-details", BookingController.getBookingsByVendor);
 //Notification
 router.get('/vendor-notifications',NotificationController.getAllNotifications);
 router.patch('/toggle-read',NotificationController.toggleRead)

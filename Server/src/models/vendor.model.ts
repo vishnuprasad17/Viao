@@ -21,15 +21,15 @@ const VendorSchema: Schema = new Schema({
     refreshToken:{type:String},
     totalRating:{type:Number,default:0},
     locks: [{
-        date: {
-          type: String,
-          required: true
-        },
-        isLocked: {
-          type: Boolean,
-          default: false
-        }
-      }]
+      date: {
+        type: String,
+        required: true
+      },
+      isLocked: {
+        type: Boolean,
+        default: false
+      }
+    }]
 
 });
 

@@ -95,6 +95,18 @@ const addDate = async (credential: any, config: any) => {
   }
 };
 
+//Booking
+
+const getBooking = async (vendorId: string | undefined, page: number, config: any) => {
+  const authApi = createAxiosInstance("vendor");
+  try {
+    const response = await authApi.get(`/booking-details?vendorId=${vendorId}&page=${page}`, config);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 //Chat
 const deleteForEveryone = async (data: any, config: any) => {
   const authApi = createAxiosInstance("vendor");
@@ -126,6 +138,7 @@ export {
     addPost,
     getDate,
     addDate,
+    getBooking,
     deleteForEveryone,
     deleteForMe,
 }

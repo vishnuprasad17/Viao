@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ChangePassword from "../../../components/user/profile/ChangePassword";
 import Favourites from "../../../components/user/profile/Favourites";
 import ProfileCard from "../../../components/user/profile/ProfileCard";
+import BookingDetails from "../../../components/user/profile/BookingDetails";
 import Notifications from "../../../components/user/profile/Notifications";
 import { USER } from "../../../config/routes/user.routes";
 import Layout from "../../../layout/user/Layout";
@@ -23,6 +24,7 @@ const Profile: React.FC = () => {
               <Route path="/" element={<ProfileCard />} />
               <Route path={USER.CHANGE_PWD} element={<ChangePassword />} />
               <Route path={USER.FAV} element={<Favourites />} />
+              <Route path={USER.BOOKING_DETAILS} element={<BookingDetails />} />
               <Route path={USER.NOTIFICATION} element={<Notifications />} />
             </Routes>
           </div>
