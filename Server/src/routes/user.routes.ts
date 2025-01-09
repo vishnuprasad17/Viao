@@ -1,5 +1,14 @@
 import { Router} from 'express';
-import {AuthController, UserController, VendorController, VendorTypeController, PostController, NotificationController, MessageController} from '../controllers/';
+import {
+    AuthController,
+    UserController,
+    VendorController,
+    VendorTypeController,
+    PostController,
+    NotificationController,
+    MessageController,
+    BookingController,
+  } from "../controllers/";
 import { setRole } from '../shared/middlewares/setRole';
 import { otpValidityMiddleware, signupOtpValidityMiddleware } from '../shared/middlewares/otp.expiration';
 import multer from 'multer';
@@ -32,6 +41,8 @@ router.get("/get-locations",VendorController.getLocations);
 router.get("/posts", PostController.getPosts);
 router.get("/getvendor", VendorController.getVendor);
 router.post("/add-favorite-vendor", UserController.AddFavVendor);
+router.post("/book-vendor", BookingController.bookVendor);
+router.get("/get-bookings", BookingController.getBookingsByUser);
 //Profile
 router.put("/update-profile", upload.single("image"), UserController.updateProfile)
 router.post("/update-password", UserController.updatePassword);

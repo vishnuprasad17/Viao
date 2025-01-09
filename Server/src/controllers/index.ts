@@ -6,6 +6,7 @@ import PostController from './post.controller';
 import NotificationController from './notification.controller';
 import MessageController from './message.controller';
 import ConversationController from './conversation.controller';
+import BookingController from './booking.controller';
 
 // Add other controllers as needed
 export {
@@ -17,4 +18,5 @@ export {
     NotificationController,
     MessageController,
     ConversationController,
+    BookingController,
 };

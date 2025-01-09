@@ -138,6 +138,28 @@ const changePwd = async (userId: any, formValues: any, config: any) => {
     }
   };
 
+  //Booking
+
+  const bookEvent = async (vendorId: string | null, userId: string | undefined, data: any, config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.post(`/book-vendor?vendorId=${vendorId}&userId=${userId}`, data, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getBooking = async (userId: string | undefined, page: number, config: any) => {
+    const authApi = createAxiosInstance("user");
+    try {
+      const response = await authApi.get(`/get-bookings?userId=${userId}&page=${page}`, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   //Chat
 
   const getVendorForChat = async (id: string | undefined) => {
@@ -196,6 +218,8 @@ const changePwd = async (userId: any, formValues: any, config: any) => {
     getFavourites,
     deleteFavourite,
     notificationCount,
+    bookEvent,
+    getBooking,
     getVendorForChat,
     getUserForChat,
     deleteForEveryone,

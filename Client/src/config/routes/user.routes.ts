@@ -20,6 +20,7 @@ export const USER = {
     HOME: "/",
     VENDORS: "/vendors",
     VIEW_VENDOR: "/view-vendor",
+    BOOK_EVENT: "/book-event",
     ABOUT:"/about",
     CONTACT:"/contact",
   };

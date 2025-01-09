@@ -51,6 +51,22 @@ const ProfileButtons: React.FC<ProfileButtonsProps> = ({ vendorId, bookedDates, 
     }
   }
 
+  const handleClick = () => {
+    if (userId) {
+      // If userId is defined, navigate to the desired route
+      navigate(`/book-event?id=${vendorId}`);
+    } else {
+      // If userId is not defined, show an error toast
+      toast.error('Please login before booking.', {
+        style: {
+          background: 'red', // Red background
+          color: '#FFFFFF', // White text
+        },
+        duration: 3000,
+      });
+    }
+  };
+
   return (
     <>
       <div className="flex flex-wrap justify-center py-4 pt-8 lg:pt-4">
@@ -69,6 +85,7 @@ const ProfileButtons: React.FC<ProfileButtonsProps> = ({ vendorId, bookedDates, 
          
           <Button
             className="w-fit bg-blue-900 rounded-full"
+            onClick={handleClick}
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}

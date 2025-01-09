@@ -50,7 +50,7 @@ export function VendorProfile() {
     };
 
     fetchData(); // Call the async function
-  }, [user, id, reviewAdded]); // Ensure correct dependencies
+  }, [user, id, reviewAdded]);
 
   const handleFavourite = async () => {
     if (!user || !user._id) {
@@ -184,7 +184,11 @@ export function VendorProfile() {
                     {vendor?.totalRating}
                   </Button>
                 </div>
-                <ProfileButtons bookedDates={vendor?.bookedDates} />
+                <ProfileButtons
+                 vendorId={vendor?._id}
+                 bookedDates={vendor?.bookedDates}
+                 userId={user?._id}
+                 />
               </div>
             </div>
             <div className="-mt-4 lg:pl-20 container space-y-2">

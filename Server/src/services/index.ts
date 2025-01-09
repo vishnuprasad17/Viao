@@ -6,6 +6,7 @@ import postService from "./post.service";
 import notificationService from "./notification.service";
 import messageService from "./message.service";
 import conversationService from "./conversation.service";
+import bookingService from "./booking.service";
 
 // Add other controllers as needed
 export {
@@ -17,4 +18,5 @@ export {
     notificationService,
     messageService,
     conversationService,
+    bookingService,
 };
