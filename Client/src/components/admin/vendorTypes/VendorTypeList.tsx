@@ -35,7 +35,7 @@ const VendorTypeList = () => {
       .then((response) => {
         console.log(response);
         setVendorType((prevVendorTypes) =>
-          prevVendorTypes.filter((type) => type._id !== vendorTypeId),
+          prevVendorTypes.filter((type) => type.id !== vendorTypeId),
         );
         navigate(`${ADMIN.VENDOR_TYPES}`);
       })
@@ -131,7 +131,7 @@ const VendorTypeList = () => {
                     <div className="w-max">
                       <Button
                         size="sm"
-                        onClick={() => handleEdit(type._id)}
+                        onClick={() => handleEdit(type.id)}
                         className="mr-2"
                         placeholder={undefined}
                         onPointerEnterCapture={undefined}
@@ -143,7 +143,7 @@ const VendorTypeList = () => {
                         size="sm"
                         placeholder={undefined}
                         variant="outlined"
-                        onClick={() => handleDeleteModal(type._id)}
+                        onClick={() => handleDeleteModal(type.id)}
                         onPointerEnterCapture={undefined}
                         onPointerLeaveCapture={undefined}
                       >

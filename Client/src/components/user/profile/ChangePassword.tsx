@@ -52,7 +52,7 @@ const ChangePassword = () => {
     setFormErrors(errors)
     console.log(Object.values(errors))
     if (Object.values(errors).every((error) => error === "")) {
-      changePwd(user?._id, formValues,{withCredentials:true})
+      changePwd(user?.id, formValues,{withCredentials:true})
         .then((response) => {
           console.log(response);
           toast.success("Password updated Successfully!")

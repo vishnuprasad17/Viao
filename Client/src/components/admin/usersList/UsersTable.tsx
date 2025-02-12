@@ -79,7 +79,7 @@ const UsersTable = () => {
           clearUserState();
         }
         const updatedUsers = users.map((user) =>
-          user._id === userId ? { ...user, isActive: !user.isActive } : user
+          user.id === userId ? { ...user, isActive: !user.isActive } : user
         );
         setUsers(updatedUsers);
         console.log("UserData", user)
@@ -248,7 +248,7 @@ const UsersTable = () => {
                       <Button
                         color={user.isActive ? "red" : "green"}
                         variant="gradient"
-                        onClick={() => handleBlock(user._id)}
+                        onClick={() => handleBlock(user.id)}
                         size="sm"
                         className="hidden lg:inline-block w-30"
                         placeholder={undefined}

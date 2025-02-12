@@ -34,7 +34,7 @@ const EditProfile: React.FC = () => {
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    getVendor(vendor?._id)
+    getVendor(vendor?.id)
         .then((response) => {
             console.log(response);
             const { coverpic, logo, ...restData } = response.data.data;
@@ -83,7 +83,7 @@ const EditProfile: React.FC = () => {
         formData.append("logo", formState.logo);
       }
   
-      updateProfile(vendor?._id, formData,{ headers: { "Content-Type": "multipart/form-data" }})
+      updateProfile(vendor?.id, formData,{ headers: { "Content-Type": "multipart/form-data" }})
         .then((response) => {
           console.log(response);
           setFormState(initialFormState); // Reset form state after successful submission

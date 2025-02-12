@@ -34,6 +34,7 @@ export function VendorProfile() {
         const response = await getVendor(id, {
           withCredentials: true,
         });
+        console.log(user);
         setVendor(response.data.data);
 
         if (user?.favourite?.includes(id)) {
@@ -53,7 +54,7 @@ export function VendorProfile() {
   }, [user, id, reviewAdded]);
 
   const handleFavourite = async () => {
-    if (!user || !user._id) {
+    if (!user || !user.id) {
       hottoast.error("User must be logged in to add to favourites.", {
         style: {
           background: "red",
@@ -64,11 +65,10 @@ export function VendorProfile() {
       return;
     }
     try {
-      addToFavourite(id, user?._id, {
+      addToFavourite(id, user?.id, {
         withCredentials: true,
       })
         .then((response) => {
-          console.log(response);
           setFavourite(response.data.fav);
           dispatch(setUserInfo(response.data.userData));
           toast.success(response.data.message);
@@ -185,9 +185,8 @@ export function VendorProfile() {
                   </Button>
                 </div>
                 <ProfileButtons
-                 vendorId={vendor?._id}
-                 bookedDates={vendor?.bookedDates}
-                 userId={user?._id}
+                 vendorId={vendor?.id}
+                 userId={user?.id}
                  />
               </div>
             </div>

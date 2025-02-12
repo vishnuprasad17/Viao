@@ -31,7 +31,7 @@ const CustomDatePicker: React.FC = () => {
   const [dates, setDates] = useState<string[]>([]);
 
   useEffect(() => {
-    getDate(vendor?._id, { withCredentials: true })
+    getDate(vendor?.id, { withCredentials: true })
       .then((response) => {
         console.log(response.data);
         setDates(response.data.bookedDates)
@@ -54,7 +54,7 @@ const CustomDatePicker: React.FC = () => {
     }
 
     addDate(
-        { status: selectedStatus, date: selectedDate, vendorId: vendor?._id },
+        { status: selectedStatus, date: selectedDate, vendorId: vendor?.id },
         { withCredentials: true },
       )
       .then((response) => {

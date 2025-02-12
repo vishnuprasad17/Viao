@@ -11,7 +11,7 @@ import {
   Typography,
   Textarea,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getVendorProfile,
   blockVendors,
@@ -26,12 +26,23 @@ import VendorRootState from "../../../redux/rootstate/VendorState";
 import { useSelector } from "react-redux";
 import { persistStore } from "redux-persist";
 import { store } from "../../../redux/store";
+import config from "../../../config/envConfig";
+import { io, Socket } from "socket.io-client";
+import { debounce } from "lodash";
+
+interface VerifyRequestData {
+  vendorId: string;
+}
+
+interface ArrivalMessage {
+  vendorId: string;
+}
 
 const clearVendorState = () => {
   const persistor = persistStore(store);
 
   persistor.pause(); // Temporarily disable persistence
-  localStorage.removeItem("persist:user"); // Remove the `user` slice from localStorage
+  localStorage.removeItem("persist:vendor"); // Remove the `vendor` slice from localStorage
   persistor.persist(); // Resume persistence
 };
 
@@ -43,11 +54,13 @@ const VendorProfile = () => {
   const [actionType, setActionType] = useState(''); // "Accept" or "Reject"
   const [rejectionNote, setRejectionNote] = useState('');
   const [error, setError] = useState(''); // Error message for rejection note
+  const [arrivalMessage, setArrivalMessage] = useState<ArrivalMessage | null>(null);
   const dispatch = useDispatch();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const Id = queryParams.get("Id");
   const [vendor, setVendor] = useState<VendorData>();
+  const socket = useRef<Socket>();
 
   useEffect(() => {
     getVendorProfile(Id)
@@ -60,6 +73,32 @@ const VendorProfile = () => {
         console.error("Error fetching users:", error);
       });
   }, [Id, vendor?.isActive]);
+
+  useEffect(() => {
+    const currentSocket = io(config.SOCKET_URL);
+    socket.current = currentSocket;
+
+    // Debounced message updater
+    const updateVerifyStatus = debounce((data: VerifyRequestData) => {
+      setArrivalMessage({
+        vendorId: data.vendorId
+      });;
+    }, 300); // Debounce to limit updates to every 300ms
+
+    currentSocket.on("getVerifyRequest", updateVerifyStatus);
+
+    return () => {
+      currentSocket.off("getVerifyRequest", updateVerifyStatus);
+      updateVerifyStatus.cancel();
+      currentSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    // arrivalMessage &&
+    //   currentchat?.members.includes(arrivalMessage.senderId!) &&
+    //   setmessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage]);
 
   const handleBlock = () => {
     blockVendors(Id)
@@ -108,7 +147,7 @@ const VendorProfile = () => {
   const updateVerifyStatus = async (status: string, note: string) => {
     try {
       const response = await updateVerify(
-        { vendorId: vendor?._id, status: status, note: note },
+        { vendorId: vendor?.id, status: status, note: note },
         { withCredentials: true }
       );
       console.log(response);

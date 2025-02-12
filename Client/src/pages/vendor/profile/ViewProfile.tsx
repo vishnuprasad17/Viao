@@ -2,12 +2,14 @@ import { useSelector } from 'react-redux';
 import Breadcrumb from '../../../components/vendor/Breadcrumbs/Breadcrumb';
 import { useLocation } from 'react-router-dom';
 import VendorRootState from '../../../redux/rootstate/VendorState';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getVendor, verifyRequest } from '../../../config/services/venderApi';
+import { io, Socket } from 'socket.io-client';
 import { Button } from '@material-tailwind/react';
 import { toast } from 'react-toastify';
 import { VendorData } from '../../../interfaces/vendorTypes';
 import Layout from '../../../layout/vendor/Layout';
+import config from '../../../config/envConfig';
 
 
 const ViewProfile = () => {
@@ -18,9 +20,10 @@ const ViewProfile = () => {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get('id');
   const [vendor, setVendor] = useState<VendorData>();
+  const socket = useRef<Socket>();
 
   useEffect(() => {
-    getVendor(vendorData?._id, { withCredentials: true })
+    getVendor(vendorData?.id, { withCredentials: true })
       .then((response) => {
         setVendor((response.data.data));
         console.log(response.data);
@@ -30,9 +33,23 @@ const ViewProfile = () => {
       });
   }, [id, vendorData]);
 
+  useEffect(() => {
+    const currentSocket = io(config.SOCKET_URL);
+    socket.current = currentSocket;
+
+    return () => {
+      currentSocket.disconnect();
+    };
+  }, []);
+
   const handleVerification = async () => {
+
+    socket.current?.emit("sendVerifyRequest", {
+      vendorId: vendor?.id
+    });
+
     verifyRequest(
-        { vendorId: vendor?._id },
+        { vendorId: vendor?.id },
         { withCredentials: true },
       )
       .then((response) => {

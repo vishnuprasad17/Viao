@@ -22,9 +22,10 @@ const BookingDetails = () => {
   const fetchBookings = async (page: number) => {
     try {
       const response = await getBooking(
-        user?._id, page,
+        user?.id, page,
         { withCredentials: true },
       );
+      console.log(response.data.bookings);
       setBookings(response.data.bookings);
       const totalPagesFromResponse = response.data.totalPages;
       setTotalPages(totalPagesFromResponse);
@@ -79,7 +80,7 @@ const BookingDetails = () => {
               <tr key={key}>
                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                   <h5 className="font-medium text-teal-500 dark:text-white">
-                    <Link to={`${USER.VIEW_VENDOR}?id=${item?.vendorId?._id}`}>{item?.vendorId?.name}</Link>
+                    <Link to={`${USER.VIEW_VENDOR}?id=${item?.vendorId}`}>{item?.vendorName}</Link>
                   </h5>
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
@@ -117,7 +118,7 @@ const BookingDetails = () => {
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">
-                    <Link to={`${USER.PROFILE}${USER.BOOKING}?id=${item._id}`}>
+                    <Link to={`${USER.PROFILE}${USER.BOOKING}?id=${item.id}`}>
                       <button className="hover:text-primary">
                         <svg
                           className="fill-current"

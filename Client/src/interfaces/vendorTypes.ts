@@ -1,7 +1,6 @@
 export interface VendorData{
-    _id:string;
+    id:string;
     email : string;
-    password : string;
     name:string;
     city:string;
     about:string;

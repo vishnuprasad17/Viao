@@ -69,7 +69,7 @@ const Chat = () => {
   const handleConversationSelect = (selectedConversation: Chats) => {
     setcurrentchat(selectedConversation);
     setIsSidebarOpen(false);
-    const friendId = selectedConversation.members.find((m) => m !== user?._id);
+    const friendId = selectedConversation.members.find((m) => m !== user?.id);
     // Fetch vendor data based on friendId
     getVendorForChat(friendId)
       .then((res) => {
@@ -114,7 +114,7 @@ const Chat = () => {
   }, [arrivalMessage, currentchat]);
 
   useEffect(() => {
-    socket.current?.emit("adduser", user?._id);
+    socket.current?.emit("adduser", user?.id);
     socket.current?.on("getUsers", (users) => {
       console.log(users);
     });
@@ -122,7 +122,7 @@ const Chat = () => {
 
   const getConversation = async () => {
     try {
-      const res = await getChat(user?._id);
+      const res = await getChat(user?.id, "user");
       console.log(res.data);
       setconversation(res.data);
     } catch (error) {
@@ -132,13 +132,13 @@ const Chat = () => {
 
   useEffect(() => {
     getConversation();
-  }, [user?._id]);
+  }, [user?.id]);
 
   //getting messages
   useEffect(() => {
     const getmessages = async () => {
       try {
-        const res = await getMessages(currentchat?._id);
+        const res = await getMessages(currentchat?.id, "user");
         setmessages(res.data);
         setIsUpdated(false);
       } catch (error) {
@@ -150,7 +150,7 @@ const Chat = () => {
 
   const receiverId = useMemo(() => {
       if (currentchat) {
-        const conversation = currentchat?.members.find((member) => member !== user?._id);
+        const conversation = currentchat?.members.find((member) => member !== user?.id);
         return conversation || null;
       }
       return null;
@@ -164,15 +164,15 @@ const Chat = () => {
       return; // Do not send the message if it's empty
     }
     const message = {
-      senderId: user?._id,
+      senderId: user?.id,
       text: newMessage,
       image: "",
       imageUrl: "",
-      conversationId: currentchat?._id,
+      conversationId: currentchat?.id,
     };
 
     socket.current?.emit("sendMessage", {
-      senderId: user?._id,
+      senderId: user?.id,
       receiverId,
       text: newMessage,
       image: "",
@@ -180,7 +180,7 @@ const Chat = () => {
     });
 
     try {
-      await sendMessage(message)
+      await sendMessage("user", message)
         .then((res) => {
           setmessages([...messages, res.data]);
           setnewMessage("");
@@ -286,22 +286,22 @@ const Chat = () => {
       const url = await getSignedUrl(s3, command2, { expiresIn: 86400 * 3 });
 
       const message = {
-        senderId: user?._id,
+        senderId: user?.id,
         text: "",
-        conversationId: currentchat?._id,
+        conversationId: currentchat?.id,
         imageName: imageName,
         imageUrl: url,
       };
 
       socket.current?.emit("sendMessage", {
-        senderId: user?._id,
+        senderId: user?.id,
         receiverId,
         text: "",
         image: imageName,
         imageUrl: url,
       });
 
-      await sendMessage(message)
+      await sendMessage("user", message)
         .then((res) => {
           setmessages([...messages, res.data]);
           setnewMessage("");
@@ -319,9 +319,9 @@ const Chat = () => {
     try {
       const datas = {
         chatId,
-        senderId: user?._id,
+        senderId: user?.id,
       };
-      await changeReadStatus(datas, { withCredentials: true }).then((res) => {
+      await changeReadStatus("user", datas, { withCredentials: true }).then((res) => {
         console.log(res);
       });
     } catch (error) {
@@ -379,7 +379,7 @@ const Chat = () => {
                 <div
                   onClick={() => {
                     handleConversationSelect(c);
-                    changeIsRead(c._id);
+                    changeIsRead(c.id);
                   }}
                 >
                   <Conversation
@@ -470,7 +470,7 @@ const Chat = () => {
                     <div ref={chatAreaRef}>
                       <Message
                         message={m}
-                        own={m.senderId === user?._id}
+                        own={m.senderId === user?.id}
                         setIsUpdated={setIsUpdated}
                       />
                     </div>

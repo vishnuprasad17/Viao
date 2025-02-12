@@ -49,12 +49,12 @@ const VendorPosts = () => {
         </Typography>
       )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {posts.map(({ imageUrl, _id, caption }, index) => (
+        {posts.map(({ imageUrl, id, caption }, index) => (
           <div
             key={index}
             className="relative"
             onClick={() => {
-              setSelectedPost({ imageUrl, _id });
+              setSelectedPost({ imageUrl, id });
               handleOpen();
             }}
           >

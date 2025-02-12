@@ -1,94 +1,87 @@
 import { createAxiosInstance } from "./axiosInstance";
 
+const vendorApi = createAxiosInstance("vendor");
+
 
 //Profile
 
-const getVendor = async (vendorId: any, config?: any) => {
-    const authApi = createAxiosInstance("vendor");
+const getVendor = async (vendorId: string | undefined, config?: object) => {
     try {
       const response = config
-        ? await authApi.get(`/getvendor?vendorid=${vendorId}`, config)
-        : await authApi.get(`/getvendor?vendorid=${vendorId}`);
+        ? await vendorApi.get(`/getvendor?vendorid=${vendorId}`, config)
+        : await vendorApi.get(`/getvendor?vendorid=${vendorId}`);
       return response;
     } catch (error) {
       throw error;
     }
   };
   
-const verifyRequest = async (data: any, config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const verifyRequest = async (data: object, config: object) => {
   try {
-    const response = await authApi.post(`/verification-request`, data, config);
+    const response = await vendorApi.post(`/verification-request`, data, config);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const updateProfile = async (vendorId: any, credential: any, config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const updateProfile = async (vendorId: string | undefined, credential: object, config: object) => {
   try {
-    const response = await authApi.put(`/update-profile?vendorid=${vendorId}`, credential, config);
+    const response = await vendorApi.put(`/update-profile?vendorid=${vendorId}`, credential, config);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const updatePassword = async (vendorId: any, credential: any, config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const updatePassword = async (vendorId: string | undefined, credential: object, config: object) => {
   try {
-    const response = await authApi.patch(`/update-password?vendorid=${vendorId}`, credential, config);
+    const response = await vendorApi.patch(`/update-password?vendorid=${vendorId}`, credential, config);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const getPost = async (vendorId: any, page: number, config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const getPost = async (vendorId: string | undefined, page: number, config: object) => {
   try {
-    const response = await authApi.get(`/posts?vendorid=${vendorId}&page=${page}`, config);
+    const response = await vendorApi.get(`/posts?vendorid=${vendorId}&page=${page}`, config);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const deletePost = async (id: string, config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const deletePost = async (id: string, config: object) => {
   try {
-    const response = await authApi.delete(`/posts/${id}`, config);
+    const response = await vendorApi.delete(`/posts/${id}`, config);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const addPost = async (vendorId: any, credential: any, config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const addPost = async (vendorId: any, credential: object, config: object) => {
   try {
-    const response = await authApi.post(`/add-post?vendorid=${vendorId}`, credential, config);
+    const response = await vendorApi.post(`/add-post?vendorid=${vendorId}`, credential, config);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const getDate = async (vendorId: any,  config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const getDate = async (vendorId: string | undefined,  config: object) => {
   try {
-    const response = await authApi.get(`/load-dates?vendorId=${vendorId}`, config);
+    const response = await vendorApi.get(`/load-dates?vendorId=${vendorId}`, config);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const addDate = async (credential: any, config: any) => {
-    const authApi = createAxiosInstance("vendor");
+const addDate = async (credential: object, config: object) => {
   try {
-    const response = await authApi.post(`/add-dates`, credential, config);
+    const response = await vendorApi.post(`/add-dates`, credential, config);
     return response;
   } catch (error) {
     throw error;
@@ -97,10 +90,9 @@ const addDate = async (credential: any, config: any) => {
 
 //Booking
 
-const getBooking = async (vendorId: string | undefined, page: number, config: any) => {
-  const authApi = createAxiosInstance("vendor");
+const getBooking = async (vendorId: string | undefined, page: number, config: object) => {
   try {
-    const response = await authApi.get(`/booking-details?vendorId=${vendorId}&page=${page}`, config);
+    const response = await vendorApi.get(`/booking-details?vendorId=${vendorId}&page=${page}`, config);
     return response;
   } catch (error) {
     throw error;
@@ -108,20 +100,18 @@ const getBooking = async (vendorId: string | undefined, page: number, config: an
 }
 
 //Chat
-const deleteForEveryone = async (data: any, config: any) => {
-  const authApi = createAxiosInstance("vendor");
+const deleteForEveryone = async (data: object, config: object) => {
   try {
-    const response = await authApi.patch("/delete-for-everyone", data, config);
+    const response = await vendorApi.patch("/delete-for-everyone", data, config);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-const deleteForMe = async (data: any, config: any) => {
-  const authApi = createAxiosInstance("vendor");
+const deleteForMe = async (data: object, config: object) => {
   try {
-    const response = await authApi.patch("/delete-for-me", data, config);
+    const response = await vendorApi.patch("/delete-for-me", data, config);
     return response.data;
   } catch (error) {
     throw error;

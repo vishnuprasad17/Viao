@@ -45,6 +45,10 @@ export const validate =  (values: ValidationValues): ValidationErrors => {
     errors.name = 'Should not contain numbers!';
   }
 
+  if (!values.date.trim()) {
+    errors.date = 'Select a date';
+  }
+
 
   if (!values.city.trim()) {
     errors.city = 'City is required';

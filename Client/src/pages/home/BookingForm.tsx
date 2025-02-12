@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Input, Typography } from '@material-tailwind/react';
-import Footer from '../../layout/user/footer';
-import 'react-datepicker/dist/react-datepicker.css';
-import { validate} from '../../validations/home/BookingValidation';
-import { bookEvent } from '../../config/services/userApi';
-import { useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import UserRootState from '../../redux/rootstate/UserState';
-import { useSelector } from 'react-redux';
-import { USER } from '../../config/routes/user.routes';
-
-
+import React, { useEffect, useState } from "react";
+import { Button, Input, Typography } from "@material-tailwind/react";
+import Footer from "../../layout/user/footer";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { validate } from "../../validations/home/BookingValidation";
+import { bookEvent } from "../../config/services/userApi";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import UserRootState from "../../redux/rootstate/UserState";
+import { useSelector } from "react-redux";
+import { USER } from "../../config/routes/user.routes";
+import { getDate } from "../../config/services/venderApi";
 
 interface FormValues {
   eventName: string;
@@ -23,242 +23,287 @@ interface FormValues {
 }
 
 const initialValues: FormValues = {
-  eventName: '',
-  name: '',
-  date: '',
-  city: '',
-  pin: '',
-  mobile: '',
+  eventName: "",
+  name: "",
+  date: "",
+  city: "",
+  pin: "",
+  mobile: "",
 };
-
-
 
 const BookingForm: React.FC = () => {
   const user = useSelector((state: UserRootState) => state.user.userdata);
-  const [minDate, setMinDate] = useState('');
-  const navigate=useNavigate()
+  const [minDate, setMinDate] = useState<Date>(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  });
+  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const id = queryParams.get('id');
+  const id = queryParams.get("id");
   const [formValues, setFormValues] = useState(initialValues);
-  const [formErrors, setFormErrors] = useState<FormValues>({
-    eventName: '',
-    name: '',
-    date: '',
-    city: '',
-    pin: '',
-    mobile: '',
-  });
+  const [formErrors, setFormErrors] = useState<FormValues>(initialValues);
+  const [bookedDates, setBookedDates] = useState<Date[]>([]);
 
   useEffect(() => {
-    // Get tomorrow's date in the required format
-    const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + 1);
-    const tomorrowDate = currentDate.toISOString().split("T")[0];
-    
-    setMinDate(tomorrowDate);
-  }, []);
+    getDate(id as string, { withCredentials: true })
+      .then((response) => {
+        const dates = response.data.bookedDates.map((dateString: string) => {
+          const [year, month, day] = dateString.split("-");
+          return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        });
+        setBookedDates(dates);
+      })
+      .catch(console.error);
+  }, [id]);
 
-
-
-  const handleChange = (e: { target: { name: string; value: string; }; }) => {
+  const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
     const errors = validate({ ...formValues, [name]: value });
     setFormErrors((prevErrors) => ({ ...prevErrors, ...errors }));
   };
 
+  const handleDateChange = (date: Date | null) => {
+    if (!date) return;
 
-  const submitHandler = async (e: { preventDefault: () => void }) => {
+    const adjustTimezone = (d: Date) => {
+      const newDate = new Date(d);
+      newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
+      return newDate;
+    };
+
+    const adjustedDate = adjustTimezone(date);
+    const dateString = adjustedDate.toISOString().split("T")[0];
+
+    setFormValues((prev) => ({ ...prev, date: dateString }));
+    setFormErrors((prev) => ({
+      ...prev,
+      date: validate({ ...formValues, date: dateString }).date,
+    }));
+  };
+
+  const isDateBooked = (date: Date) => {
+    return bookedDates.some(
+      (bookedDate) =>
+        date.getFullYear() === bookedDate.getFullYear() &&
+        date.getMonth() === bookedDate.getMonth() &&
+        date.getDate() === bookedDate.getDate()
+    );
+  };
+
+  const dayClassName = (date: Date) => {
+    return isDateBooked(date) ? "booked-date" : "";
+  };
+
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     const errors = validate(formValues);
-    setFormErrors(errors)
-    if (Object.values(errors).every((error) => error === "")) {
-      console.log(formValues);
-      bookEvent(id, user?._id, formValues, { withCredentials: true })
-        .then((response) =>{
-          console.log(response);
-          toast.success(response.data.message);
-          navigate(`${USER.PROFILE}${USER.BOOKING_DETAILS}`)
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message)
-          console.log("here", error);
-        });
+    setFormErrors(errors);
+    if (Object.values(errors).some((error) => error)) return;
+
+    try {
+      const response = await bookEvent(id, user?.id, formValues, {
+        withCredentials: true,
+      });
+      toast.success(response.data.message);
+      navigate(`${USER.PROFILE}${USER.BOOKING_DETAILS}`);
+    } catch (error: any) {
+      toast.error(error.response?.data.message || "Booking failed");
     }
   };
- 
+
   return (
     <>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="bg-white shadow-md rounded px-6 pt-8 pb-8 w-full max-w-3xl mt-30 mb-30">
-          <div className="grid grid-cols-2 gap-4 w-full">
-            <div className="flex flex-col justify-center items-center">
+          <div className="grid md:grid-cols-2 gap-8 p-8">
+            <div>
               <Typography
-                variant="h5"
-                color="purple"
-                className="mb-3"
+                variant="h4"
+                color="deep-purple"
+                className="mb-6 text-center"
                 placeholder={undefined}
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               >
-                BOOKING FORM
+                Event Booking
               </Typography>
-              <form
-                onSubmit={submitHandler}
-                className="border border-gray-300 shadow-lg p-10 w-full"
-              >
-                
-                <div className="mb-4">
-                  <Input
-                    label="Date"
-                    type="date"
-                    onChange={handleChange}
-                    value={formValues.date}
-                    name="date"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                    min={minDate}
+              <form onSubmit={submitHandler} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Booking Date
+                  </label>
+                  <DatePicker
+                    selected={
+                      formValues.date ? new Date(formValues.date) : null
+                    }
+                    onChange={handleDateChange}
+                    minDate={minDate}
+                    filterDate={(date) => !isDateBooked(date)}
+                    dayClassName={dayClassName}
+                    placeholderText="Select available date"
+                    className={`w-full p-3 border rounded-lg focus:ring-2 ${
+                      formErrors.date
+                        ? "border-red-500 focus:ring-red-200"
+                        : "border-gray-300 focus:border-deep-purple-500 focus:ring-deep-purple-200"
+                    }`}
+                    dateFormat="MMMM d, yyyy"
+                    showPopperArrow={false}
+                    popperClassName="react-datepicker-popper"
+                    wrapperClassName="w-full"
+                    withPortal={window.innerWidth < 768}
                   />
-                 
-                </div>
-                <div className="mb-4">
-                  <Input
-                    label="Event name"
-                    type="text"
-                    size="md"
-                    onChange={handleChange}
-                    value={formValues.eventName}
-                    name="eventName"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                   {formErrors.eventName ? (
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: 'red',
-                      }}
-                    >
-                      {formErrors.eventName}
+                  {formErrors.date && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formErrors.date}
                     </p>
-                  ) : null}
-                </div>
-                <div className="mb-4">
-                  <Input
-                    type="text"
-                    size="md"
-                    label="Name"
-                    onChange={handleChange}
-                    value={formValues.name}
-                    name="name"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                        {formErrors.name ? (
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: 'red',
-                      }}
-                    >
-                      {formErrors.name}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="mb-4">
-                  <Input
-                    label="City"
-                    type="text"
-                    size="md"
-                    onChange={handleChange}
-                    value={formValues.city}
-                    name="city"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                        {formErrors.city ? (
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: 'red',
-                      }}
-                    >
-                      {formErrors.city}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="mb-4">
-                  <Input
-                    label="Pin"
-                    type="text"
-                    size="md"
-                    onChange={handleChange}
-                    value={formValues.pin}
-                    name="pin"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                        {formErrors.pin ? (
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: 'red',
-                      }}
-                    >
-                      {formErrors.pin}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="mb-4">
-                  <Input
-                    label="Mobile"
-                    type="text"
-                    size="md"
-                    onChange={handleChange}
-                    value={formValues.mobile}
-                    name="mobile"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    crossOrigin={undefined}
-                  />
-                        {formErrors.mobile ? (
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: 'red',
-                      }}
-                    >
-                      {formErrors.mobile}
-                    </p>
-                  ) : null}
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <Button
-                    className='bg-blue-900'
-                    size="sm"
-                    type="submit"
-                    placeholder={undefined}
+                {/* Other form fields */}
+                <div>
+                  <Input
+                    label="Event Name"
+                    name="eventName"
+                    value={formValues.eventName}
+                    onChange={handleChange}
+                    error={!!formErrors.eventName}
+                    crossOrigin={undefined}
+                    placeholder="Enter your event"
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
-                  >
-                    Book Now
-                  </Button>
+                  />
+                  {formErrors.eventName && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formErrors.eventName}
+                    </p>
+                  )}
                 </div>
+                <div>
+                  <Input
+                    label="Name"
+                    name="name"
+                    value={formValues.name}
+                    onChange={handleChange}
+                    error={!!formErrors.name}
+                    crossOrigin={undefined}
+                    placeholder="Enter your name"
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  />
+                  {formErrors.name && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formErrors.name}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    label="City"
+                    name="city"
+                    value={formValues.city}
+                    onChange={handleChange}
+                    error={!!formErrors.city}
+                    crossOrigin={undefined}
+                    placeholder="Enter city name"
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  />
+                  {formErrors.city && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formErrors.city}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    label="Pin"
+                    name="pin"
+                    value={formValues.pin}
+                    onChange={handleChange}
+                    error={!!formErrors.pin}
+                    crossOrigin={undefined}
+                    placeholder="Enter pin"
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  />
+                  {formErrors.pin && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formErrors.pin}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    label="Mobile"
+                    name="mobile"
+                    value={formValues.mobile}
+                    onChange={handleChange}
+                    error={!!formErrors.mobile}
+                    crossOrigin={undefined}
+                    placeholder="Enter your contact number"
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  />
+                  {formErrors.mobile && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formErrors.mobile}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  className="mt-6 bg-deep-purple-500 hover:bg-deep-purple-600 focus:ring-2 focus:ring-deep-purple-500 focus:ring-offset-2"
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  Confirm Booking
+                </Button>
               </form>
+              <style>{`
+        .react-datepicker {
+          font-family: 'Inter', sans-serif;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.75rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .react-datepicker__header {
+          background-color: #f5f3ff;
+          border-bottom: none;
+          border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .react-datepicker__day--selected {
+          background-color: #6366f1;
+          color: white;
+        }
+        .booked-date {
+          background-color: #fecaca !important;
+          color: #991b1b !important;
+          position: relative;
+        }
+        .booked-date::after {
+          position: absolute;
+          right: 2px;
+          top: 0;
+          font-size: 0.8em;
+        }
+        .react-datepicker__day--disabled:not(.booked-date) {
+          color: #d1d5db;
+          background-color: #f9fafb;
+        }
+      `}</style>
             </div>
-            {/* Image container */}
-            <div className="hidden md:block p-5">
+            <div className="hidden md:flex items-center justify-center p-6 bg-deep-purple-50">
               <img
-                className="h-full w-full object-cover object-center shadow-lg"
                 src="/imgs/booking/book-form.svg"
-                alt="booking image"
+                alt="Booking illustration"
+                className="w-full h-auto object-contain"
               />
             </div>
           </div>

@@ -19,7 +19,7 @@ import { USER } from "../../../config/routes/user.routes";
 import { VENDOR } from "../../../config/routes/vendor.routes";
 import config from "../../../config/envConfig";
 
-const client_id = config.CLIENT_ID;
+const clientid = config.CLIENTid;
 
 
 interface UserFormValues {
@@ -88,7 +88,7 @@ const UserSignup= () => {
       <p className="text-xl md:text-2xl bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-transparent bg-clip-text font-normal mt-5 mx-4">Easily Connect, Plan, and Execute Your Ideas</p>
     </div>
     <div className="w-full md:w-1/2 mt-10 md:mt-0">
-      <GoogleOAuthProvider clientId={client_id}>
+      <GoogleOAuthProvider clientId={clientid}>
         <Card className="w-full md:w-96 m-auto bg-dark" shadow={false}  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
       <CardHeader
           floated={false}

@@ -41,7 +41,7 @@ const ContactForm = () => {
         .then((data) => {
           console.log(data);
           if (data) {
-            toast.success("Email send Successfully!");
+            toast.success(data.message);
             setFormValues(initialValues)
           }
         })

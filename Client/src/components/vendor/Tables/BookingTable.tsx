@@ -8,7 +8,7 @@ import { VENDOR } from '../../../config/routes/vendor.routes';
 import { Typography } from '@material-tailwind/react';
 
 interface Booking {
-  _id: string;
+  id: string;
   date: string;
   name: string;
   eventName: string;
@@ -34,7 +34,7 @@ const BookingTable = () => {
   const fetchBookings = async (page: number) => {
     try {
       const response = await getBooking(
-        vendorData?._id, page,
+        vendorData?.id, page,
         { withCredentials: true },
       );
       setBookings(response.data.bookings);
@@ -104,7 +104,7 @@ const BookingTable = () => {
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">
-                    <Link to={`${VENDOR.VIEW_BOOKING}?id=${item._id}`}>
+                    <Link to={`${VENDOR.VIEW_BOOKING}?id=${item.id}`}>
                       <button className="hover:text-primary">
                         <svg
                           className="fill-current"

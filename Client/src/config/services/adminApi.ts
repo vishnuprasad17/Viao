@@ -3,7 +3,7 @@ import { createAxiosInstance } from "./axiosInstance";
 
 //Profile
 
-const getUsers = async (page : any, search: any) => {
+const getUsers = async (page : string | number, search: string) => {
     const authApi = createAxiosInstance("admin");
     try {
       const response = await authApi.get(`/users?page=${page}&search=${search}`);
@@ -23,7 +23,7 @@ const getUsers = async (page : any, search: any) => {
     }
   };
 
-  const getVendors = async (page: number, config: any) => {
+  const getVendors = async (page: number, config: object) => {
     const authApi = createAxiosInstance("admin");
     try {
       const response = await authApi.get(`/getvendors?page=${page}`, config);
@@ -53,7 +53,7 @@ const getUsers = async (page : any, search: any) => {
     }
   };
 
-  const updateVerify = async (data: any, config: any) => {
+  const updateVerify = async (data: object, config: object) => {
     const authApi = createAxiosInstance("admin");
     try {
       const response = await authApi.put(`/update-verify-status`, data, config);
@@ -74,7 +74,7 @@ const getUsers = async (page : any, search: any) => {
     }
   };
 
-  const deleteVendorTypes = async (vendorTypeId: string, config: any) => {
+  const deleteVendorTypes = async (vendorTypeId: string, config: object) => {
     const authApi = createAxiosInstance("admin");
     try {
       const response = await authApi.delete(`/delete-vendortype?id=${vendorTypeId}`, config);
@@ -84,7 +84,7 @@ const getUsers = async (page : any, search: any) => {
     }
   };
 
-  const addVendorTypes = async (formData: any, config: any) => {
+  const addVendorTypes = async (formData: FormData, config: object) => {
     const authApi = createAxiosInstance("admin");
     try {
       const response = await authApi.post('/add-type', formData, config);
@@ -104,7 +104,7 @@ const getUsers = async (page : any, search: any) => {
     }
   };
 
-  const updateVendorTypes = async (vendorTypeId: string, formData: any, config: any) => {
+  const updateVendorTypes = async (vendorTypeId: string, formData: FormData, config: object) => {
     const authApi = createAxiosInstance("admin");
     try {
       const response = await authApi.put(`/update-type?id=${vendorTypeId}`, formData, config);

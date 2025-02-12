@@ -24,7 +24,7 @@ const CreatePost = () => {
   );
 
   useEffect(() => {
-    console.log(vendor?._id);
+    console.log(vendor?.id);
   }, []);
   const [imageSrc, setImageSrc] = useState<string | undefined>();
   const [caption, setCaption] = useState<string>("");
@@ -88,7 +88,7 @@ const CreatePost = () => {
       formData.append("image", file, file.name);
     }
 
-    addPost(vendor?._id, formData, {
+    addPost(vendor?.id, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {

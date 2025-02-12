@@ -1,25 +1,21 @@
 
-  export const setToken = (token: string, refreshToken: string, role: string) => {
-    localStorage.setItem(`${role}Token`, token);
-    localStorage.setItem(`${role}Refresh`, refreshToken);
-  };
-  
-  export const getToken = (role: string) => {
-    return localStorage.getItem(`${role}Token`);
-  };
-  
-  export const getRefreshToken = (role: string) => {
-    return localStorage.getItem(`${role}Refresh`);
-  };
-  
-  export const refreshAuthToken = async (instance: any, refreshToken: string, role: string) => {
-    try {
-      const refreshResponse = await instance.post('/refresh-token', { refreshToken });
-      const newToken = refreshResponse.data.token;
-      setToken(newToken, refreshResponse.data.refreshToken, role);
-      return newToken;
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      throw error;
-    }
-  };
+  // authToken.ts
+type AuthRole = 'admin' | 'user' | 'vendor';
+
+export const setTokens = (role: AuthRole, accessToken: string, refreshToken: string) => {
+  localStorage.setItem(`${role}_access_token`, accessToken);
+  localStorage.setItem(`${role}_refresh_token`, refreshToken);
+};
+
+export const clearTokens = (role: AuthRole) => {
+  localStorage.removeItem(`${role}_access_token`);
+  localStorage.removeItem(`${role}_refresh_token`);
+};
+
+export const getToken = (role: AuthRole) => {
+  return localStorage.getItem(`${role}_access_token`);
+};
+
+export const getRefreshToken = (role: AuthRole) => {
+  return localStorage.getItem(`${role}_refresh_token`);
+};

@@ -1,49 +1,51 @@
 import { createAxiosInstance } from "./axiosInstance";
 
-const getChat = async (Id: any) => {
-    const authApi = createAxiosInstance("conversation");
+type AuthRole = 'admin' | 'user' | 'vendor';
+
+const getChat = async (Id: string | undefined, role: string) => {
+    const chatApi = createAxiosInstance("conversation", role as AuthRole );
     try {
-      const response = await authApi.get(`/?userId=${Id}`);
+      const response = await chatApi.get(`/?userId=${Id}`);
       return response;
     } catch (error) {
       throw error;
     }
   };
 
-  const sendData = async (data: any) => {
-    const authApi = createAxiosInstance("conversation");
+  const sendData = async (role: string, data: object) => {
+    const chatApi = createAxiosInstance("conversation", role as AuthRole);
     try {
-      const response = await authApi.post('/' , data);
+      const response = await chatApi.post('/' , data);
       return response;
     } catch (error) {
       throw error;
     }
   };
 
-  const getMessages = async (chatId: any) => {
-    const authApi = createAxiosInstance("message");
+  const getMessages = async (chatId: string | undefined, role: string) => {
+    const chatApi = createAxiosInstance("message", role as AuthRole);
     try {
-      const response = await authApi.get(`/?conversationId=${chatId}`);
+      const response = await chatApi.get(`/?conversationId=${chatId}`);
       return response;
     } catch (error) {
       throw error;
     }
   };
 
-  const sendMessage = async (message: any) => {
-    const authApi = createAxiosInstance("message");
+  const sendMessage = async (role: string, message: object) => {
+    const chatApi = createAxiosInstance("message", role as AuthRole);
     try {
-      const response = await authApi.post('/', message);
+      const response = await chatApi.post('/', message);
       return response;
     } catch (error) {
       throw error;
     }
   };
 
-  const changeReadStatus = async (data: any, config: any) => {
-    const authApi = createAxiosInstance("message");
+  const changeReadStatus = async (role: string, data: object, config: object) => {
+    const chatApi = createAxiosInstance("message", role as AuthRole);
     try {
-      const response = await authApi.patch("/changeIsRead", data, config);
+      const response = await chatApi.patch("/changeIsRead", data, config);
       return response;
     } catch (error) {
       throw error;

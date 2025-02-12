@@ -56,7 +56,7 @@ const Message:React.FC<MessageProps>=({ message, own, setIsUpdated }) => {
 
   const handleDeleteForMe = async (side: string) => {
     deleteForMe(
-        { msgId: messageIdToDelete, id: user?._id },
+        { msgId: messageIdToDelete, id: user?.id },
         { withCredentials: true }
       )
       .then((response) => {
@@ -93,7 +93,7 @@ const Message:React.FC<MessageProps>=({ message, own, setIsUpdated }) => {
                   >
                     You deleted this message
                   </span>
-                ) : message?.deletedIds?.includes(user?._id!) ? (
+                ) : message?.deletedIds?.includes(user?.id!) ? (
                   ""
                 ) : message?.imageUrl ? (
                   <img
@@ -106,7 +106,7 @@ const Message:React.FC<MessageProps>=({ message, own, setIsUpdated }) => {
                     <span
                       style={{ fontSize: "14px" }}
                       className="relative px-5 py-2 rounded-lg inline-block rounded-bl-none bg-blue-500 text-white"
-                      onClick={() => handleOpenRight(message?._id!)}
+                      onClick={() => handleOpenRight(message?.id!)}
                     >
                       {/* Text content */}
                       {message?.text}
@@ -130,7 +130,7 @@ const Message:React.FC<MessageProps>=({ message, own, setIsUpdated }) => {
               </div>
             </div>
           </div>
-          {message?.deletedIds?.includes(user?._id!) ? (
+          {message?.deletedIds?.includes(user?.id!) ? (
             ""
           ) : (
             <p className="flex items-end justify-end text-xs text-gray-500 mr-2">
@@ -150,7 +150,7 @@ const Message:React.FC<MessageProps>=({ message, own, setIsUpdated }) => {
                   >
                     This message was deleted
                   </span>
-                ) : message?.deletedIds?.includes(user?._id!) ? (
+                ) : message?.deletedIds?.includes(user?.id!) ? (
                   ""
                 ) : message?.imageUrl ? (
                   <img
@@ -162,7 +162,7 @@ const Message:React.FC<MessageProps>=({ message, own, setIsUpdated }) => {
                   <>
                     <span
                       className="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-200 text-gray-800"
-                      onClick={() => handleOpenLeft(message?._id!)}
+                      onClick={() => handleOpenLeft(message?.id!)}
                       style={{ fontSize: "14px" }}
                     >
                       {message.text}
@@ -172,7 +172,7 @@ const Message:React.FC<MessageProps>=({ message, own, setIsUpdated }) => {
               </div>
             </div>
           </div>
-          {message?.deletedIds?.includes(user?._id!) ? (
+          {message?.deletedIds?.includes(user?.id!) ? (
             ""
           ) : (
             <p className="text-xs text-gray-500 ml-2">

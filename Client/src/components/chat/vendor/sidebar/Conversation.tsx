@@ -34,7 +34,7 @@ const formatMessageTime = (updatedAt:Date ) => {
 
 const Conversation:React.FC<ConversationsProps>=({conversation, currentUser, currentchat}) => {
   const [user , setUser] = useState<UserData>()
-  const friendId = conversation.members.find((m) => m !== currentUser?._id);
+  const friendId = conversation.members.find((m) => m !== currentUser?.id);
 
   useEffect(()=>{
 
@@ -54,7 +54,7 @@ const Conversation:React.FC<ConversationsProps>=({conversation, currentUser, cur
 
   return (
     <div>
-    <div className={`relative rounded-lg px-2 py-2 flex items-center space-x-3 mb-3 ${currentchat?._id === conversation._id ? 'bg-gray-100' : 'bg-gray-50'}`}>
+    <div className={`relative rounded-lg px-2 py-2 flex items-center space-x-3 mb-3 ${currentchat?.id === conversation.id ? 'bg-gray-100' : 'bg-gray-50'}`}>
 
         <div className="flex-shrink-0">
           <img

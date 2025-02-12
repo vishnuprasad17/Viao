@@ -19,8 +19,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Pagination from '../../common/Pagination';
 import { USER } from '../../../config/routes/user.routes';
+import { useDispatch } from 'react-redux';
+import { setUserInfo } from "../../../redux/slices/UserSlice";
 interface Favourite {
-  _id: string;
+  id: string;
   coverpicUrl:string;
   name:string
 }
@@ -39,6 +41,7 @@ const Favourites = () => {
   const handleClose = () => setOpen(false); // Close the dialog
   const [favourites, setFavourites] = useState<Favourite[]>([]);
   const user = useSelector((state: UserRootState) => state.user.userdata);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchFav(currentPage);
@@ -46,7 +49,7 @@ const Favourites = () => {
 
   const fetchFav = async (page: number) => {
     try {
-      const response = await getFavourites(user?._id, page, {
+      const response = await getFavourites(user?.id, page, {
         withCredentials: true,
       })
       setFavourites(response.data);
@@ -63,7 +66,7 @@ const Favourites = () => {
 
 
   const handleDelete = async (id:string) => {
-    deleteFavourite(user?._id, id, {
+    deleteFavourite(user?.id, id, {
         withCredentials: true,
       })
       .then((data) => {
@@ -71,8 +74,9 @@ const Favourites = () => {
         handleClose();
         if(data.userData){
           toast.success("Vendor Profile Removed from Favourites!")
-          setFavourites(favourites?.filter((fav) => fav._id !== id));
+          setFavourites(favourites?.filter((fav) => fav.id !== id));
         }
+        dispatch(setUserInfo(data.userData));
         
       })
       .catch((error) => {
@@ -94,7 +98,7 @@ const Favourites = () => {
             Your favourites list is empty!
           </Typography>:  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 m-10">
       
-      {favourites.map(({ coverpicUrl, name, _id }, index) => (
+      {favourites.map(({ coverpicUrl, name, id }, index) => (
         <div key={index}>
           <Card
             className="mt-2 w-70"
@@ -109,11 +113,11 @@ const Favourites = () => {
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              <Link to={`${USER.VIEW_VENDOR}?id=${_id}`}>
+              <Link to={`${USER.VIEW_VENDOR}?id=${id}`}>
               <img src={coverpicUrl?coverpicUrl:"/imgs/vendor/default-cover.jpg.jpg"} alt={name} />
               </Link>
               <button
-                onClick={() => handleOpen(_id)} // Pass _id to handleOpen
+                onClick={() => handleOpen(id)} // Pass id to handleOpen
                 className="absolute top-0 right-0 m-2 bg-danger hover:bg-red-700 hover:text-white text-red-500 font-bold py-1 px-3 rounded"
               >
                 <FontAwesomeIcon icon={faTrash} />
@@ -124,7 +128,7 @@ const Favourites = () => {
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              <Link to={`${USER.VIEW_VENDOR}?id=${_id}`}>
+              <Link to={`${USER.VIEW_VENDOR}?id=${id}`}>
                 <Typography
                   variant="h5"
                   color="blue-gray"

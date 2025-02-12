@@ -79,7 +79,7 @@ const Chat = () => {
     setcurrentchat(selectedConversation);
     setIsSidebarOpen(false);
     const friendId = selectedConversation.members.find(
-      (m) => m !== vendor?._id
+      (m) => m !== vendor?.id
     );
     // Fetch vendor data based on friendId
     getUserForChat(friendId)
@@ -131,7 +131,7 @@ const Chat = () => {
 
   useEffect(() => {
     console.log(vendor);
-    socket.current?.emit("adduser", vendor?._id);
+    socket.current?.emit("adduser", vendor?.id);
     socket.current?.on("getUsers", (users) => {
       console.log(users);
     });
@@ -140,7 +140,7 @@ const Chat = () => {
   //getting conversations
   const getconversation = async () => {
     try {
-      const res = await getChat(vendor?._id);
+      const res = await getChat(vendor?.id, "vendor");
       console.log(res.data);
       setconversation(res.data);
     } catch (error) {
@@ -150,13 +150,13 @@ const Chat = () => {
 
   useEffect(() => {
     getconversation();
-  }, [vendor?._id]);
+  }, [vendor?.id]);
 
   //getting messages
   useEffect(() => {
     const getmessages = async () => {
       try {
-        const res = await getMessages(currentchat?._id);
+        const res = await getMessages(currentchat?.id, "vendor");
         setmessages(res.data);
         setIsUpdated(false);
       } catch (error) {
@@ -169,7 +169,7 @@ const Chat = () => {
   const receiverId = useMemo(() => {
     if (currentchat) {
       const conversation = currentchat?.members.find(
-        (member) => member !== vendor?._id
+        (member) => member !== vendor?.id
       );
       return conversation || null;
     }
@@ -185,14 +185,14 @@ const Chat = () => {
     }
 
     const message = {
-      senderId: vendor?._id,
+      senderId: vendor?.id,
       text: newMessage,
       image: "",
       imageUrl: "",
-      conversationId: currentchat?._id,
+      conversationId: currentchat?.id,
     };
     socket.current?.emit("sendMessage", {
-      senderId: vendor?._id,
+      senderId: vendor?.id,
       receiverId,
       text: newMessage,
       image: "",
@@ -200,7 +200,7 @@ const Chat = () => {
     });
 
     try {
-      sendMessage(message)
+      sendMessage("vendor", message)
         .then((res) => {
           setmessages([...messages, res.data]);
           setnewMessage("");
@@ -304,22 +304,22 @@ const Chat = () => {
       const url = await getSignedUrl(s3, command2, { expiresIn: 86400 * 3 });
 
       const message = {
-        senderId: vendor?._id,
+        senderId: vendor?.id,
         text: "",
-        conversationId: currentchat?._id,
+        conversationId: currentchat?.id,
         imageName: imageName,
         imageUrl: url,
       };
 
       socket.current?.emit("sendMessage", {
-        senderId: vendor?._id,
+        senderId: vendor?.id,
         receiverId,
         text: "",
         image: imageName,
         imageUrl: url,
       });
 
-      await sendMessage(message)
+      await sendMessage("vendor", message)
         .then((res) => {
           setmessages([...messages, res.data]);
           setnewMessage("");
@@ -337,9 +337,9 @@ const Chat = () => {
     try {
       const datas = {
         chatId,
-        senderId: vendor?._id,
+        senderId: vendor?.id,
       };
-      await changeReadStatus(datas, { withCredentials: true }).then((res) => {
+      await changeReadStatus("vendor", datas, { withCredentials: true }).then((res) => {
         console.log(res);
       });
     } catch (error) {
@@ -397,7 +397,7 @@ const Chat = () => {
                 <div
                   onClick={() => {
                     handleConversationSelect(c);
-                    changeIsRead(c._id);
+                    changeIsRead(c.id);
                   }}
                 >
                   <Conversation
@@ -488,7 +488,7 @@ const Chat = () => {
                     <div ref={chatAreaRef}>
                       <Message
                         message={m}
-                        own={m.senderId === vendor?._id}
+                        own={m.senderId === vendor?.id}
                         setIsUpdated={setIsUpdated}
                       />
                     </div>

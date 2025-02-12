@@ -21,7 +21,7 @@ const Notifications = () => {
   }, [currentPage]);
 
   const fetchNotification = async (page: number) => {
-    getNotification("user", user?._id, page, {
+    getNotification("user", user?.id, page, {
         withCredentials: true,
       })
       .then((response) => {
@@ -46,7 +46,7 @@ const Notifications = () => {
     e.preventDefault();
     toggleRead(
         "user",
-        { id, recipient: user?._id },
+        { id, recipient: user?.id },
         {
           withCredentials: true,
         }
@@ -66,7 +66,7 @@ const Notifications = () => {
     id: string
   ) => {
     e.preventDefault();
-    deleteNotification("user", id, user?._id, {
+    deleteNotification("user", id, user?.id, {
       withCredentials: true,
     })
       .then((response) => {
@@ -131,21 +131,21 @@ const Notifications = () => {
                       {!data?.read ? (
                         <button
                           className="absolute top-6 right-1 bg-blue-900 text-white text-xs px-2 py-1 rounded-full"
-                          onClick={(e) => handleRead(e, data?._id)}
+                          onClick={(e) => handleRead(e, data?.id)}
                         >
                           Mark as read
                         </button>
                       ) : (
                         <button
                           className="absolute top-6 right-1 bg-gray-500 text-white text-xs px-2 py-1 rounded-full"
-                          onClick={(e) => handleRead(e, data?._id)}
+                          onClick={(e) => handleRead(e, data?.id)}
                         >
                           Mark as unread
                         </button>
                       )}
                       <button
                         className="absolute -top-2 right-0"
-                        onClick={(e) => handleDelete(e, data?._id)}
+                        onClick={(e) => handleDelete(e, data?.id)}
                       >
                         <i className="fa-solid fa-x text-xs"></i>
                       </button>

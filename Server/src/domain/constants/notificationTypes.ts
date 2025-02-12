@@ -1,0 +1,13 @@
+export const Types = {
+    NEW_USER : "NEW_USER",
+    NEW_VENDOR : "NEW_VENDOR",
+    WELCOME : "WELCOME",
+    BOOKING : "BOOKING",
+    STATUS : "STATUS",
+    VERIFY : "VERIFY",
+    VERIFIED : "VERIFIED",
+    REJECTED : "REJECTED",
+    PAYMENT : "PAYMENT",
+    WALLET : "WALLET",
+    REVIEW : "REVIEW"
+}

@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import { VendorData } from "../../../interfaces/vendorTypes";
    
-  const VendorCard:React.FC<VendorData>=({name,city,_id,coverpicUrl,totalRating}) =>{
+  const VendorCard:React.FC<VendorData>=({name,city,id,coverpicUrl,totalRating}) =>{
     return (
       <Card className="w-full max-w-[16rem] shadow-lg h-70"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         <CardHeader floated={false} color="blue-gray"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
@@ -48,7 +48,7 @@ import { VendorData } from "../../../interfaces/vendorTypes";
           </Typography>
         </CardBody>
         <CardFooter className="pt-3 -mt-5"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-        <Link to={`/view-vendor?id=${_id}`}>
+        <Link to={`/view-vendor?id=${id}`}>
           <Button size="sm" fullWidth={true} className="bg-blue-900"  placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             View Profile
           </Button>

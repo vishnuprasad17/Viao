@@ -21,7 +21,7 @@ interface Props {
 }
 
 interface VendorType {
-  _id: string;
+  id: string;
   type: string;
   status: boolean;
 }

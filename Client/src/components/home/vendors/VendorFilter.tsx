@@ -14,7 +14,7 @@ interface IconProps {
 
 interface VendorFiltersProps {
   setSelectLocation: React.Dispatch<React.SetStateAction<string[]>>; // Correct type for state setter
-  vendorTypeData: { _id: string; type: string }[]; // Correct type for vendor data
+  vendorTypeData: { id: string; type: string }[]; // Correct type for vendor data
   locations: string[];
   setCategory: React.Dispatch<React.SetStateAction<string[]>>; // Correct type for state setter
 }
@@ -100,10 +100,10 @@ const VendorFilters:React.FC<VendorFiltersProps>=({
         <AccordionBody>
           {vendorTypeData.map((category) => (
             <Checkbox
-              key={category._id}
+              key={category.id}
               label={category.type}
               onChange={handleCategoryChange}
-              value={category._id}
+              value={category.id}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
               crossOrigin={undefined}

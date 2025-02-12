@@ -57,7 +57,7 @@ import Layout from "../../../layout/vendor/Layout";
       setFormErrors(errors)
       console.log(Object.values(errors))
       if (Object.values(errors).every((error) => error === "")) {
-        updatePassword(vendor?._id, formValues,{withCredentials:true})
+        updatePassword(vendor?.id, formValues,{withCredentials:true})
           .then((response) => {
             console.log(response);
             toast.success("Password updated Successfully!")

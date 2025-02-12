@@ -30,7 +30,7 @@ export default function Posts() {
   const fetchPosts = async (page: number) => {
     try {
       const response = await getPost(
-       vendorData?._id, page,
+       vendorData?.id, page,
         { withCredentials: true }
       );
       setPosts(response.data.posts);
@@ -76,7 +76,7 @@ export default function Posts() {
           ""
         )}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 m-2">
-          {posts.map(({ imageUrl, caption, _id }, index) => (
+          {posts.map(({ imageUrl, caption, id }, index) => (
             <div key={index} className="card shadow-lg rounded-lg relative">
               <div className="card-body">
                 <img
@@ -85,7 +85,7 @@ export default function Posts() {
                   alt="gallery-photo"
                 />
                 <button
-                  onClick={() => handleDelete(_id)}
+                  onClick={() => handleDelete(id)}
                   className="absolute top-0 right-0 m-2 bg-danger hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                 >
                   <FontAwesomeIcon icon={faTrash} />

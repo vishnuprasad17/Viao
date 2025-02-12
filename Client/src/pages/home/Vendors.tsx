@@ -18,6 +18,7 @@ const VendorsList = () => {
   const [search, setSearch] = useState<string>("");
   const [category, setCategory] = useState<string[]>([]);
   const [selectLocation, setSelectLocation] = useState<string[]>([]);
+  const [sort, setSort] = useState<number>();
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -29,7 +30,7 @@ const VendorsList = () => {
     if (searchParam) {
       setSearch(searchParam); // Update search state if a search parameter is found
     }
-  }, [search]);
+  }, [location.search]);
 
   useEffect(()=>{
     window.scrollTo(0, 0);
@@ -37,7 +38,7 @@ const VendorsList = () => {
 
   useEffect(() => {
     fetchVendors();
-  }, [category, search, selectLocation, page]);
+  }, [category, search, selectLocation, sort, page]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -59,7 +60,7 @@ const VendorsList = () => {
   const fetchVendors = async () => {
     try {
       const response = await getAllVendors(
-        search, currentPage, category, selectLocation,
+        search, currentPage, category, selectLocation, sort,
         {
           withCredentials: true,
         }
@@ -88,7 +89,8 @@ const VendorsList = () => {
   return (
     <>
       <div className="relative flex h-screen content-center items-center justify-start lg:pt-16 pt-6 pb-20 mb-0">
-      <div className="absolute top-0 h-100 w-full bg-orange-300 bg-cover bg-top transform scale-x-[-1]" />
+      <div className="absolute top-0 h-100 w-full bg-cover bg-top transform scale-x-[-1]"
+      style={{ background: 'linear-gradient(90deg, rgb(196, 70, 255) -14.33%, rgb(120, 1, 251) 38.59%, rgb(62, 0, 130) 98.88%)' }} />
 
         <div className="absolute top-0 h-100 w-full bg-black/30 bg-cover bg-center" />
         <Card
@@ -107,28 +109,32 @@ const VendorsList = () => {
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             >
-              Vendors Page - Vendors search, filter, sort etc.
+              "Curate your perfect day with exceptional vendors. Your journey
+              starts here!"
             </Typography>
           </CardBody>
         </Card>
       </div>
       <section className="mx-20 -mt-15 mb-20">
         <div className="flex justify-end gap-6 md:flex-row flex-col mb-10 mr-5">
-          <div>
+          <div className="flex items-center text-blue-500 font-bold gap-2">
             <h3>Found {vendors.length} Vendors</h3>
           </div>
 
-          <div className="relative w-full gap-2 md:w-max">
+          <div className="relative flex w-full gap-2 md:w-max">
             <input
               type="text"
               name="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              // onKeyUp={handleSearch}
               placeholder="Search vendors..."
               className="px-4 py-2 border border-gray-500 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
             />
           </div>
+          {/* <h3>Sort By:</h3>
+          <div>
+            <VendorSort setSort={setSort} />
+          </div> */}
         </div>
         <div className="flex md:flex-row flex-col">
           <div>

@@ -21,7 +21,7 @@ import { USER } from "../../../config/routes/user.routes";
 import { VENDOR } from "../../../config/routes/vendor.routes";
 import config from "../../../config/envConfig";
 
-const client_id = config.CLIENT_ID;;
+const clientid = config.CLIENTid;;
 
 interface FormValues {
   email: string;
@@ -79,7 +79,7 @@ const UserLogin = () => {
         </p>
       </div>
       <div className="w-full md:w-1/2 mt-10 md:mt-0">
-        <GoogleOAuthProvider clientId={client_id}>
+        <GoogleOAuthProvider clientId={clientid}>
           <Card
             className="w-full md:w-96 m-auto bg-dark"
             shadow={false}

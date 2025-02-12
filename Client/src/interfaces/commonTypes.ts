@@ -1,7 +1,6 @@
-import { VendorData } from "./vendorTypes";
 
 export interface Notification {
-  _id: string;
+  id: string;
   message: string;
   read: boolean;
   type: string;
@@ -9,32 +8,32 @@ export interface Notification {
 }
 
 export interface Booking {
-  _id: string;
+  id: string;
   date: string;
   name: string;
   eventName: string;
   city: string;
   pin: number;
   mobile: number;
-  createdAt: Date;
-  vendorId: VendorData;
+  vendorId: string;
+  vendorName?: string;
   userId: string;
   status: string;
   payment_status: string;
   amount: number;
   refundAmount:number;
+  createdAt: Date;
 }
 
 export interface VendorType {
-  _id: string;
+  id: string;
   type: string;
   status: boolean;
-  image:string;
   imageUrl:string;
 }
 
 export interface Chats {
-  _id:string;
+  id:string;
   members: string[];
   recentMessage: string;
   updatedAt:Date;
@@ -42,7 +41,7 @@ export interface Chats {
 }
 
 export interface Messages {
-  _id: string;
+  id: string;
   conversationId: string;
   senderId: string;
   text: string;
@@ -51,6 +50,5 @@ export interface Messages {
   isRead: boolean;
   isDeleted: boolean;
   deletedIds: string[];
-  emoji: string;
   createdAt:number;
 }

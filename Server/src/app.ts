@@ -1,13 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { initializeDatabase } from './config/database';
-import routes from './routes'
+import { initializeDatabase } from './infrastructure/config/database';
+import redisClient from './infrastructure/config/redis';
+import routes from './api/ApiRoutes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { Request,Response,NextFunction } from 'express';
 import path from 'path';
-import { globalErrorHandler } from './shared/middlewares/error-handler';
+import { globalErrorHandler } from './domain/errors/Error-handler';
 
 import initializeSocket from './socketServer.ts';
 import { createServer } from 'http';
@@ -54,6 +55,9 @@ const PORT = process.env.PORT;
 
 (async () => {
   try {
+
+    // Connect to Redis
+    await redisClient.connect();
     // Connect to the database
     await initializeDatabase();
 

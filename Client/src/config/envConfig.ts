@@ -1,7 +1,7 @@
 
 const config = {
     BASE_URL: import.meta.env.VITE_BASE_URL || "",
-    CLIENT_ID: import.meta.env.VITE_CLIENT_ID || "",
+    CLIENTid: import.meta.env.VITE_CLIENTid || "",
     ACCESS_KEY: import.meta.env.VITE_ACCESS_KEY || "",
     BUCKET_REGION: import.meta.env.VITE_BUCKET_REGION || "",
     BUCKET_NAME: import.meta.env.VITE_BUCKET_NAME || "",

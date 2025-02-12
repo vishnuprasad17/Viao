@@ -215,7 +215,7 @@ function Home() {
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               >
-                <Link to={`${USER.VIEW_VENDOR}?id=${vendor?._id}`}>
+                <Link to={`${USER.VIEW_VENDOR}?id=${vendor?.id}`}>
                   <CardHeader
                     floated={false}
                     className="relative h-56"
@@ -254,7 +254,7 @@ function Home() {
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                   >
-                      <Link to={`${USER.VIEW_VENDOR}?id=${vendor?._id}`}>
+                      <Link to={`${USER.VIEW_VENDOR}?id=${vendor?.id}`}>
                            {vendor.name}
                            </Link>
                   </Typography>
