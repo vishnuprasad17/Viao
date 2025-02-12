@@ -5,6 +5,7 @@ import redisClient from './infrastructure/config/redis';
 import routes from './api/ApiRoutes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { cleanExpiredBookedDates } from './infrastructure/cron/cleanExpiredBookedDates';
 import session from 'express-session';
 import { Request,Response,NextFunction } from 'express';
 import path from 'path';
@@ -16,6 +17,7 @@ import { createServer } from 'http';
 const app = express();
 
 dotenv.config();
+cleanExpiredBookedDates();
 const server = createServer(app);
 
 const corsOptions = {
