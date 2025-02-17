@@ -1,5 +1,5 @@
 import { UpdateWriteOpResult } from "mongoose";
-import { Message } from "../entities/Message";
+import { Message } from "../../entities/Message";
 
 export interface MessageRepository {
   create(message: Message): Promise<Message>;

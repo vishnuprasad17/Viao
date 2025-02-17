@@ -1,4 +1,4 @@
-import { PostRepository } from "../../../domain/interfaces/PostRepository";
+import { PostRepository } from "../../../domain/interfaces/infrastructure interfaces/PostRepository";
 import { BaseRepository } from "./BaseRepository";
 import { PostModel, IPost } from "../mongooseModels/Post";
 import { mapToDomain, mapToDatabase } from "../mappers/postMapper";

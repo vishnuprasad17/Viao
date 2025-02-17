@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { ConversationRepository } from "../../domain/interfaces/ConversationRepository";
+import { ConversationRepository } from "../../domain/interfaces/infrastructure interfaces/ConversationRepository";
 import { BaseError } from "../../domain/errors/BaseError";
-import { ConversationUseCase } from "../../domain/interfaces/ConversationUseCase";
+import { ConversationUseCase } from "../../domain/interfaces/application interfaces/ConversationUseCase";
 import { Conversation } from "../../domain/entities/Conversation";
 import { ConversationDTO } from "../../domain/dtos/ConversationDTO";
 

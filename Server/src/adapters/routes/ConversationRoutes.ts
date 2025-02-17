@@ -1,6 +1,6 @@
 import { Router} from 'express';
 import multer from 'multer';
-import { ConversationController } from '../../domain/interfaces/ConversationController';
+import { ConversationController } from '../../domain/interfaces/adapter interfaces/ConversationController';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });

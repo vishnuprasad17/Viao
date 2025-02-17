@@ -1,9 +1,10 @@
-import { Vendor } from "../entities/Vendor";
+import { Vendor } from "../../entities/Vendor";
 
 export interface VendorRepository {
   getById(id: string): Promise<Vendor | null>;
   create(vendor: Vendor, password: string): Promise<Vendor>;
   update(id: string, user: Partial<Vendor>): Promise<Vendor | null>;
+  countDocuments(condition?:Record<string,unknown>):Promise<number>;
   block(id: string, status: boolean): Promise<Vendor | null>;
   findByEmail(email: string): Promise<Vendor | null>;
   findByPhone(phone:number): Promise<Vendor | null>;
@@ -26,4 +27,7 @@ export interface VendorRepository {
   lockDate(id: string, date: string): Promise<boolean>;
   unlockDate(id: string, date: string): Promise<boolean>;
   bookDate(id: string, date: string): Promise<Vendor | null>;
+  cancelDate(id: string, date: string): Promise<Vendor | null>;
+  updateBookingCount(id: string): Promise<boolean>;
+  updateRating(id: string, rating: number): Promise<boolean>;
 }

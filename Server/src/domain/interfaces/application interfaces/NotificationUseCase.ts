@@ -1,4 +1,4 @@
-import { Notification } from "../entities/Notification";
+import { Notification } from "../../entities//Notification";
 
 export interface NotificationUseCase {
     getNotifications(recipient: string,page: number, pageSize: number): Promise<{notification: Notification[],totalPages: number}>;

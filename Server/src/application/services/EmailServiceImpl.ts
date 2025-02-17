@@ -1,7 +1,7 @@
 import sgMail from "@sendgrid/mail";
 import { injectable } from "inversify";
 import { BaseError } from "../../domain/errors/BaseError";
-import { EmailService } from "../../domain/interfaces/EmailService";
+import { EmailService } from "../../domain/interfaces/application interfaces/EmailService";
 
 @injectable()
 export class EmailServiceImpl implements EmailService {

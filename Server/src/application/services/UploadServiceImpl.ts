@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { UploadService } from "../../domain/interfaces/UploadService";
+import { UploadService } from "../../domain/interfaces/application interfaces/UploadService";
 import crypto from "crypto";
 import sharp from "sharp";
 import { PutObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";

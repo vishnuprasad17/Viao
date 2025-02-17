@@ -88,11 +88,10 @@ const VendorPosts = () => {
       {posts.length > 0 && (
         <div className="flex justify-center items-center mt-10">
           <Button
-            variant="outlined"
+            variant="text"
             placeholder={undefined}
-            color="blue"
             size="lg"
-            className="mr-3 mt-5 text-center"
+            className="mr-3 mt-5 text-center text-gray-500"
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
           >

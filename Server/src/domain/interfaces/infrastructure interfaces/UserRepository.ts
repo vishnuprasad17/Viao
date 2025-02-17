@@ -1,4 +1,4 @@
-import { User } from "../entities/User";
+import { User } from "../../entities/User";
 
 export interface UserRepository {
   getById(id: string): Promise<User | null>;
@@ -14,4 +14,5 @@ export interface UserRepository {
   deleteFavVendor(userId: string, vendorId: string): Promise<User | null>;
   findAllUsers(page: number, limit: number, search: string): Promise<User[]>;
   addFavVendor(userId: string, vendorId: string): Promise<User | null>;
+  refundToWallet(id: string, amount: number): Promise<boolean>;
 }

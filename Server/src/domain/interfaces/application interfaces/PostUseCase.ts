@@ -1,5 +1,5 @@
-import { PostDTO } from "../dtos/PostDTO";
-import { Post } from "../entities/Post";
+import { PostDTO } from "../../dtos/PostDTO";
+import { Post } from "../../entities/Post";
 
 export interface PostUseCase {
     getAllPostsByVendor(vendor_id: string, page: number, pageSize: number): Promise<{ posts: PostDTO[], totalPages: number}>;

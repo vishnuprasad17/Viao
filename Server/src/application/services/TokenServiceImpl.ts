@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
-import { TokenService, TokenPayload } from "../../domain/interfaces/TokenService";
+import { TokenService, TokenPayload } from "../../domain/interfaces/adapter interfaces/TokenService";
 
 const JWT_ACCESS_SECRET = process.env.JWT_SECRET!;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;

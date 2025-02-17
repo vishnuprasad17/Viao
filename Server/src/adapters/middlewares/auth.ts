@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { BaseError } from '../../domain/errors/BaseError';
 import dotenv from 'dotenv';
 import redisClient from '../../infrastructure/config/redis';
-import { TokenPayload } from '../../domain/interfaces/TokenService';
+import { TokenPayload } from '../../domain/interfaces/adapter interfaces/TokenService';
 
 dotenv.config();
 

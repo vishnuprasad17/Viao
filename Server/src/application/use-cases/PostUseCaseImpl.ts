@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
-import { PostUseCase } from "../../domain/interfaces/PostUseCase";
+import { PostUseCase } from "../../domain/interfaces/application interfaces/PostUseCase";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { PostRepository } from "../../domain/interfaces/PostRepository";
+import { PostRepository } from "../../domain/interfaces/infrastructure interfaces/PostRepository";
 import { Post } from "../../domain/entities/Post";
 import { BaseError } from "../../domain/errors/BaseError";
-import { UploadService } from "../../domain/interfaces/UploadService";
+import { UploadService } from "../../domain/interfaces/application interfaces/UploadService";
 import { PostDTO } from "../../domain/dtos/PostDTO";
 
 @injectable()

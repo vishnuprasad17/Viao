@@ -2,27 +2,27 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { inject, injectable } from "inversify";
 import { BaseError } from "../../domain/errors/BaseError";
-import { AuthUseCase, SignupParams, VerifyParams, UserSession, VendorSession, OTP, LoginResponse, DecodedData } from "../../domain/interfaces/AuthUseCase";
+import { AuthUseCase, SignupParams, VerifyParams, UserSession, VendorSession, OTP, LoginResponse, DecodedData } from "../../domain/interfaces/application interfaces/AuthUseCase";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { EmailService } from "../../domain/interfaces/EmailService";
-import { UserRepository } from "../../domain/interfaces/UserRepository";
-import { VendorRepository } from "../../domain/interfaces/VendorRepository";
-import { AdminRepository } from "../../domain/interfaces/AdminRepository";
-import { PasswordService } from "../../domain/interfaces/PasswordService";
-import { NotificationService } from "../../domain/interfaces/NotificationService";
+import { EmailService } from "../../domain/interfaces/application interfaces/EmailService";
+import { UserRepository } from "../../domain/interfaces/infrastructure interfaces/UserRepository";
+import { VendorRepository } from "../../domain/interfaces/infrastructure interfaces/VendorRepository";
+import { AdminRepository } from "../../domain/interfaces/infrastructure interfaces/AdminRepository";
+import { PasswordService } from "../../domain/interfaces/application interfaces/PasswordService";
+import { NotificationService } from "../../domain/interfaces/application interfaces/NotificationService";
 import { User } from "../../domain/entities/User";
 import { Types } from "../../domain/constants/notificationTypes";
-import { TypeRepository } from "../../domain/interfaces/TypeRepository";
+import { TypeRepository } from "../../domain/interfaces/infrastructure interfaces/TypeRepository";
 import { Vendor } from "../../domain/entities/Vendor";
 import { Session, SessionData } from "express-session";
 import { UserDTO } from "../../domain/dtos/UserDTO";
 import { VendorDTO } from "../../domain/dtos/VendorDTO";
 import { Admin } from "../../domain/entities/Admin";
 import { AdminDTO } from "../../domain/dtos/AdminDTO";
-import { NotificationRepository } from "../../domain/interfaces/NotificationRepository";
-import { TokenService, TokenPayload } from "../../domain/interfaces/TokenService";
+import { NotificationRepository } from "../../domain/interfaces/infrastructure interfaces/NotificationRepository";
+import { TokenService, TokenPayload } from "../../domain/interfaces/adapter interfaces/TokenService";
 import dotenv from "dotenv";
-import { RedisRepository } from "../../domain/interfaces/RedisRepository";
+import { RedisRepository } from "../../domain/interfaces/infrastructure interfaces/RedisRepository";
 
 dotenv.config();
 
@@ -146,7 +146,8 @@ export class AuthUseCaseImpl implements AuthUseCase  {
                     phone,
                     isActive,
                     "",
-                    []
+                    [],
+                    0
                   )
                   const newUser = await this.userRepository.create(user, hashedPassword);
                   const userDtos = UserDTO.fromDomain(newUser);
@@ -377,7 +378,8 @@ export class AuthUseCaseImpl implements AuthUseCase  {
         0,
         isActive,
         "",
-        []
+        [],
+        0
       )
       const newUser = await this.userRepository.create(user, jti);
       const userDtos = UserDTO.fromDomain(newUser);

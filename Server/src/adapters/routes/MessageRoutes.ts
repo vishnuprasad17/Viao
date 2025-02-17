@@ -1,6 +1,6 @@
 import { Router} from 'express';
 import multer from 'multer';
-import { MessageController } from '../../domain/interfaces/MessageController';
+import { MessageController } from '../../domain/interfaces/adapter interfaces/MessageController';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });

@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { asyncHandler } from "../middlewares/async-handler";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { TypeUseCase } from "../../domain/interfaces/TypeUseCase";
-import { VendorTypeController } from "../../domain/interfaces/VendorTypeController";
+import { TypeUseCase } from "../../domain/interfaces/application interfaces/TypeUseCase";
+import { VendorTypeController } from "../../domain/interfaces/adapter interfaces/VendorTypeController";
 
 @injectable()
 export class VendorTypeControllerImpl implements VendorTypeController  {

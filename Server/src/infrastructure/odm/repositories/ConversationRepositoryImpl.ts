@@ -1,4 +1,4 @@
-import { ConversationRepository } from "../../../domain/interfaces/ConversationRepository";
+import { ConversationRepository } from "../../../domain/interfaces/infrastructure interfaces/ConversationRepository";
 import { BaseRepository } from "./BaseRepository";
 import { ConversationModel, IConversation } from "../mongooseModels/Conversation";
 import { mapToDomain, mapToDatabase } from "../mappers/conversationMapper";

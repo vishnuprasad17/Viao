@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { asyncHandler } from "../middlewares/async-handler";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { PostUseCase } from "../../domain/interfaces/PostUseCase";
-import { PostController } from "../../domain/interfaces/PostController";
+import { PostUseCase } from "../../domain/interfaces/application interfaces/PostUseCase";
+import { PostController } from "../../domain/interfaces/adapter interfaces/PostController";
 
 @injectable()
 export class PostControllerImpl implements PostController  {

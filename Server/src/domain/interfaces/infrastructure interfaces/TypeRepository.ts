@@ -1,4 +1,4 @@
-import { VendorType } from "../entities/VendorType";
+import { VendorType } from "../../entities/VendorType";
 
 export interface TypeRepository {
     create(vendortype: VendorType): Promise<VendorType>;

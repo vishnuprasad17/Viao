@@ -1,4 +1,4 @@
-import { VendorRepository } from "../../../domain/interfaces/VendorRepository";
+import { VendorRepository } from "../../../domain/interfaces/infrastructure interfaces/VendorRepository";
 import { BaseRepository } from "./BaseRepository";
 import { VendorModel, IVendor } from "../mongooseModels/Vendor";
 import { mapToDomain, mapToDatabase } from "../mappers/vendorMapper";
@@ -173,5 +173,32 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
       { new: true}
     );
     return updatedDocument? this.toDomain(updatedDocument) : null;
+  }
+
+  async cancelDate(id: string, date: string): Promise<Vendor | null> {
+    const updatedDocument = await VendorModel.findByIdAndUpdate(id,
+      { $pull: { bookedDates: date } },
+      { new: true}
+    );
+
+    return updatedDocument? this.toDomain(updatedDocument) : null;
+  }
+
+  async updateBookingCount(id: string): Promise<boolean> {
+    const document = VendorModel.findByIdAndUpdate(id, {$inc: { totalBooking: 1 }});
+
+    return true;
+  }
+
+  async updateRating(id: string, rating: number): Promise<boolean> {
+    let vendorData = await VendorModel.findById(id);
+    if (vendorData) {
+      vendorData.totalRating = rating;
+      await vendorData.save();
+
+      return true;
+    }
+
+    return false;
   }
 }

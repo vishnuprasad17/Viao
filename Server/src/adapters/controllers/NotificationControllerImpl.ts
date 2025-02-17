@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { asyncHandler } from "../middlewares/async-handler";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { NotificationUseCase } from "../../domain/interfaces/NotificationUseCase";
-import { NotificationController } from "../../domain/interfaces/NotificationController";
+import { NotificationUseCase } from "../../domain/interfaces/application interfaces/NotificationUseCase";
+import { NotificationController } from "../../domain/interfaces/adapter interfaces/NotificationController";
 
 @injectable()
 export class NotificationControllerImpl implements NotificationController {

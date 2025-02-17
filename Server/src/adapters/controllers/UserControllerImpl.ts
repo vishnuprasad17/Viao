@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { asyncHandler } from "../middlewares/async-handler";
 import TYPES from '../../domain/constants/inversifyTypes';
-import { UserUseCase } from '../../domain/interfaces/UserUseCase';
-import { UserController } from "../../domain/interfaces/UserController";
+import { UserUseCase } from '../../domain/interfaces/application interfaces/UserUseCase';
+import { UserController } from "../../domain/interfaces/adapter interfaces/UserController";
 
 injectable()
 export class UserControllerImpl implements UserController{

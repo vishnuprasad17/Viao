@@ -1,16 +1,20 @@
 import bcrypt from 'bcrypt';
 import { inject, injectable } from "inversify";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { VendorRepository } from "../../domain/interfaces/VendorRepository";
+import { VendorRepository } from "../../domain/interfaces/infrastructure interfaces/VendorRepository";
 import { Vendor } from "../../domain/entities/Vendor";
-import { AdminRepository } from "../../domain/interfaces/AdminRepository";
-import { NotificationRepository } from "../../domain/interfaces/NotificationRepository";
+import { AdminRepository } from "../../domain/interfaces/infrastructure interfaces/AdminRepository";
+import { NotificationRepository } from "../../domain/interfaces/infrastructure interfaces/NotificationRepository";
 import { BaseError } from "../../domain/errors/BaseError";
-import { NotificationService } from "../../domain/interfaces/NotificationService";
-import { UploadService } from "../../domain/interfaces/UploadService";
-import { PasswordService } from '../../domain/interfaces/PasswordService';
+import { NotificationService } from "../../domain/interfaces/application interfaces/NotificationService";
+import { UploadService } from "../../domain/interfaces/application interfaces/UploadService";
+import { PasswordService } from '../../domain/interfaces/application interfaces/PasswordService';
 import { Types } from '../../domain/constants/notificationTypes';
-import { UserRepository } from '../../domain/interfaces/UserRepository';
+import { UserRepository } from '../../domain/interfaces/infrastructure interfaces/UserRepository';
+import moment from 'moment';
+import { PaymentRepository } from '../../domain/interfaces/infrastructure interfaces/PaymentRepository';
+import { VendorDTO } from '../../domain/dtos/VendorDTO';
+import { VendorUseCase } from '../../domain/interfaces/application interfaces/VendorUseCase';
 
 function toTitleCase(city: string): string {
   return city.toLowerCase().split(' ').map(word => {
@@ -18,22 +22,49 @@ function toTitleCase(city: string): string {
   }).join(' ');
 }
 
+function getCurrentWeekRange () {
+  const startOfWeek = moment().startOf("isoWeek").toDate();
+  const endOfWeek = moment().endOf("isoWeek").toDate();
+  return { startOfWeek, endOfWeek };
+}
+
+// Function to get current year range
+function getCurrentYearRange() {
+  const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+  const endOfYear = new Date(new Date().getFullYear() + 1, 0, 1);
+  return { startOfYear, endOfYear };
+}
+
+// Function to calculate the last five years' range
+function getLastFiveYearsRange() {
+  const currentYear = new Date().getFullYear();
+  const startOfFiveYearsAgo = new Date(currentYear - 5, 0, 1);
+  const endOfCurrentYear = new Date(currentYear + 1, 0, 1);
+  return { startOfFiveYearsAgo, endOfCurrentYear };
+}
+
 injectable()
-export class VendorUseCase {
+export class VendorUseCaseImpl implements VendorUseCase {
     constructor(@inject(TYPES.VendorRepository) private vendorRepository: VendorRepository,
                 @inject(TYPES.UploadService) private uploadService: UploadService,
                 @inject(TYPES.AdminRepository) private adminRepository: AdminRepository,
                 @inject(TYPES.UserRepository) private userRepository: UserRepository,
+                @inject(TYPES.PaymentRepository) private paymentRepository: PaymentRepository,
                 @inject(TYPES.PasswordService) private passwordService: PasswordService,
                 @inject(TYPES.NotificationRepository) private notificationRepository: NotificationRepository,
                 @inject(TYPES.NotificationService) private notificationService: NotificationService,
                 ) {}
 
-    async getSingleVendor(vendorId: string): Promise<Vendor | null> {
-        return await this.vendorRepository.getById(vendorId);
+    async getSingleVendor(vendorId: string): Promise<VendorDTO | null> {
+        const vendorData = await this.vendorRepository.getById(vendorId);
+        if (!vendorData) {
+          return null;
+        }
+
+        return VendorDTO.fromDomain(vendorData);
     }
 
-    async verificationRequest(vendorId: string): Promise<Vendor> {
+    async verificationRequest(vendorId: string): Promise<VendorDTO> {
           const data = await this.vendorRepository.requestForVerification(vendorId);
           if(!data) {
             throw new BaseError("Vendor not found", 404);
@@ -48,10 +79,11 @@ export class VendorUseCase {
           const message = `${data.name} requested for verification!`
           const notificationData = await this.notificationService.createNotification(Admin.id, message, notificationType);
           await this.notificationRepository.create(notificationData);
-          return data;
+
+          return VendorDTO.fromDomain(data);
       }
 
-    async update(vendorId: string, data: any, files: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined) {
+    async update(vendorId: string, data: any, files: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined): Promise<VendorDTO> {
           const existingVendor = await this.vendorRepository.getById(vendorId);
           if (!existingVendor) {
             throw new BaseError("Vendor not found", 404);
@@ -98,7 +130,7 @@ export class VendorUseCase {
           if (!updatedVendor) {
             throw new BaseError("Failed to update vendor", 500);
           }
-          return updatedVendor;
+          return VendorDTO.fromDomain(updatedVendor);
       }
       
     async updatePwd(currentPassword: string, newPassword: string, vendorId: string): Promise<boolean> {
@@ -146,7 +178,7 @@ export class VendorUseCase {
             return data;
         }
 
-    async getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<Vendor[]> {
+    async getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<VendorDTO[]> {
             const vendors = await this.vendorRepository.findAllVendors(
               page,
               limit,
@@ -155,20 +187,23 @@ export class VendorUseCase {
               location,
               sortValue
             );
-            return vendors;
+            return VendorDTO.fromDomainList(vendors);
         }
       
-        async toggleVendorBlock(vendorId: string): Promise<Vendor | null> {
+        async toggleVendorBlock(vendorId: string): Promise<VendorDTO | null> {
             const vendor = await this.vendorRepository.getById(vendorId);
             if (!vendor) {
               throw new BaseError("Vendor not found.", 404);
             }
 
             const updatedVendor = await this.vendorRepository.block(vendorId, !vendor.isActive);
-            return updatedVendor;
+            if (!updatedVendor) {
+              return null;
+            }
+            return VendorDTO.fromDomain(updatedVendor);
         }
     
-        async changeVerifyStatus(vendorId: string, status: string, note?: string): Promise<Vendor> {
+        async changeVerifyStatus(vendorId: string, status: string, note?: string): Promise<VendorDTO> {
             const data = await this.vendorRepository.updateVerificationStatus(
               vendorId,
               status
@@ -180,7 +215,7 @@ export class VendorUseCase {
             const message = status == "Accepted" ? `Your account has been Verified!` : `Verification Rejected! ${note}`;
             const notificationData = await this.notificationService.createNotification(data.id, message, notificationType)
             await this.notificationRepository.create(notificationData);
-            return data;
+            return VendorDTO.fromDomain(data);
         }
     
         async getAllLocations(): Promise<string[]> {
@@ -191,7 +226,7 @@ export class VendorUseCase {
             return data;
         }
 
-        async FavoriteVendors(userid: string, page: number, pageSize: number) {
+        async FavoriteVendors(userid: string, page: number, pageSize: number): Promise<{ favVendors: VendorDTO[], count: number }> {
             const userData = await this.userRepository.getById(userid);
             if (!userData) {
               throw new BaseError("User not found", 404);
@@ -202,8 +237,67 @@ export class VendorUseCase {
               //throw new BaseError("No favorite vendors found for this user", 404);
             }
             const { favVendors, count } = await this.vendorRepository.getFavVendors(favs, page, pageSize);
+            const vendorDtos = VendorDTO.fromDomainList(favVendors);
 
-            return { favVendors, count };
+            return { favVendors: vendorDtos, count };
+        }
+
+        async revenue(vendorId: string, dateType: string): Promise<number[] | null> {
+          let start,
+            end,
+            groupBy,
+            sortField,
+            arrayLength = 0;
+    
+          switch (dateType) {
+            case "week":
+              const { startOfWeek, endOfWeek } = getCurrentWeekRange();
+              start = startOfWeek;
+              end = endOfWeek;
+              groupBy = { day: { $dayOfMonth: "$createdAt" } }; // Group by day
+              sortField = "day"; // Sort by day
+              arrayLength = 7;
+              break;
+            case "month":
+              const { startOfYear, endOfYear } = getCurrentYearRange();
+              start = startOfYear;
+              end = endOfYear;
+              groupBy = { month: { $month: "$createdAt" } }; // Group by month
+              sortField = "month"; // Sort by month
+              arrayLength = 12;
+              break;
+            case "year":
+              const { startOfFiveYearsAgo, endOfCurrentYear } =
+                getLastFiveYearsRange();
+              start = startOfFiveYearsAgo;
+              end = endOfCurrentYear;
+              groupBy = { year: { $year: "$createdAt" } }; // Group by year
+              sortField = "year"; // Sort by year
+              arrayLength = 5;
+              break;
+            default:
+              return null;
+          }
+    
+          const revenueData = await this.paymentRepository.getVendorRevenueDetails(vendorId, start, end, groupBy, sortField);
+          const revenueArray = Array.from({ length: arrayLength }, (_, index) => {
+            const item = revenueData.find((r) => {
+              if (dateType === "week") {
+                return r._id.day === index + 1;
+              } else if (dateType === "month") {
+                return r._id.month === index + 1;
+              } else if (dateType === "year") {
+                return (
+                  r._id.year ===
+                  new Date().getFullYear() - (arrayLength - 1) + index
+                );
+              }
+              return false;
+            });
+            return item ? item.totalRevenue : 0; // Default to 0 if no data for the expected index
+          });
+
+          return revenueArray;
         }
     
 }

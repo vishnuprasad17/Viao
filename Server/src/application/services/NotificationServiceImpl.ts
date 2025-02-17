@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { NotificationService } from "../../domain/interfaces/NotificationService";
+import { NotificationService } from "../../domain/interfaces/application interfaces/NotificationService";
 import { Notification } from "../../domain/entities/Notification";
 
 @injectable()

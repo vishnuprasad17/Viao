@@ -1,4 +1,4 @@
-import { Conversation } from "../entities/Conversation";
+import { Conversation } from "../../entities/Conversation";
 
 export interface ConversationRepository {
   create(conversation: Conversation): Promise<Conversation>;

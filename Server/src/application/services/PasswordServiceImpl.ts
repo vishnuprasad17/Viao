@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { PasswordService } from "../../domain/interfaces/PasswordService";
+import { PasswordService } from "../../domain/interfaces/application interfaces/PasswordService";
 
 
 export class PasswordServiceImpl implements PasswordService {

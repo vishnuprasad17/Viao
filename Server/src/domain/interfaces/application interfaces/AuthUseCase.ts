@@ -1,7 +1,7 @@
 import { Response } from "express";
-import { UserDTO } from "../dtos/UserDTO";
-import { VendorDTO } from "../dtos/VendorDTO";
-import { AdminDTO } from "../dtos/AdminDTO";
+import { UserDTO } from "../../dtos/UserDTO";
+import { VendorDTO } from "../../dtos/VendorDTO";
+import { AdminDTO } from "../../dtos/AdminDTO";
 import { Session, SessionData } from "express-session";
 
 interface AuthUseCase {

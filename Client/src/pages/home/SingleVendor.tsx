@@ -2,21 +2,17 @@ import {
   Avatar,
   Typography,
   Button,
-  IconButton,
 } from "@material-tailwind/react";
 import Footer from "../../layout/user/footer";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { addToFavourite, getVendor } from "../../config/services/userApi";
+import { getVendor, checkIfUserReviewed } from "../../config/services/userApi";
 import VendorTabs from "../../components/home/VendorProfile/VendorTabs";
-import { toast } from "react-toastify";
 import UserRootState from "../../redux/rootstate/UserState";
 import { useSelector } from "react-redux";
 import ProfileButtons from "../../components/home/VendorProfile/ProfileButtons";
+import AddReview from "../../components/home/VendorProfile/AddReview";
 import { VendorData } from "../../interfaces/vendorTypes";
-import { toast as hottoast } from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { setUserInfo } from "../../redux/slices/UserSlice";
 
 export function VendorProfile() {
   const user = useSelector((state: UserRootState) => state.user.userdata);
@@ -25,8 +21,8 @@ export function VendorProfile() {
   const id = queryParams.get("id") || "";
   const [vendor, setVendor] = useState<VendorData>();
   const [favourite, setFavourite] = useState(false);
-  const [reviewAdded, setReviewAdded] = useState(false);
-  const dispatch = useDispatch();
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,8 +30,13 @@ export function VendorProfile() {
         const response = await getVendor(id, {
           withCredentials: true,
         });
-        console.log(user);
         setVendor(response.data.data);
+
+        // Check if user has already reviewed this vendor
+        if (user?.id && id) {
+          const response = await checkIfUserReviewed(user.id, id);
+          setHasReviewed(response.data.hasReviewed);
+        }
 
         if (user?.favourite?.includes(id)) {
           setFavourite(true);
@@ -43,44 +44,17 @@ export function VendorProfile() {
           setFavourite(false);
         }
 
-        setReviewAdded(false);
         window.scrollTo(0, 0);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    fetchData(); // Call the async function
-  }, [user, id, reviewAdded]);
+    fetchData();
+  }, [user, id, hasReviewed]);
 
-  const handleFavourite = async () => {
-    if (!user || !user.id) {
-      hottoast.error("User must be logged in to add to favourites.", {
-        style: {
-          background: "red",
-          color: "#FFFFFF",
-        },
-        duration: 3000,
-      });
-      return;
-    }
-    try {
-      addToFavourite(id, user?.id, {
-        withCredentials: true,
-      })
-        .then((response) => {
-          setFavourite(response.data.fav);
-          dispatch(setUserInfo(response.data.userData));
-          toast.success(response.data.message);
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log("here", error);
-          hottoast.error(error.response.data.message);
-        });
-    } catch (error) {
-      console.log(error);
-    }
+  const handleFavouriteToggle = () => {
+    setFavourite((prev) => !prev);
   };
 
   return (
@@ -160,34 +134,27 @@ export function VendorProfile() {
               </div>
 
               <div className="mt-10 mb-10 flex lg:flex-col md:flex-row flex-col justify-between items-center lg:justify-end lg:mb-0 lg:px-4 flex-wrap lg:-mt-5">
+                {/* Rating Button */}
                 <div className="flex gap-2">
-                  <IconButton
-                    // style={favourite?{backgroundColor:"pink"}:{backgroundColor:"black"}}
-                    color={favourite ? "red" : "deep-purple"}
-                    className="rounded-full"
-                    placeholder={undefined}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
-                    onClick={handleFavourite}
-                  >
-                    <i className="fas fa-heart w-fit lg:ml-auto" />
-                  </IconButton>
-
                   <Button
-                    className="w-fit lg:ml-auto rounded-full"
+                    className="w-fit rounded-full"
+                    color="deep-purple"
                     placeholder={undefined}
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
-                    color="deep-purple"
                   >
                     <i className="fa-solid fa-star mr-1 text-yellow-700"></i>
                     {vendor?.totalRating}
                   </Button>
                 </div>
+
+                {/* Profile Buttons */}
                 <ProfileButtons
-                 vendorId={vendor?.id}
-                 userId={user?.id}
-                 />
+                  vendorId={vendor?.id}
+                  userId={user?.id}
+                  isFavourite={favourite}
+                  onFavouriteToggle={handleFavouriteToggle}
+                />
               </div>
             </div>
             <div className="-mt-4 lg:pl-20 container space-y-2">
@@ -219,8 +186,21 @@ export function VendorProfile() {
         </div>
       </section>
       <section>
-        <VendorTabs />
+        <VendorTabs refreshKey={refreshKey} onRefresh={() => setRefreshKey(prev => prev + 1)} />
       </section>
+      {/* Conditionally render AddReview */}
+      {!hasReviewed && (
+        <section className="mb-20">
+          <AddReview 
+            id={vendor?.id} 
+            hasReviewed={hasReviewed}
+            onSuccess={() => {
+              setHasReviewed(true);
+              setRefreshKey(prev => prev + 1);
+            }}
+          />
+        </section>
+      )}
       <div className="bg-white">
         <Footer />
       </div>

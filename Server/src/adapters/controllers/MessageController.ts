@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/async-handler";
 import { inject, injectable } from "inversify";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { MessageUseCase } from "../../domain/interfaces/MessageUseCase";
-import { MessageController } from "../../domain/interfaces/MessageController";
+import { MessageUseCase } from "../../domain/interfaces/application interfaces/MessageUseCase";
+import { MessageController } from "../../domain/interfaces/adapter interfaces/MessageController";
 
 @injectable()
 export class MessageControllerImpl implements MessageController{

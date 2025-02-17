@@ -7,7 +7,7 @@ export class User {
         public isActive: boolean = true,
         public imageUrl: string,
         public favourite: string[],
-        public wallet?: number,
+        public wallet: number,
     ) {}
 
     // Method to update specific fields

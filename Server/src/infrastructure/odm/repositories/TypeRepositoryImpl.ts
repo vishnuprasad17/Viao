@@ -1,4 +1,4 @@
-import { TypeRepository } from "../../../domain/interfaces/TypeRepository";
+import { TypeRepository } from "../../../domain/interfaces/infrastructure interfaces/TypeRepository";
 import { BaseRepository } from "./BaseRepository";
 import { VendorTypeModel, IVendorType } from "../mongooseModels/VendorType";
 import { mapToDomain, mapToDatabase } from "../mappers/vendorTypeMapper";

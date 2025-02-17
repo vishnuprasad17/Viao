@@ -1,4 +1,4 @@
-import { MessageRepository } from "../../../domain/interfaces/MessageRepository";
+import { MessageRepository } from "../../../domain/interfaces/infrastructure interfaces/MessageRepository";
 import { BaseRepository } from "./BaseRepository";
 import { MessageModel, IMessage } from "../mongooseModels/Message";
 import { mapToDomain, mapToDatabase } from "../mappers/messageMapper";

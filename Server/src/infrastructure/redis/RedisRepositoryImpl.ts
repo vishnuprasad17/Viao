@@ -1,6 +1,6 @@
 import { RedisCommandRawReply } from "@redis/client/dist/lib/commands";
 import redisClient from "../config/redis";
-import { RedisRepository } from "../../domain/interfaces/RedisRepository";
+import { RedisRepository } from "../../domain/interfaces/infrastructure interfaces/RedisRepository";
 
 export class RedisRepositoryImpl implements RedisRepository {
   async set(key: string, value: string, token: string): Promise<string | null> {

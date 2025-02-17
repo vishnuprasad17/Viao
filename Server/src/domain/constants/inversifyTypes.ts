@@ -40,6 +40,14 @@ const TYPES = {
     MessageRepository: Symbol.for("MessageRepository"),
     MessageUseCase: Symbol.for("MessageUseCase"),
     MessageController: Symbol.for("MessageController"),
+    //Review
+    ReviewRepository: Symbol.for("ReviewRepository"),
+    ReviewUseCase: Symbol.for("ReviewUseCase"),
+    ReviewController: Symbol.for("ReviewController"),
+    //Payment
+    PaymentRepository: Symbol.for("PaymentRepository"),
+    PaymentUseCase: Symbol.for("PaymentUseCase"),
+    PaymentController: Symbol.for("PaymentController"),
     //Services
     EmailService: Symbol.for("EmailService"),
     OtpService: Symbol.for("OtpService"),

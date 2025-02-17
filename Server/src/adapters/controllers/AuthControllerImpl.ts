@@ -2,9 +2,8 @@ import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { asyncHandler } from "../middlewares/async-handler";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { AuthUseCase } from "../../domain/interfaces/AuthUseCase";
-import { AuthController } from "../../domain/interfaces/AuthController";
-import { BaseError } from "../../domain/errors/BaseError";
+import { AuthUseCase } from "../../domain/interfaces/application interfaces/AuthUseCase";
+import { AuthController } from "../../domain/interfaces/adapter interfaces/AuthController";
 
 
 @injectable()

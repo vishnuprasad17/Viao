@@ -1,3 +1,14 @@
+import { UserData } from "./userTypes";
+import { VendorData } from "./vendorTypes";
+
+export interface Review {
+  id: string;
+  userId: UserData;
+  rating: number;
+  content: string;
+  reply: Array<string>;
+  createdAt: Date;
+}
 
 export interface Notification {
   id: string;
@@ -15,13 +26,21 @@ export interface Booking {
   city: string;
   pin: number;
   mobile: number;
-  vendorId: string;
-  vendorName?: string;
-  userId: string;
+  vendorId: VendorData;
+  userId: UserData;
   status: string;
   payment_status: string;
   amount: number;
   refundAmount:number;
+  createdAt: Date;
+}
+
+export interface Payment {
+  id: string;
+  amount: number;
+  vendorId: VendorData;
+  userId: UserData;
+  bookingId: Booking;
   createdAt: Date;
 }
 

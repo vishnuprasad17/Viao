@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { TypeRepository } from "../../domain/interfaces/TypeRepository";
+import { TypeRepository } from "../../domain/interfaces/infrastructure interfaces/TypeRepository";
 import { BaseError } from "../../domain/errors/BaseError";
 import { VendorType } from "../../domain/entities/VendorType";
-import { UploadService } from "../../domain/interfaces/UploadService";
-import { TypeUseCase } from "../../domain/interfaces/TypeUseCase";
+import { UploadService } from "../../domain/interfaces/application interfaces/UploadService";
+import { TypeUseCase } from "../../domain/interfaces/application interfaces/TypeUseCase";
 import { VendorTypeDTO } from "../../domain/dtos/VendorTypeDTO";
 
 

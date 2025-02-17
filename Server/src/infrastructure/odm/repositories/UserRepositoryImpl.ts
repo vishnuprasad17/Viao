@@ -1,4 +1,4 @@
-import { UserRepository } from "../../../domain/interfaces/UserRepository";
+import { UserRepository } from "../../../domain/interfaces/infrastructure interfaces/UserRepository";
 import { BaseRepository } from "./BaseRepository";
 import { UserModel, IUser} from "../mongooseModels/User";
 import { mapToDatabase, mapToDomain } from "../mappers/userMapper";
@@ -83,5 +83,15 @@ export class UserRepositoryImpl extends BaseRepository<IUser, User> implements U
       } catch (error) {
         throw error;
       }
+    }
+
+    async refundToWallet(id: string, amount: number): Promise<boolean> {
+      let UserData=await UserModel.findById(id);
+      if (UserData) {
+        UserData.wallet += amount;
+        await UserData.save();
+      }
+      
+      return UserData ? true : false;
     }
 }

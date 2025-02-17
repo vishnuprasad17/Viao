@@ -1,4 +1,4 @@
-import { NotificationRepository } from "../../../domain/interfaces/NotificationRepository";
+import { NotificationRepository } from "../../../domain/interfaces/infrastructure interfaces/NotificationRepository";
 import { BaseRepository } from "./BaseRepository";
 import { NotificationModel, INotification } from "../mongooseModels/Notification";
 import { mapToDomain, mapToDatabase } from "../mappers/notificationMapper";

@@ -15,8 +15,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, handle
         <div className="flex justify-end items-end gap-4 m-10">
           {currentPage > 1 && (
             <button
-              disabled
-              className="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none bg-pink-500 active:bg-pink-400 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              className="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none bg-blue-500 active:bg-blue-400 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
               type="button"
               onClick={() => handlePageChange(currentPage - 1)}
             >

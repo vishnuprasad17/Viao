@@ -1,13 +1,13 @@
 import bcrypt from 'bcrypt';
 import { inject, injectable } from "inversify";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { UserRepository } from "../../domain/interfaces/UserRepository";
-import { EmailService } from "../../domain/interfaces/EmailService";
+import { UserRepository } from "../../domain/interfaces/infrastructure interfaces/UserRepository";
+import { EmailService } from "../../domain/interfaces/application interfaces/EmailService";
 import { BaseError } from "../../domain/errors/BaseError";
-import { UploadService } from '../../domain/interfaces/UploadService';
-import { PasswordService } from '../../domain/interfaces/PasswordService';
+import { UploadService } from '../../domain/interfaces/application interfaces/UploadService';
+import { PasswordService } from '../../domain/interfaces/application interfaces/PasswordService';
 import { UserDTO } from '../../domain/dtos/UserDTO';
-import { UserUseCase } from '../../domain/interfaces/UserUseCase';
+import { UserUseCase } from '../../domain/interfaces/application interfaces/UserUseCase';
 
 @injectable()
 export class UserUseCaseImpl implements UserUseCase {

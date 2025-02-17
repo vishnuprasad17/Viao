@@ -10,7 +10,7 @@ export class UserDTO {
     favourite: string[];
     wallet: number;
   
-    constructor(user: any) {
+    constructor(user: User) {
       this.id = user.id;
       this.name = user.name;
       this.email = user.email;

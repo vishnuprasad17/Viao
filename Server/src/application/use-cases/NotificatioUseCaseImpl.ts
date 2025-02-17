@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import TYPES from "../../domain/constants/inversifyTypes";
-import { NotificationRepository } from "../../domain/interfaces/NotificationRepository";
-import { NotificationUseCase } from "../../domain/interfaces/NotificationUseCase";
+import { NotificationRepository } from "../../domain/interfaces/infrastructure interfaces/NotificationRepository";
+import { NotificationUseCase } from "../../domain/interfaces/application interfaces/NotificationUseCase";
 import { Notification } from "../../domain/entities/Notification";
 import { BaseError } from "../../domain/errors/BaseError";
 

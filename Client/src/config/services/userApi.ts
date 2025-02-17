@@ -184,6 +184,55 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
     }
   };
 
+  //Review
+
+  const addReview = async (vendorId: string | undefined, userId: string, rating: number, content: string) => {
+    try {
+      const response = await userApi.post(`/addVendorReview`, { vendorId, userId, rating, content });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const getReviews = async (vendorId: string, page: number, pageSize: number) => {
+    try {
+      const response = await userApi.get(
+        `/getReviews?vendorId=${vendorId}&page=${page}&pageSize=${pageSize}`
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const checkIfUserReviewed = async (userId: string, vendorId: string) => {
+    try {
+      const response = await userApi.get(`/checkReviews?userId=${userId}&vendorId=${vendorId}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateReview = async(reviewId: string, content: string, rating: number) => {
+    try {
+      const response = await userApi.patch(`/update-review?reviewId=${reviewId}`, { content, rating });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const deleteReview = async(reviewId: string) => {
+    try {
+      const response = await userApi.delete(`/delete-review?reviewId=${reviewId}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 
 
   export {
@@ -206,5 +255,10 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
     getUserForChat,
     deleteForEveryone,
     deleteForMe,
+    addReview,
+    getReviews,
+    checkIfUserReviewed,
+    updateReview,
+    deleteReview,
   }
 

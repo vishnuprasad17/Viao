@@ -12,4 +12,5 @@ export interface VendorController {
     updateVerifyStatus(req: Request, res: Response, next: NextFunction): Promise<void>;
     getLocations(req: Request, res: Response, next: NextFunction): Promise<void>;
     getFavoriteVendors(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getRevenue(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
