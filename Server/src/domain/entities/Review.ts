@@ -9,7 +9,8 @@ export class Review {
         public rating: number,
         public content: string,
         public reply: string[],
-        public createdAt: Date
+        public createdAt: Date,
+        public replyAt: Date
     ) {}
 
     // Method to update specific fields

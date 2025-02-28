@@ -310,7 +310,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <header className="fixed w-full bg-black text-white p-3 flex justify-between items-center z-10">
+        <header className="fixed w-full bg-custom-blue text-white p-3 flex justify-between items-center z-10">
           {/* Left-aligned logo/text */}
           <Link to={USER.HOME} className="flex items-center">
             {/* <img

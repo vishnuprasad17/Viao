@@ -1,62 +1,40 @@
-import { Button, Typography } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
-import { getVendorTypes } from "../../config/services/userApi";
+import { Link } from "react-router-dom";
+import { USER } from "../../config/routes/user.routes";
+import { VendorType } from "../../interfaces/commonTypes";
 
+interface VendorTypeProps {
+  vendorTypeData: VendorType[];
+}
 
-const VendorTypeImages = () => {
-  const [vendorTypeData, setVendorTypeData] = useState([]);
-
-  useEffect(()=>{
-    const fetchVendorTypes = async () => {
-      try {
-        const response = await getVendorTypes({
-          withCredentials: true,
-        });
-        setVendorTypeData(response.data);
-      } catch (error) {
-        console.error("Error fetching vendor types:", error);
-      }
-    };
-    fetchVendorTypes()
-  })
+const VendorTypeImages = ({ vendorTypeData }: VendorTypeProps) => {
   return (
-    <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {vendorTypeData.map(({ imageUrl, type }) => (
-          <div key={type} className="text-center">
-            <img
-              className="h-32 w-32 lg:h-40 lg:w-40 rounded-full object-cover mx-auto"
-              src={imageUrl}
-              alt={type}
-            />
-            <Typography
-              variant="h6"
-              color="black"
-              className="mt-2 text-center text-sm sm:text-base lg:text-lg"
-              placeholder={undefined}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              {type}
-            </Typography>
-          </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {vendorTypeData.map(({ imageUrl, type, id }) => (
+          <Link
+            to={`${USER.VENDORS}?category=${id}`} // Pass category ID for filtering
+            key={id}
+            className="group block relative rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+          >
+            {/* Image Container */}
+            <div className="aspect-square overflow-hidden">
+              <img
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                src={imageUrl}
+                alt={type}
+                loading="lazy" // Lazy load images for better performance
+              />
+            </div>
+
+            {/* Overlay with Category Name */}
+            <div className="absolute inset-0 flex items-end justify-center p-4 bg-gradient-to-t from-black/60 to-transparent">
+              <h3 className="text-white text-lg font-semibold text-center">
+                {type}
+              </h3>
+            </div>
+          </Link>
         ))}
       </div>
-      {vendorTypeData.length > 4 && (
-        <div className="flex justify-center items-center mt-10">
-          <Button
-            variant="outlined"
-            color="blue"
-            size="lg"
-            className="mr-3 mt-5 text-center"
-            placeholder={undefined}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            View More Images
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

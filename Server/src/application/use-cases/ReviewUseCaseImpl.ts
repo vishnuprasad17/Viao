@@ -43,6 +43,7 @@ export class ReviewUseCaseImpl implements ReviewUseCase {
                 content,
                 [],
                 new Date(),
+                new Date() 
               )
               await this.reviewRepository.create(review);
               //Update total rating

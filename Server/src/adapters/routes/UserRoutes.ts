@@ -13,6 +13,7 @@ import { NotificationController } from '../../domain/interfaces/adapter interfac
 import { MessageController } from '../../domain/interfaces/adapter interfaces/MessageController';
 import { PaymentController } from '../../domain/interfaces/adapter interfaces/PaymentController';
 import { ReviewController } from '../../domain/interfaces/adapter interfaces/ReviewController';
+import { ServiceController } from '../../domain/interfaces/adapter interfaces/ServiceController';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -25,6 +26,7 @@ export const userRoutes = (
     vendorController: VendorController,
     vendorTypeController: VendorTypeController,
     postController: PostController,
+    serviceController: ServiceController,
     bookingController: BookingController,
     notificationController: NotificationController,
     messageController: MessageController,
@@ -51,10 +53,12 @@ export const userRoutes = (
     router.post("/send-message",userController.contactMessage)
     //Home
     router.get("/getvendors", vendorController.getAllVendors);
+    router.get("/suggestions", vendorController.getSearchSuggestions);
     router.get("/vendor-types", vendorTypeController.getVendorTypes);
     router.get("/get-locations",vendorController.getLocations);
     router.get("/posts", postController.getPosts);
     router.get("/getvendor", vendorController.getVendor);
+    router.get("/getservices", serviceController.getAllServices);
     router.post("/add-favorite-vendor", authenticate(["user"]), userController.addFavVendor);
     //Profile
     router.put("/update-profile", upload.single("image"), userController.updateProfile)
@@ -71,7 +75,7 @@ export const userRoutes = (
     router.get("/single-booking", bookingController.getBookingsById);
     router.get("/get-bookings", bookingController.getBookingsByUser);
     router.put("/cancel-booking", bookingController.cancelBookingByUser);
-    router.get("/all-transaction-details", bookingController.getRefundDetails);
+    router.get("/all-transaction-details", bookingController.getWalletDetails);
     //Chat
     router.patch("/delete-for-everyone", messageController.deleteMessage);
     router.patch("/delete-for-me", messageController.changeViewMessage);
@@ -82,9 +86,11 @@ export const userRoutes = (
     router.get("/checkReviews", reviewController.checkIfUserReviewed);
     router.patch("/update-review",reviewController.updateReview);
     router.delete("/delete-review",reviewController.deleteReview);
+    //Wallet
+    router.get("/load-wallet", userController.getWallet);
     //Payment
     router.post("/create-checkout-session", paymentController.makePayment);
-    router.post("/add-payment", paymentController.addPayment);
+    router.get("/add-payment", paymentController.addPayment);
 
     return router;
 };

@@ -356,7 +356,7 @@ export class AuthUseCaseImpl implements AuthUseCase  {
       }
     }
 
-    async gRegister(token: string): Promise<{user: UserDTO}> {
+    async gRegister(token: string): Promise<{user: UserDTO, accessToken: string, refreshToken: string}> {
       console.log("Received token:", token);
       
       // Decode the JWT token
@@ -383,8 +383,13 @@ export class AuthUseCaseImpl implements AuthUseCase  {
       )
       const newUser = await this.userRepository.create(user, jti);
       const userDtos = UserDTO.fromDomain(newUser);
+      const role = "user";
+      //Generate tokens
+      const { accessToken, refreshToken, sessionId } = await this.tokenService.generateToken(role, userDtos.id);
+      //Store refresh token in Redis with role prefix
+      await this.redisRepository.set(role, sessionId, refreshToken);
       
-      return { user: userDtos };
+      return { user: userDtos, accessToken: accessToken, refreshToken: refreshToken };
     }
 
     async gLogin(token: string): Promise<LoginResponse> {

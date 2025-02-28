@@ -1,3 +1,6 @@
+import { User } from "./User";
+import { Vendor } from "./Vendor";
+
 export class Booking {
     constructor(
         public readonly id: string,
@@ -7,13 +10,13 @@ export class Booking {
         public city: string,
         public pin:number,
         public mobile:number,
-        public vendorId: string,
-        public userId: string,
+        public vendorId: string | Vendor,
+        public userId: string | User,
         public status:string,
         public payment_status:string,
         public amount:number,
         public refundAmount:number,
-        public createdAt: Date,
-        public vendorName?:string
+        public deductedFromWallet: number,
+        public createdAt: Date
     ) {}
 }

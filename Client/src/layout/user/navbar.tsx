@@ -134,7 +134,7 @@ const NavbarComponent = () => {
       path.pathname.includes('/live') ||
       path.pathname.includes('/room/') ||
       path.pathname.includes('/book-event') ||
-      path.pathname.includes('/payment-success') || isScrolled? 'bg-black ' : 'bg-transparent shadow-none'
+      path.pathname.includes('/payment-success') || isScrolled? 'bg-custom-blue ' : 'bg-transparent shadow-none'
     } max-w-screen w-full z-0 px-4 py-3 lg:px-8 lg:py-3 rounded-none border-none shadow-none h-18`}
       placeholder={undefined}
       onPointerEnterCapture={undefined}

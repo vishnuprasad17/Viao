@@ -13,9 +13,9 @@ export class PostControllerImpl implements PostController  {
         const vendor_id:string=req.query.vendorid as string;
         const page: number = parseInt(req.query.page as string) || 1;
         const pageSize: number = parseInt(req.query.pageSize as string) || 8;
-        const result =await this.postUseCase.getAllPostsByVendor(vendor_id,page,pageSize);
+        const { posts, totalPages } =await this.postUseCase.getAllPostsByVendor(vendor_id,page,pageSize);
 
-        res.status(201).json(result);
+        res.status(201).json({posts, totalPages});
     })
   
     addNewPost = asyncHandler("AddPost")(async (req: Request, res: Response): Promise<void> => {

@@ -153,4 +153,13 @@ export class UserUseCaseImpl implements UserUseCase {
 
       return userDto;
   }
+
+  async getBalance(userId: string): Promise<number> {
+    const user = await this.userRepository.getById(userId);
+    if (!user) {
+      throw new BaseError("User not found.", 404);
+    }
+
+    return user.wallet;
+  }
 }

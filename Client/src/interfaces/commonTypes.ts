@@ -3,11 +3,13 @@ import { VendorData } from "./vendorTypes";
 
 export interface Review {
   id: string;
+  vendorId: VendorData
   userId: UserData;
   rating: number;
   content: string;
   reply: Array<string>;
   createdAt: Date;
+  replyAt: Date;
 }
 
 export interface Notification {
@@ -16,6 +18,13 @@ export interface Notification {
   read: boolean;
   type: string;
   createdAt: string;
+}
+
+export interface Service {
+  id: string;
+  vendorId: string;
+  name: string;
+  price: string;
 }
 
 export interface Booking {
@@ -32,6 +41,7 @@ export interface Booking {
   payment_status: string;
   amount: number;
   refundAmount:number;
+  deductedFromWallet:number;
   createdAt: Date;
 }
 
@@ -41,6 +51,8 @@ export interface Payment {
   vendorId: VendorData;
   userId: UserData;
   bookingId: Booking;
+  modeOfPayment: string;
+  transactionRef: string;
   createdAt: Date;
 }
 

@@ -9,4 +9,5 @@ export interface UserController {
     toggleBlock(req: Request, res: Response, next: NextFunction): Promise<void>;
     addFavVendor(req: Request, res: Response, next: NextFunction): Promise<void>;
     getUser(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getWallet(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

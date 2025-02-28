@@ -31,11 +31,11 @@ interface IVendor extends Document {
 // Define the User schema
 const VendorSchema: Schema = new Schema({
     email :{type:String , required:true, unique:true},
-    password:{type:String, required:true} , 
-    name :{type:String , required:true} ,
+    password:{type:String, required:true}, 
+    name :{type:String , required:true},
     phone :{type:Number , required:true , unique:true},
     city:{type:String , required:true},
-    about:{type:String},
+    about:{type:String, default:""},
     logo:{type:String,default:""},
     coverpic:{type:String,default:""},
     isVerified:{type:Boolean, default: false},

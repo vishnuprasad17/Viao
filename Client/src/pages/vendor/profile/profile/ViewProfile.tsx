@@ -1,15 +1,15 @@
 import { useSelector } from 'react-redux';
-import Breadcrumb from '../../../components/vendor/Breadcrumbs/Breadcrumb';
+import Breadcrumb from '../../../../components/vendor/Breadcrumbs/Breadcrumb';
 import { useLocation } from 'react-router-dom';
-import VendorRootState from '../../../redux/rootstate/VendorState';
+import VendorRootState from '../../../../redux/rootstate/VendorState';
 import { useEffect, useRef, useState } from 'react';
-import { getVendor, verifyRequest } from '../../../config/services/venderApi';
+import { getVendor, verifyRequest } from '../../../../config/services/venderApi';
 import { io, Socket } from 'socket.io-client';
 import { Button } from '@material-tailwind/react';
 import { toast } from 'react-toastify';
-import { VendorData } from '../../../interfaces/vendorTypes';
-import Layout from '../../../layout/vendor/Layout';
-import config from '../../../config/envConfig';
+import { VendorData } from '../../../../interfaces/vendorTypes';
+import Layout from '../../../../layout/vendor/Layout';
+import config from '../../../../config/envConfig';
 
 
 const ViewProfile = () => {

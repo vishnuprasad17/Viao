@@ -7,6 +7,7 @@ export interface ReviewRepository {
     getById(id: string): Promise<Review | null>;
     findOne(condition: Record<string, unknown>): Promise<Review | null>;
     delete(id:string):Promise<Review |null>;
+    countDocuments(condition?:Record<string,unknown>): Promise<number>;
 
     addReply(content: string, id: string): Promise<Review | null>;
     getReviewsByVendorId(vendorId: string, page: number, pageSize: number): Promise<{ reviews: Review[], count: number }>;

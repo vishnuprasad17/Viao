@@ -14,6 +14,7 @@ interface IBooking extends Document {
   payment_status:string;
   amount:number;
   refundAmount:number;
+  deductedFromWallet:number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +68,10 @@ const BookingSchema: Schema = new Schema(
         default:0
     },
     refundAmount:{
+        type:Number,
+        default:0
+    },
+    deductedFromWallet:{
         type:Number,
         default:0
     }

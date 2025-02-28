@@ -15,4 +15,5 @@ export interface UserRepository {
   findAllUsers(page: number, limit: number, search: string): Promise<User[]>;
   addFavVendor(userId: string, vendorId: string): Promise<User | null>;
   refundToWallet(id: string, amount: number): Promise<boolean>;
+  deductFromWallet(id: string, amount: number): Promise<boolean>;
 }

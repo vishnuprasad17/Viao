@@ -102,4 +102,12 @@ export class UserControllerImpl implements UserController{
           const data = await this.userUseCase.findUser(userId);
           res.status(200).json(data);
       })
+
+    getWallet = asyncHandler("GetWallet")(async (req: Request, res: Response): Promise<void> => {
+            
+      const userId:string = req.query.userId as string;
+      const data = await this.userUseCase.getBalance(userId);
+      
+      res.status(200).json({ walletBalance: data});
+  })
 }

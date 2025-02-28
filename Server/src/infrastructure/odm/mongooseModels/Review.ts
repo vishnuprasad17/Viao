@@ -8,6 +8,7 @@ interface IReview extends Document {
   content: string;
   reply: Array<string>;
   createdAt: Date;
+  replyAt: Date;
   updatedAt: Date;
 }
 
@@ -17,7 +18,8 @@ const ReviewSchema: Schema = new Schema(
     vendorId: { type: Schema.Types.ObjectId, ref: 'Vendor', required: true },
     rating: { type: Number, required: true },
     content: { type: String, required: true },
-    reply: [{ type: String }]
+    reply: [{ type: String }],
+    replyAt: { type: Date }
   },
   { timestamps: true }
 );

@@ -178,7 +178,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <header className="fixed w-full bg-black h-16 text-white p-4 flex justify-between items-center z-10">
+        <header className="fixed w-full bg-custom-blue h-16 text-white p-4 flex justify-between items-center z-10">
           {/* Left-aligned logo/text */}
 
           <Typography

@@ -317,6 +317,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </List>
               </AccordionBody>
             </Accordion>
+            <NavLink
+              to={VENDOR.SERVICES}
+              className={
+                pathname.includes("services")
+                  ? "bg-gray-300 border-1 rounded-lg"
+                  : ""
+              }
+            >
+              <ListItem
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                <ListItemPrefix
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  <i className="fa-solid fa-list-alt"></i>
+                </ListItemPrefix>
+                Services
+              </ListItem>
+            </NavLink>
             <Accordion
               open={open === 3}
               icon={
@@ -538,7 +561,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <header className="fixed w-full bg-black h-16 text-white p-4 flex justify-between items-center z-10">
+        <header className="fixed w-full bg-custom-blue h-16 text-white p-4 flex justify-between items-center z-10">
           {/* Left-aligned logo/text */}
 
           <Typography

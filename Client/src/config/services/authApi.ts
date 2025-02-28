@@ -21,6 +21,7 @@ export const gLogin = async (purpose: string, response: object) => {
     const authApi = createAxiosInstance("user");
     try {
         const res = await authApi.post(endpoint, response);
+        setTokens("user", res.data.accessToken, res.data.refreshToken);
         return res.data;
     } catch (error) {
         throw error;

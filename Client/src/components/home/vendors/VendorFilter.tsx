@@ -86,7 +86,7 @@ const VendorFilters:React.FC<VendorFiltersProps>=({
         placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
-        className="w-45"
+        className="w-60"
       >
         <AccordionHeader
           onClick={() => handleOpen(1)}
@@ -117,7 +117,7 @@ const VendorFilters:React.FC<VendorFiltersProps>=({
         placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
-        className="w-45"
+        className="w-60"
       >
         <AccordionHeader
           onClick={() => handleOpen(2)}

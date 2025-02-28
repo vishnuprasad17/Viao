@@ -20,6 +20,10 @@ const TYPES = {
     TypeRepository: Symbol.for("TypeRepository"),
     TypeUseCase: Symbol.for("TypeUseCase"),
     TypeController: Symbol.for("TypeController"),
+    //VendorService Type
+    ServiceRepository: Symbol.for("ServiceRepository"),
+    ServiceUseCase: Symbol.for("ServiceUseCase"),
+    ServiceController: Symbol.for("ServiceController"),
     //Notifications
     NotificationRepository: Symbol.for("NotificationRepository"),
     NotificationUseCase: Symbol.for("NotificationUseCase"),

@@ -1,26 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
-import EditProfile from './profile/EditProfile';
+import EditProfile from './profile/profile/EditProfile';
 import Posts from './profile/posts/Posts';
 import CreatePost from './profile/posts/CreatePost';
 import { Toaster } from 'react-hot-toast';
-import ChangePassword from './profile/ChangePassword';
-import Reviews from './Reviews';
+import ChangePassword from './profile/profile/ChangePassword';
+import Reviews from './profile/Reviews';
 import BookingHistory from './profile/booking/BookingHistory';
-import Notifications from './Notifications';
+import Notifications from './profile/Notifications';
 import VendorSignupForm from './auth/Signup';
 import VendorLoginForm from './auth/Login';
 import VendorPrivateRoute from './VendorPrivateRoute';
-import Dashboard from './Dashboard';
+import Dashboard from './profile/Dashboard';
 import CustomDatePicker from './profile/booking/Dates';
 import VerifyEmail from '../common/VerifyEmail';
 import ViewBooking from './profile/booking/ViewBooking';
 import ResetPassword from '../common/ResetPassword';
 import ForgotPassword from '../common/ForgotPassword';
-import Profile from './profile/ViewProfile';
+import Profile from './profile/profile/ViewProfile';
 import { ToastContainer } from 'react-toastify';
-import Chat from './Chat';
+import Chat from './profile/Chat';
+import Services from './profile/Services';
 
 
 
@@ -166,6 +167,16 @@ function VendorApp() {
             <>
               
               <CreatePost />
+            </>
+          }
+        />
+        <Route
+          index
+          path="/services"
+          element={
+            <>
+              
+              <Services />
             </>
           }
         />

@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import { FaEdit, FaCheck, FaTimes, FaAngleDown, FaTrash } from "react-icons/fa";
 import { UserData } from "../../../interfaces/userTypes";
+import { VendorData } from "../../../interfaces/vendorTypes";
 import UserRootState from "../../../redux/rootstate/UserState";
 import { useSelector } from "react-redux";
 import { updateReview, deleteReview } from "../../../config/services/userApi";
@@ -26,20 +27,24 @@ import { formatDistanceToNow } from "date-fns";
 interface ReviewCardProps {
   id: string;
   userId: UserData;
+  vendorId: VendorData;
   rating: number;
   content: string;
   reply: Array<string>;
   createdAt: Date;
+  replyAt: Date;
   onUpdate: () => void;
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({
   id,
   userId,
+  vendorId,
   rating,
   content,
   reply,
   createdAt,
+  replyAt,
   onUpdate,
 }) => {
   const user = useSelector((state: UserRootState) => state.user.userdata);
@@ -283,11 +288,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
                   <div key={index} className="py-2">
                     <div className="flex items-center gap-2 text-sm">
                       <span className="font-semibold text-gray-700">
-                        Seller
+                        {vendorId.name}
                       </span>
                       <span className="text-gray-400">•</span>
                       <span className="text-gray-500">
-                        {formatDistanceToNow(new Date(createdAt), {
+                        {formatDistanceToNow(new Date(replyAt), {
                           addSuffix: true,
                         })}
                       </span>

@@ -1,18 +1,19 @@
-import {
-  Avatar,
-  Typography,
-  Button,
-} from "@material-tailwind/react";
+import { Avatar, Typography, Button } from "@material-tailwind/react";
 import Footer from "../../layout/user/footer";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getVendor, checkIfUserReviewed } from "../../config/services/userApi";
+import {
+  getVendor,
+  getVendorServices,
+  checkIfUserReviewed,
+} from "../../config/services/userApi";
 import VendorTabs from "../../components/home/VendorProfile/VendorTabs";
 import UserRootState from "../../redux/rootstate/UserState";
 import { useSelector } from "react-redux";
 import ProfileButtons from "../../components/home/VendorProfile/ProfileButtons";
 import AddReview from "../../components/home/VendorProfile/AddReview";
 import { VendorData } from "../../interfaces/vendorTypes";
+import { Service } from "../../interfaces/commonTypes";
 
 export function VendorProfile() {
   const user = useSelector((state: UserRootState) => state.user.userdata);
@@ -20,6 +21,7 @@ export function VendorProfile() {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id") || "";
   const [vendor, setVendor] = useState<VendorData>();
+  const [services, setServices] = useState<Service[]>([]);
   const [favourite, setFavourite] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -27,10 +29,11 @@ export function VendorProfile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getVendor(id, {
-          withCredentials: true,
-        });
+        const response = await getVendor(id);
         setVendor(response.data.data);
+
+        const res = await getVendorServices(id);
+        setServices(res.data.services);
 
         // Check if user has already reviewed this vendor
         if (user?.id && id) {
@@ -63,7 +66,7 @@ export function VendorProfile() {
         <div
           className="absolute top-0 left-0 w-full h-full scale-105"
           style={{
-            backgroundImage: `url(${vendor?.coverpicUrl || "/imgs/vendor/default-cover.jpg.jpg"})`,
+            backgroundImage: `url(${vendor?.coverpicUrl || "/imgs/vendor/default-cover.jpg"})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -152,12 +155,56 @@ export function VendorProfile() {
                 <ProfileButtons
                   vendorId={vendor?.id}
                   userId={user?.id}
+                  isNotVerified={vendor && !vendor?.isVerified}
                   isFavourite={favourite}
                   onFavouriteToggle={handleFavouriteToggle}
                 />
               </div>
             </div>
             <div className="-mt-4 lg:pl-20 container space-y-2">
+              {vendor && !vendor.isVerified && (
+                <div className="mx-5 my-4 mb-6 p-4 rounded-lg bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <svg
+                        className="h-6 w-6 text-red-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <Typography
+                        variant="h6"
+                        className="text-red-700 font-semibold mb-1"
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        Verification Required
+                      </Typography>
+                      <Typography
+                        variant="small"
+                        className="text-red-600/90 leading-relaxed"
+                        placeholder={undefined}
+                        onPointerEnterCapture={undefined}
+                        onPointerLeaveCapture={undefined}
+                      >
+                        This vendor is not yet verified. Bookings cannot be made
+                        at this time. Please check back later or contact support
+                        for assistance.
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-2 mx-5">
                 <i className="fa-solid fa-map-location text-red-500" />
                 <Typography
@@ -170,7 +217,7 @@ export function VendorProfile() {
                 </Typography>
               </div>
             </div>
-            <div className="mb-10 py-6 lg:pl-20 mx-5">
+            <div className="mb-2 py-6 lg:pl-20 mx-5">
               <div className="flex w-full flex-col items-start lg:w-1/2">
                 <Typography
                   className="mb-6 font-normal text-blue-gray-500"
@@ -182,21 +229,80 @@ export function VendorProfile() {
                 </Typography>
               </div>
             </div>
+            <div className="mx-5 sm:mx-10 md:mx-10 lg:mx-24 mb-15">
+              <Typography
+                variant="h5"
+                color="blue-gray"
+                className="mb-4"
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                Offered Services
+              </Typography>
+              {services.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
+                  {services.map((service) => (
+                    <div
+                      key={service.id}
+                      className="px-2 py-1 bg-gray-50 rounded-full hover:bg-purple-50 transition-colors duration-200 border border-gray-200 hover:border-purple-200"
+                    >
+                      <div className="flex items-center justify-between gap-1 truncate">
+                        <Typography
+                          variant="small"
+                          color="gray"
+                          className="font-medium truncate text-sm"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          {service.name}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="deep-purple"
+                          className="font-semibold shrink-0 text-sm"
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          ₹{service.price}
+                        </Typography>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Typography
+                  variant="small"
+                  color="gray"
+                  className="font-normal"
+                  placeholder={undefined}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  No services currently available
+                </Typography>
+              )}
+            </div>
           </div>
         </div>
       </section>
       <section>
-        <VendorTabs refreshKey={refreshKey} onRefresh={() => setRefreshKey(prev => prev + 1)} />
+        <VendorTabs
+          refreshKey={refreshKey}
+          onRefresh={() => setRefreshKey((prev) => prev + 1)}
+        />
       </section>
       {/* Conditionally render AddReview */}
-      {!hasReviewed && (
+      {vendor && vendor.isVerified && !hasReviewed && (
         <section className="mb-20">
-          <AddReview 
-            id={vendor?.id} 
+          <AddReview
+            id={vendor?.id}
             hasReviewed={hasReviewed}
             onSuccess={() => {
               setHasReviewed(true);
-              setRefreshKey(prev => prev + 1);
+              setRefreshKey((prev) => prev + 1);
             }}
           />
         </section>

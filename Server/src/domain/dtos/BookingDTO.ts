@@ -1,4 +1,6 @@
 import { Booking } from "../entities/Booking";
+import { UserDTO } from "./UserDTO";
+import { VendorDTO } from "./VendorDTO";
 
 export class BookingDTO {
     id: string;
@@ -8,13 +10,13 @@ export class BookingDTO {
     city: string;
     pin: number;
     mobile: number;
-    vendorId: string;
-    vendorName?: string;
-    userId: string;
+    vendorId: string | VendorDTO;
+    userId: string | UserDTO;
     status: string;
     payment_status: string;
     amount: number;
     refundAmount:number;
+    deductedFromWallet: number;
     createdAt: Date;
   
     constructor(booking: Booking) {
@@ -25,16 +27,22 @@ export class BookingDTO {
       this.city = booking.city;
       this.pin = booking.pin;
       this.mobile = booking.mobile;
-      this.vendorId = booking.vendorId;
-      this.userId = booking.userId;
+      if (typeof booking.vendorId === "string") {
+        this.vendorId = booking.vendorId;
+      } else {
+        this.vendorId = VendorDTO.fromDomain(booking.vendorId);
+      }
+      if (typeof booking.userId === "string") {
+        this.userId = booking.userId;
+      } else {
+        this.userId = UserDTO.fromDomain(booking.userId);
+      }
       this.status = booking.status;
       this.payment_status = booking.payment_status;
       this.amount = booking.amount;
       this.refundAmount = booking.refundAmount;
+      this.deductedFromWallet = booking.deductedFromWallet;
       this.createdAt = booking.createdAt;
-      if (booking.vendorName) {
-        this.vendorName = booking.vendorName;
-      }
     }
   
     static fromDomain(booking: Booking): BookingDTO {

@@ -1,22 +1,21 @@
 import { Types } from "mongoose";
 import { Review } from "../../../domain/entities/Review";
 import { IReview } from "../mongooseModels/Review";
-import { User } from "../../../domain/entities/User";
 import { mapToDomain as mapToUserDomain } from "./userMapper";
 import { mapToDomain as mapToVendorDomain } from "./vendorMapper";
 import { IUser } from "../mongooseModels/User";
-import { Vendor } from "../../../domain/entities/Vendor";
 import { IVendor } from "../mongooseModels/Vendor";
 
 interface IReviewDocument {
   _id: Types.ObjectId;
   userId: Types.ObjectId | IUser;
-  vendorId: Types.ObjectId | IUser;
+  vendorId: Types.ObjectId | IVendor;
   rating: number;
   content: string;
   reply: Array<string>;
   createdAt: Date;
   updatedAt: Date;
+  replyAt: Date;
 }
 // Mapping from database model (MongoDB) to domain model
   export const mapToDomain = (document: IReview): Review => {
@@ -27,7 +26,8 @@ interface IReviewDocument {
         document.rating,
         document.content,
         document.reply,
-        document.createdAt
+        document.createdAt,
+        document.replyAt
     );
 }
 
@@ -44,7 +44,8 @@ export const mapToDomainPopulate = (document: IReviewDocument): Review => {
         document.rating,
         document.content,
         document.reply,
-        document.createdAt
+        document.createdAt,
+        document.replyAt
     );
 }
 

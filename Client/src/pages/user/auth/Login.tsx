@@ -21,7 +21,7 @@ import { USER } from "../../../config/routes/user.routes";
 import { VENDOR } from "../../../config/routes/vendor.routes";
 import config from "../../../config/envConfig";
 
-const clientid = config.CLIENTid;;
+const clientid = config.CLIENT_ID;;
 
 interface FormValues {
   email: string;

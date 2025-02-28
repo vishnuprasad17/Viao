@@ -12,7 +12,7 @@ interface AuthUseCase {
   verifyOtp(receivedOtp: string, session: Session & Partial<SessionData>): Promise<{message: string}>;
   reset(role: string, password: string, confirmPassword: string, session: Session & Partial<SessionData>): Promise<boolean>;
   resend(sessionData: UserSession | VendorSession | OTP, otp: string): Promise<boolean>;
-  gRegister(token: string): Promise<{user: UserDTO}>;
+  gRegister(token: string): Promise<{user: UserDTO, accessToken: string, refreshToken: string}>;
   gLogin(token: string): Promise<LoginResponse>;
   createToken(role: string, refreshToken: string): Promise<{ accessToken: string, refreshToken: string }>;
   delete(role: string, refreshToken: string): Promise<number>

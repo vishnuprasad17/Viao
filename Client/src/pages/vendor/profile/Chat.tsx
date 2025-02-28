@@ -1,5 +1,5 @@
-import Conversation from "../../components/chat/vendor/sidebar/Conversation";
-import VendorRootState from "../../redux/rootstate/VendorState";
+import Conversation from "../../../components/chat/vendor/sidebar/Conversation";
+import VendorRootState from "../../../redux/rootstate/VendorState";
 import { useSelector } from "react-redux";
 import {
   MouseEvent,
@@ -12,14 +12,14 @@ import {
 import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 
-import { getUserForChat } from "../../config/services/userApi";
+import { getUserForChat } from "../../../config/services/userApi";
 import {
   changeReadStatus,
   getChat,
   getMessages,
   sendMessage,
-} from "../../config/services/chatApi";
-import Message from "../../components/chat/vendor/messages/Message";
+} from "../../../config/services/chatApi";
+import Message from "../../../components/chat/vendor/messages/Message";
 import { Button, IconButton } from "@material-tailwind/react";
 import {
   S3Client,
@@ -27,10 +27,10 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Chats, Messages } from "../../interfaces/commonTypes";
-import { UserData } from "../../interfaces/userTypes";
-import MessageSkeleton from "../../components/chat/skeletons/MessageSkeleton";
-import config from "../../config/envConfig";
+import { Chats, Messages } from "../../../interfaces/commonTypes";
+import { UserData } from "../../../interfaces/userTypes";
+import MessageSkeleton from "../../../components/chat/skeletons/MessageSkeleton";
+import config from "../../../config/envConfig";
 import { IoSendSharp } from "react-icons/io5";
 import { BsEmojiSmile } from "react-icons/bs";
 import EmojiPicker, { Theme } from "emoji-picker-react";
@@ -40,7 +40,7 @@ import { AiOutlineFileImage } from "react-icons/ai";
 import { CiHome } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
-import { VENDOR } from "../../config/routes/vendor.routes";
+import { VENDOR } from "../../../config/routes/vendor.routes";
 import { useMediaQuery } from "react-responsive";
 import { debounce } from "lodash";
 import { toast } from "react-toastify";

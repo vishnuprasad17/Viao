@@ -94,4 +94,13 @@ export class UserRepositoryImpl extends BaseRepository<IUser, User> implements U
       
       return UserData ? true : false;
     }
+
+    async deductFromWallet(id: string, amount: number): Promise<boolean> {
+      let UserData=await UserModel.findById(id);
+      if (UserData) {
+        UserData.wallet -= amount;
+        await UserData.save();
+      }
+      return UserData? true : false;
+    }
 }

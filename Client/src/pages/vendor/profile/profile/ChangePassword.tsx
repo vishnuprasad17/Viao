@@ -9,12 +9,12 @@ import {
   import { useNavigate } from "react-router-dom";
   import { useSelector } from "react-redux";
   import { useState } from "react";
-import VendorRootState from "../../../redux/rootstate/VendorState";
-import { validate } from "../../../validations/common/changePwdValidation";
-import { updatePassword } from "../../../config/services/venderApi";
-import Breadcrumb from "../../../components/vendor/Breadcrumbs/Breadcrumb";
-import { VENDOR } from "../../../config/routes/vendor.routes";
-import Layout from "../../../layout/vendor/Layout";
+import VendorRootState from "../../../../redux/rootstate/VendorState";
+import { validate } from "../../../../validations/common/changePwdValidation";
+import { updatePassword } from "../../../../config/services/venderApi";
+import Breadcrumb from "../../../../components/vendor/Breadcrumbs/Breadcrumb";
+import { VENDOR } from "../../../../config/routes/vendor.routes";
+import Layout from "../../../../layout/vendor/Layout";
 
   
   interface FormValues {

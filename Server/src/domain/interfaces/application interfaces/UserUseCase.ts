@@ -1,4 +1,4 @@
-import { UserDTO } from "../dtos/UserDTO";
+import { UserDTO } from "../../dtos/UserDTO";
 
 export interface UserUseCase {
     contact(data: {name: string, email: string, mobile: string, subject: string, message: string}): Promise<boolean>;
@@ -9,4 +9,5 @@ export interface UserUseCase {
     toggleUserBlock(userId: string): Promise<UserDTO>;
     favoriteVendor(vendorId: string, userId: string): Promise<{ status: boolean, data: UserDTO}>;
     findUser(userId: string): Promise<UserDTO>;
+    getBalance(userId: string): Promise<number>;
 }

@@ -7,5 +7,5 @@ export interface ReviewController {
   checkIfUserReviewed(req: Request, res: Response, next: NextFunction): Promise<void>;
   updateReview(req: Request, res: Response, next: NextFunction): Promise<void>;
   deleteReview(req: Request, res: Response, next: NextFunction): Promise<void>;
-  getReviewStatistics (req: Request, res: Response, next: NextFunction): Promise<void>;
+  getReviewStatistics(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

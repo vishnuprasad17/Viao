@@ -1,5 +1,5 @@
 interface ValidationErrors {
-    eventName: string;
+  serviceId: string;
   name:string;
   date:string;
   city:string;
@@ -9,7 +9,7 @@ interface ValidationErrors {
    }
    
    interface ValidationValues {
-    eventName: string;
+    serviceId: string;
     name:string;
     date:string;
     city:string;
@@ -20,26 +20,21 @@ interface ValidationErrors {
 
 export const validate =  (values: ValidationValues): ValidationErrors => {
    const errors: ValidationErrors = {
-    eventName: '',
-
+    serviceId: '',
     name:'',
     date:'',
     city:'',
     pin:'',
     mobile:''
-
    };
 
 
 
-   if (!values.eventName.trim()) {
-    errors.eventName = 'event-name is required';
-  } else if (!/^[A-Za-z\s]+$/i.test(values.eventName)) {
-    errors.eventName = 'Should not contain numbers!';
+  if (!values.serviceId) {
+    errors.serviceId = 'Please select a service';
   }
 
-
-   if (!values.name.trim()) {
+  if (!values.name.trim()) {
     errors.name = 'name is required';
   } else if (!/^[A-Za-z\s]+$/i.test(values.name)) {
     errors.name = 'Should not contain numbers!';
@@ -51,7 +46,7 @@ export const validate =  (values: ValidationValues): ValidationErrors => {
 
 
   if (!values.city.trim()) {
-    errors.city = 'City is required';
+    errors.city = 'Place is required';
   } else if (!/^[A-Za-z\s]+$/i.test(values.city)) {
     errors.city = 'Should not contain numbers!';
   }

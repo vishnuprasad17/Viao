@@ -11,6 +11,7 @@ import { setUserInfo } from '../../../redux/slices/UserSlice';
 interface ProfileButtonsProps {
   vendorId: string | undefined;
   userId: string | undefined;
+  isNotVerified: boolean | undefined;
   isFavourite: boolean;
   onFavouriteToggle: () => void;
 }
@@ -18,6 +19,7 @@ interface ProfileButtonsProps {
 const ProfileButtons: React.FC<ProfileButtonsProps> = ({
   vendorId,
   userId,
+  isNotVerified,
   isFavourite,
   onFavouriteToggle,
 }) => {
@@ -114,6 +116,7 @@ const ProfileButtons: React.FC<ProfileButtonsProps> = ({
             placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            disabled={isNotVerified}
           >
             Book Now
           </Button>

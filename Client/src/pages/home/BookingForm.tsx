@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Typography } from "@material-tailwind/react";
+import Select from "react-select";
 import Footer from "../../layout/user/footer";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -11,10 +12,11 @@ import { useNavigate } from "react-router-dom";
 import UserRootState from "../../redux/rootstate/UserState";
 import { useSelector } from "react-redux";
 import { USER } from "../../config/routes/user.routes";
-import { getDate } from "../../config/services/venderApi";
+import { getDate, getServicesForPage } from "../../config/services/venderApi";
+import { Service } from "../../interfaces/commonTypes";
 
 interface FormValues {
-  eventName: string;
+  serviceId: string;
   name: string;
   date: string;
   city: string;
@@ -23,13 +25,18 @@ interface FormValues {
 }
 
 const initialValues: FormValues = {
-  eventName: "",
+  serviceId: "",
   name: "",
   date: "",
   city: "",
   pin: "",
   mobile: "",
 };
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
 
 const BookingForm: React.FC = () => {
   const user = useSelector((state: UserRootState) => state.user.userdata);
@@ -46,6 +53,7 @@ const BookingForm: React.FC = () => {
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState<FormValues>(initialValues);
   const [bookedDates, setBookedDates] = useState<Date[]>([]);
+  const [events, setEvents] = useState<Service[]>([]);
 
   useEffect(() => {
     getDate(id as string, { withCredentials: true })
@@ -57,6 +65,13 @@ const BookingForm: React.FC = () => {
         setBookedDates(dates);
       })
       .catch(console.error);
+
+    getServicesForPage(id as string)
+      .then((response) => {
+        setEvents(response.data.services);
+        console.log(response);
+      })
+      .catch(console.error);
   }, [id]);
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
@@ -65,6 +80,21 @@ const BookingForm: React.FC = () => {
     const errors = validate({ ...formValues, [name]: value });
     setFormErrors((prevErrors) => ({ ...prevErrors, ...errors }));
   };
+
+  const handleServiceChange = (value: string | undefined) => {
+    const selectedValue = value || "";
+    setFormValues({ ...formValues, serviceId: selectedValue });
+    const errors = validate({ ...formValues, serviceId: selectedValue });
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      serviceId: errors.serviceId,
+    }));
+  };
+
+  const selectOptions: SelectOption[] = events.map((service) => ({
+    value: service.id.toString(), // Ensure value is a string
+    label: `${service.name} - ₹${service.price.toLocaleString()}`, // Display name and price
+  }));
 
   const handleDateChange = (date: Date | null) => {
     if (!date) return;
@@ -165,20 +195,21 @@ const BookingForm: React.FC = () => {
 
                 {/* Other form fields */}
                 <div>
-                  <Input
-                    label="Event Name"
-                    name="eventName"
-                    value={formValues.eventName}
-                    onChange={handleChange}
-                    error={!!formErrors.eventName}
-                    crossOrigin={undefined}
-                    placeholder="Enter your event"
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
+                  <Select
+                    options={selectOptions}
+                    value={selectOptions.find(
+                      (option) => option.value === formValues.serviceId
+                    )}
+                    onChange={(selectedOption) => {
+                      handleServiceChange(selectedOption?.value || "");
+                    }}
+                    placeholder="Select a service"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
                   />
-                  {formErrors.eventName && (
+                  {formErrors.serviceId && (
                     <p className="mt-1 text-sm text-red-600">
-                      {formErrors.eventName}
+                      {formErrors.serviceId}
                     </p>
                   )}
                 </div>
@@ -202,13 +233,13 @@ const BookingForm: React.FC = () => {
                 </div>
                 <div>
                   <Input
-                    label="City"
+                    label="Place"
                     name="city"
                     value={formValues.city}
                     onChange={handleChange}
                     error={!!formErrors.city}
                     crossOrigin={undefined}
-                    placeholder="Enter city name"
+                    placeholder="Enter place name"
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                   />
