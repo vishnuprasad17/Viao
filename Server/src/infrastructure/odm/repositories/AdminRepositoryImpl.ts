@@ -1,4 +1,4 @@
-import { AdminRepository } from "../../../domain/interfaces/AdminRepository";
+import { AdminRepository } from "../../../domain/interfaces/infrastructure interfaces/AdminRepository";
 import { BaseRepository } from "./BaseRepository";
 import { AdminModel, IAdmin } from "../mongooseModels/Admin";
 import { mapToDomain, mapToDatabase } from "../mappers/adminMapper";
@@ -23,5 +23,26 @@ export class AdminRepositoryImpl extends BaseRepository<IAdmin, Admin> implement
   async getPwdById(id: string): Promise<string | null> {
       const admin = await AdminModel.findById(id);
       return admin ? admin.password : null;
+  }
+
+  async updateWallet(amount: number): Promise<boolean> {
+    let AdminData=await AdminModel.findOne({});
+    if (AdminData) {
+      AdminData.wallet += amount;
+      await AdminData.save();
+    }
+    return AdminData? true : false;
+  }
+
+  async refundFromWallet(amount: number): Promise<boolean> {
+    let AdminData=await AdminModel.findOne({});
+    if (AdminData && amount > 0 && AdminData.wallet >= amount) {
+      AdminData.wallet -= amount;
+      await AdminData.save();
+
+      return true;
+    }
+    
+    return false;
   }
 }

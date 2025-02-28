@@ -23,6 +23,7 @@ export interface VendorRepository {
     location: string,
     sortValue: number
   ): Promise<Vendor[]>;
+  getVendorSuggestions(term: string): Promise<{ id: string, name: string, city: string, logoUrl: string }[]>;
   findAllLocations(): Promise<string[]>;
   lockDate(id: string, date: string): Promise<boolean>;
   unlockDate(id: string, date: string): Promise<boolean>;
@@ -30,4 +31,11 @@ export interface VendorRepository {
   cancelDate(id: string, date: string): Promise<Vendor | null>;
   updateBookingCount(id: string): Promise<boolean>;
   updateRating(id: string, rating: number): Promise<boolean>;
+}
+
+export interface VendorQuery {
+  isActive: boolean;
+  name?: { $regex: RegExp };
+  vendor_type?: { $in: string[] };
+  city?: { $in: string[] };
 }

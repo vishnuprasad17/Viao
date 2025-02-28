@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getAnalytics } from "../../../config/services/adminApi";
-import AdminRootState from "../../../redux/rootstate/AdminState";
-import AnalyticsChart from "../../../components/admin/Charts/AnalyticsChart";
-import StatsCard from "../../../components/admin/StatsCard";
-import InsightItem from "../../../components/admin/Charts/InsightItem";
-import PrintLayout from "../../../components/admin/PrintLayout";
+import { getAnalytics } from "../../../config/services/venderApi";
+import VendorRootState from "../../../redux/rootstate/VendorState";
+import Layout from "../../../layout/vendor/Layout";
+import AnalyticsChart from "../../../components/vendor/Charts/AnalyticsChart";
+import StatsCard from "../../../components/vendor/StatsCard";
+import InsightItem from "../../../components/vendor/Charts/InsightItem";
+import PrintLayout from "../../../components/vendor/PrintLayout";
 import { Button, Select, Option } from "@material-tailwind/react";
 import { Download, Printer } from "react-feather";
 import { exportToCSV } from "../../../utils/exportUtils";
@@ -13,23 +14,23 @@ import ReactDOMServer from "react-dom/server";
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({
-    users: 0,
-    vendors: 0,
+    reviews: 0,
     bookings: 0,
+    rating: 0,
     revenueData: [] as number[],
   });
   const [period, setPeriod] = useState<"week" | "month" | "year">("month");
-  const admin = useSelector((state: AdminRootState) => state.admin.admindata);
+  const vendor = useSelector((state: VendorRootState) => state.vendor.vendordata);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await getAnalytics(period);
+        const response = await getAnalytics(vendor?.id, period);
 
         setStats({
-          users: response.data.analyticsData.totalUsers,
-          vendors: response.data.analyticsData.totalVendors,
+          reviews: response.data.analyticsData.totalReviews,
           bookings: response.data.analyticsData.totalBookings,
+          rating: response.data.analyticsData.totalRating,
           revenueData: response.data.analyticsData.revenueArray,
         });
       } catch (error) {
@@ -37,8 +38,8 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    if (admin?.id) loadData();
-  }, [admin, period]);
+    if (vendor?.id) loadData();
+  }, [vendor, period]);
 
   const handleExport = () => {
     const data = {
@@ -46,7 +47,7 @@ const Dashboard: React.FC = () => {
       stats,
       labels: getChartLabels(period),
     };
-    exportToCSV(data, `viao_revenue_${period}_report`);
+    exportToCSV(data, `${vendor?.name}_revenue_${period}_report`);
   };
 
   const getChartLabels = (periodType: string) => {
@@ -93,6 +94,7 @@ const Dashboard: React.FC = () => {
       // Render the PrintLayout component to HTML
       const printContent = ReactDOMServer.renderToString(
         <PrintLayout
+          vendor={vendor!}
           period={period}
           stats={stats}
           getChartLabels={getChartLabels}
@@ -103,7 +105,7 @@ const Dashboard: React.FC = () => {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Viao Revenue Report</title>
+            <title>${vendor?.name} Revenue Report</title>
             <style>
               /* Add any additional styles here */
             </style>
@@ -119,12 +121,13 @@ const Dashboard: React.FC = () => {
   };
 
   return (
+    <Layout>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Viao Admin Analytics Dashboard
+              {vendor?.name} Analytics Dashboard
             </h1>
             <p className="text-gray-600">Performance overview and key metrics</p>
           </div>
@@ -157,14 +160,14 @@ const Dashboard: React.FC = () => {
             icon="calendar"
           />
           <StatsCard
-            title="Total Users"
-            value={stats.users}
-            icon="users"
+            title="Average Rating"
+            value={stats.rating}
+            icon="star"
           />
           <StatsCard
-            title="Total Vendors"
-            value={stats.vendors}
-            icon="vendors"
+            title="Total Reviews"
+            value={stats.reviews}
+            icon="comment"
           />
           <StatsCard
             title="Total Revenue"
@@ -233,6 +236,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+    </Layout>
   );
 };
 

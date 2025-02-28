@@ -7,10 +7,25 @@ export interface VendorUseCase {
     updatePwd(currentPassword: string, newPassword: string, vendorId: string): Promise<boolean>;
     getBookedDates(vendorId: string): Promise<string[]>;
     addDateAvailability(vendorId: string, status: string, date: string): Promise<string[]>;
-    getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<VendorDTO[]>;
+    getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<{ vendorData: VendorDTO[], totalPages: number }>;
+    getSuggestions(term: string): Promise<Suggestion[]>;
     toggleVendorBlock(vendorId: string): Promise<VendorDTO | null>;
     changeVerifyStatus(vendorId: string, status: string, note?: string): Promise<VendorDTO>;
     getAllLocations(): Promise<string[]>;
     FavoriteVendors(userid: string, page: number, pageSize: number): Promise<{ favVendors: VendorDTO[], count: number }>;
-    revenue(vendorId: string, dateType: string): Promise<number[] | null>;
+    analytics(vendorId: string, dateType: string): Promise<AnalyticsResponse | null>;
+}
+
+export interface Suggestion {
+    id: string,
+    name: string,
+    city: string,
+    logoUrl: string
+}
+
+export interface AnalyticsResponse {
+    totalBookings: number,
+    totalRating: number,
+    totalReviews: number,
+    revenueArray: number[]
 }

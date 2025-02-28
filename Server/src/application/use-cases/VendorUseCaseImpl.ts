@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt';
 import { inject, injectable } from "inversify";
 import TYPES from "../../domain/constants/inversifyTypes";
 import { VendorRepository } from "../../domain/interfaces/infrastructure interfaces/VendorRepository";
-import { Vendor } from "../../domain/entities/Vendor";
 import { AdminRepository } from "../../domain/interfaces/infrastructure interfaces/AdminRepository";
 import { NotificationRepository } from "../../domain/interfaces/infrastructure interfaces/NotificationRepository";
 import { BaseError } from "../../domain/errors/BaseError";
@@ -11,37 +10,11 @@ import { UploadService } from "../../domain/interfaces/application interfaces/Up
 import { PasswordService } from '../../domain/interfaces/application interfaces/PasswordService';
 import { Types } from '../../domain/constants/notificationTypes';
 import { UserRepository } from '../../domain/interfaces/infrastructure interfaces/UserRepository';
-import moment from 'moment';
 import { PaymentRepository } from '../../domain/interfaces/infrastructure interfaces/PaymentRepository';
 import { VendorDTO } from '../../domain/dtos/VendorDTO';
-import { VendorUseCase } from '../../domain/interfaces/application interfaces/VendorUseCase';
-
-function toTitleCase(city: string): string {
-  return city.toLowerCase().split(' ').map(word => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  }).join(' ');
-}
-
-function getCurrentWeekRange () {
-  const startOfWeek = moment().startOf("isoWeek").toDate();
-  const endOfWeek = moment().endOf("isoWeek").toDate();
-  return { startOfWeek, endOfWeek };
-}
-
-// Function to get current year range
-function getCurrentYearRange() {
-  const startOfYear = new Date(new Date().getFullYear(), 0, 1);
-  const endOfYear = new Date(new Date().getFullYear() + 1, 0, 1);
-  return { startOfYear, endOfYear };
-}
-
-// Function to calculate the last five years' range
-function getLastFiveYearsRange() {
-  const currentYear = new Date().getFullYear();
-  const startOfFiveYearsAgo = new Date(currentYear - 5, 0, 1);
-  const endOfCurrentYear = new Date(currentYear + 1, 0, 1);
-  return { startOfFiveYearsAgo, endOfCurrentYear };
-}
+import { AnalyticsResponse, Suggestion, VendorUseCase } from '../../domain/interfaces/application interfaces/VendorUseCase';
+import { ReviewRepository } from '../../domain/interfaces/infrastructure interfaces/ReviewRepository';
+import { toTitleCase, getCurrentWeekRange, getCurrentYearRange, getLastFiveYearsRange } from '../../domain/helpers/helperFunctions';
 
 injectable()
 export class VendorUseCaseImpl implements VendorUseCase {
@@ -53,6 +26,7 @@ export class VendorUseCaseImpl implements VendorUseCase {
                 @inject(TYPES.PasswordService) private passwordService: PasswordService,
                 @inject(TYPES.NotificationRepository) private notificationRepository: NotificationRepository,
                 @inject(TYPES.NotificationService) private notificationService: NotificationService,
+                @inject(TYPES.ReviewRepository) private reviewRepository: ReviewRepository
                 ) {}
 
     async getSingleVendor(vendorId: string): Promise<VendorDTO | null> {
@@ -178,7 +152,7 @@ export class VendorUseCaseImpl implements VendorUseCase {
             return data;
         }
 
-    async getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<VendorDTO[]> {
+    async getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<{ vendorData: VendorDTO[], totalPages: number }> {
             const vendors = await this.vendorRepository.findAllVendors(
               page,
               limit,
@@ -187,8 +161,21 @@ export class VendorUseCaseImpl implements VendorUseCase {
               location,
               sortValue
             );
-            return VendorDTO.fromDomainList(vendors);
+            const vendorDtos = VendorDTO.fromDomainList(vendors);
+            const totalVendors = vendorDtos.length;
+            const totalPages = Math.floor(totalVendors / limit);
+
+            return { vendorData: vendorDtos, totalPages };
         }
+
+      async getSuggestions(term: string): Promise<Suggestion[]> {
+        const suggestions = await this.vendorRepository.getVendorSuggestions(term);
+        if (term) {
+          console.log(suggestions, "term: ", term);
+        }
+
+        return suggestions;
+      }
       
         async toggleVendorBlock(vendorId: string): Promise<VendorDTO | null> {
             const vendor = await this.vendorRepository.getById(vendorId);
@@ -242,7 +229,11 @@ export class VendorUseCaseImpl implements VendorUseCase {
             return { favVendors: vendorDtos, count };
         }
 
-        async revenue(vendorId: string, dateType: string): Promise<number[] | null> {
+        async analytics(vendorId: string, dateType: string): Promise<AnalyticsResponse | null> {
+          const vendor = await this.vendorRepository.getById(vendorId);
+          if (!vendor) {
+            throw new BaseError("Vendor not found", 404);
+          }
           let start,
             end,
             groupBy,
@@ -254,7 +245,7 @@ export class VendorUseCaseImpl implements VendorUseCase {
               const { startOfWeek, endOfWeek } = getCurrentWeekRange();
               start = startOfWeek;
               end = endOfWeek;
-              groupBy = { day: { $dayOfMonth: "$createdAt" } }; // Group by day
+              groupBy = { day: { $isoDayOfWeek: "$createdAt" } }; // Group by day
               sortField = "day"; // Sort by day
               arrayLength = 7;
               break;
@@ -297,7 +288,17 @@ export class VendorUseCaseImpl implements VendorUseCase {
             return item ? item.totalRevenue : 0; // Default to 0 if no data for the expected index
           });
 
-          return revenueArray;
+          //Get reviews count of vendor
+          const totalReviews = await this.reviewRepository.countDocuments({ vendorId: vendorId });
+
+          const response: AnalyticsResponse = {
+            totalBookings: vendor.totalBooking,
+            totalRating: vendor.totalRating,
+            totalReviews: totalReviews,
+            revenueArray: revenueArray
+          }
+
+          return response;
         }
     
 }

@@ -86,7 +86,7 @@ export class VendorControllerImpl implements VendorController {
         const pageNumber = parseInt(page as string, 10);
         const limitNumber = parseInt(limit as string, 10);
         const sortValue = parseInt(sort as string, 10);
-        const vendorData = await this.vendorUseCase.getVendors(
+        const { vendorData, totalPages } = await this.vendorUseCase.getVendors(
           pageNumber,
           limitNumber,
           search.toString(),
@@ -94,10 +94,15 @@ export class VendorControllerImpl implements VendorController {
           location.toString(),
           sortValue
         );
-        const totalVendors = vendorData.length;
-        const totalPages = Math.floor(totalVendors / limitNumber);
-        
+
         res.status(200).json({ vendorData, totalPages }); 
+      });
+
+    getSearchSuggestions = asyncHandler("GetSuggestions")(async (req: Request, res: Response): Promise<void> => {
+        const term = req.query.term as string;
+        const vendors = await this.vendorUseCase.getSuggestions(term);
+
+        res.status(200).json({suggestions: vendors});
       });
     
     toggleBlock = asyncHandler("BlockVendor")(async (req: Request, res: Response): Promise<void> => {
@@ -148,19 +153,19 @@ export class VendorControllerImpl implements VendorController {
         }
       });
 
-    getRevenue = asyncHandler("GetRevenue")(async(req: Request, res: Response): Promise<void> => {
+    getAnalytics = asyncHandler("GetRevenue")(async(req: Request, res: Response): Promise<void> => {
         const vendorId = req.query.vendorId as string;
         const dateType = req.query.date as string;
         if (!vendorId) {
           res.status(400).json({ message: "Invalid or missing vendorId" });
           return;
         }
-        const revenueArray = await this.vendorUseCase.revenue(vendorId, dateType);
+        const data = await this.vendorUseCase.analytics(vendorId, dateType);
         
-        if (revenueArray === null) {
+        if (data === null) {
           res.status(400).json({ message: "Invalid date parameter" });
           return;
         }
-        res.status(200).json({ revenue: revenueArray });
+        res.status(200).json({ analyticsData: data });
       });
 }

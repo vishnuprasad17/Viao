@@ -8,9 +8,10 @@ export interface VendorController {
     loadDates(req: Request, res: Response, next: NextFunction): Promise<void>;
     addDates(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAllVendors(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getSearchSuggestions(req: Request, res: Response, next: NextFunction): Promise<void>;
     toggleBlock(req: Request, res: Response, next: NextFunction): Promise<void>;
     updateVerifyStatus(req: Request, res: Response, next: NextFunction): Promise<void>;
     getLocations(req: Request, res: Response, next: NextFunction): Promise<void>;
     getFavoriteVendors(req: Request, res: Response, next: NextFunction): Promise<void>;
-    getRevenue(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getAnalytics(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

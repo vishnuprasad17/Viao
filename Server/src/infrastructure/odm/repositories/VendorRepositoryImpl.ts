@@ -1,9 +1,10 @@
-import { VendorRepository } from "../../../domain/interfaces/infrastructure interfaces/VendorRepository";
+import { VendorQuery, VendorRepository } from "../../../domain/interfaces/infrastructure interfaces/VendorRepository";
 import { BaseRepository } from "./BaseRepository";
 import { VendorModel, IVendor } from "../mongooseModels/Vendor";
 import { mapToDomain, mapToDatabase } from "../mappers/vendorMapper";
 import { Vendor } from "../../../domain/entities/Vendor";
 import { injectable } from "inversify";
+import { FilterQuery } from "mongoose";
 
 @injectable()
 export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implements VendorRepository {
@@ -100,9 +101,9 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
     category:string,
     location:string,
     sortValue:number
-  ){
-    try {
-      let query: any = {};
+  ): Promise<Vendor[]> {
+      
+      const query: FilterQuery<VendorQuery> = { isActive: true };
   
       if (search && search.trim()) {
         query.name = { $regex: new RegExp(search, 'i') };
@@ -125,15 +126,35 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
         .limit(limit);
       //console.log(vendors);
   
-      const v = vendors.map((vendor) => this.toDomain(vendor));
-      console.log(v);
-      return v;
-    } catch (error) {
-      throw error;
-    }
+      const result = vendors.map((vendor) => this.toDomain(vendor));
+      console.log(result);
+      return result;
   }
 
-  async findAllLocations(){
+  async getVendorSuggestions(term: string): Promise<{ id: string, name: string, city: string, logoUrl: string }[]> {
+    const vendors = await VendorModel.find(
+      { 
+        $or: [
+          { name: { $regex: term, $options: "i" } },
+          { city: { $regex: term, $options: "i" } }
+        ],
+        isActive: true
+      }
+    )
+    .limit(5)
+    .select('name city logoUrl');
+
+    const suggestions = vendors.map(vendor => ({
+        id: vendor._id.toString(),
+        name: vendor.name,
+        city: vendor.city,
+        logoUrl: vendor.logoUrl
+      }));
+
+    return suggestions;
+  }
+
+  async findAllLocations() {
     return await VendorModel.distinct('city');
   }
 
@@ -185,7 +206,7 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
   }
 
   async updateBookingCount(id: string): Promise<boolean> {
-    const document = VendorModel.findByIdAndUpdate(id, {$inc: { totalBooking: 1 }});
+    const document = await VendorModel.findByIdAndUpdate(id, {$inc: { totalBooking: 1 }}, { new: true });
 
     return true;
   }
