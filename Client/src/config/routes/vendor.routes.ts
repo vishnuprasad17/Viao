@@ -13,6 +13,7 @@ export const VENDOR = {
     CHANGE_PWD: "/vendor/change-password",
     VIEW_POSTS: "/vendor/view-posts",
     ADD_POSTS: "/vendor/add-post",
+    SERVICES: "/vendor/services",
     BOOKING_HISTORY: "/vendor/booking-history",
     ADD_DATE: "/vendor/add-date",
     REVIEWS: "/vendor/reviews",

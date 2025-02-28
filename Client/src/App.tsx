@@ -11,6 +11,7 @@ import UserPrivateRoute from "./pages/user/UserPrivateRoute";
 import VendorsList from "./pages/home/Vendors";
 import Profile from "./pages/user/profile/Profile";
 import BookingForm from "./pages/home/BookingForm";
+import PaymentSuccess from "./pages/home/PaymentSuccess";
 import VerifyEmail from "./pages/common/VerifyEmail";
 import ForgotPassword from "./pages/common/ForgotPassword";
 import ResetPassword from "./pages/common/ResetPassword";
@@ -67,6 +68,7 @@ const App: React.FC = () => {
             <Route path={USER.VIEW_VENDOR} element={<VendorProfile />} />
             <Route path={`${USER.PROFILE}/*`} element={<Profile />} />
             <Route path={USER.BOOK_EVENT} element={<BookingForm />} />
+            <Route path={USER.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
             <Route path={USER.CHAT} element={<Chat />} />
           </Route>
          

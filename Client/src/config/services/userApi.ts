@@ -4,9 +4,9 @@ import { createAxiosInstance } from "./axiosInstance";
 const userApi = createAxiosInstance("user");
 
 //Vendor Types
-  const getVendorTypes = async (config: object) => {
+  const getVendorTypes = async () => {
     try {
-      const response = await userApi.get('/vendor-types', config);
+      const response = await userApi.get('/vendor-types');
       return response;
     } catch (error) {
       throw error;
@@ -22,23 +22,41 @@ const userApi = createAxiosInstance("user");
     }
   };
 
-  const getVendorPosts = async (id: string | null, config: object) => {
+  const getSuggestions = async (value: string) => {
     try {
-      const response = await userApi.get(`/posts?vendorid=${id}`, config);
+      const response = await userApi.get(`/suggestions?term=${value}`);
       return response;
     } catch (error) {
       throw error;
     }
   };
 
-  const getVendor = async (id: string, config: object) => {
+  const getVendorPosts = async (id: string | null, page: number, pageSize: number) => {
     try {
-      const response = await userApi.get(`/getvendor?vendorid=${id}`, config);
+      const response = await userApi.get(`/posts?vendorid=${id}&page=${page}&pageSize=${pageSize}`);
       return response;
     } catch (error) {
       throw error;
     }
   };
+
+  const getVendor = async (id: string) => {
+    try {
+      const response = await userApi.get(`/getvendor?vendorid=${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getVendorServices = async (id: string) => {
+    try {
+      const response = await userApi.get(`/getservices?vendorId=${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   const addToFavourite = async (id: string, userId: string, config: object) => {
     try {
@@ -49,18 +67,18 @@ const userApi = createAxiosInstance("user");
     }
   };
 
-  const getLocations = async (config: object) => {
+  const getLocations = async () => {
     try {
-      const response = await userApi.get('/get-locations', config);
+      const response = await userApi.get('/get-locations');
       return response;
     } catch (error) {
       throw error;
     }
   };
 
-  const getAllVendors = async (search: string, page: number, category: string[], location: string[], sort: number | undefined, config: object) => {
+  const getAllVendors = async (search: string, page: number, category: string[], location: string[], sort: number | undefined) => {
     try {
-      const response = await userApi.get(`/getvendors?search=${search}&page=${page}&category=${category.join(",")}&location=${location.join(",")}&sort=${sort}`, config);
+      const response = await userApi.get(`/getvendors?search=${search}&page=${page}&category=${category.join(",")}&location=${location.join(",")}&sort=${sort}`);
       return response;
     } catch (error) {
       throw error;
@@ -140,6 +158,24 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
   const getBooking = async (userId: string | undefined, page: number, config: object) => {
     try {
       const response = await userApi.get(`/get-bookings?userId=${userId}&page=${page}`, config);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const getSingleBooking = async (bookingId: string | null) => {
+    try {
+      const response = await userApi.get(`/single-booking?bookingId=${bookingId}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const cancelBooking = async (bookingId: string | null) => {
+    try {
+      const response = await userApi.put(`/cancel-booking?bookingId=${bookingId}`);
       return response;
     } catch (error) {
       throw error;
@@ -233,13 +269,55 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
     }
   };
 
+  //Wallet
+
+  const loadWallet = async(userId: string | undefined) => {
+    try {
+      const response = await userApi.get(`/load-wallet?userId=${userId}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const getTransactionDetails = async(userId: string | undefined, page: number) => {
+    try {
+      const response = await userApi.get(`/all-transaction-details?userId=${userId}&page=${page}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //Payment
+
+  const makePayment = async (userId: string | undefined, vendorId: string, bookingId: string, name: string, logoUrl: string, useWallet: boolean) => {
+    try {
+      const response = await userApi.post(`/create-checkout-session`, { userId, vendorId, bookingId, name, logoUrl, useWallet});
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const addPayment = async (session_id: string) => {
+    try {
+      const response = await userApi.get(`/add-payment?sessionId=${session_id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
 
   export {
     getVendorTypes,
     getVendors,
+    getSuggestions,
     getVendorPosts,
     getVendor,
+    getVendorServices,
     addToFavourite,
     getLocations,
     getAllVendors,
@@ -251,6 +329,8 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
     notificationCount,
     bookEvent,
     getBooking,
+    getSingleBooking,
+    cancelBooking,
     getVendorForChat,
     getUserForChat,
     deleteForEveryone,
@@ -260,5 +340,8 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
     checkIfUserReviewed,
     updateReview,
     deleteReview,
+    loadWallet,
+    getTransactionDetails,
+    makePayment,
+    addPayment,
   }
-
