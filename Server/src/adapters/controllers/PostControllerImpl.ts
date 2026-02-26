@@ -28,7 +28,7 @@ export class PostControllerImpl implements PostController  {
     })
   
     deletePost = asyncHandler("DeletePost")(async (req: Request, res: Response): Promise<void> => {
-        const id=req.params.id;
+        const id=req.params.id as string;
         const result = await this.postUseCase.deletePost(id);
 
         res.status(200).json(result);

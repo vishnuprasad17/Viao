@@ -18,6 +18,8 @@ import { GoogleOAuthProvider , GoogleLogin } from "@react-oauth/google";
 import { USER } from "../../../config/routes/user.routes";
 import { VENDOR } from "../../../config/routes/vendor.routes";
 import config from "../../../config/envConfig";
+import { useDispatch } from "react-redux";
+import { setUserInfo } from "../../../redux/slices/UserSlice";
 
 const clientid = config.CLIENT_ID;
 
@@ -42,10 +44,12 @@ const UserSignup= () => {
   const user = useSelector((state: UserRootState) => state.user.userdata);
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState<UserFormValues>(initialValues);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const role = "user";
 
-  const navigate=useNavigate()
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (user) {
@@ -63,22 +67,28 @@ const UserSignup= () => {
   const submitHandler = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const errors = validate(formValues);
-    setFormErrors(errors)
-    console.log(Object.values(errors))
-    if (Object.values(errors).every((error) => error === "")) {
-      signup(role, formValues, { withCredentials: true })
-        .then((data) => {
-          console.log(data);
-          if (data.email) {
-            toast.success(data.message);
-            navigate(`${USER.VERIFY}`);
+    setFormErrors(errors);
+    if (!Object.values(errors).every((error) => error === "")) return;
+
+    setIsSubmitting(true);
+      try {
+        const data = await signup(role, formValues, { withCredentials: true });
+        if (data.email) {
+          if (data.otpExpiresAt) {
+            sessionStorage.setItem('otpExpiresAt', String(data.otpExpiresAt));
           }
-        })
-        .catch((error) => {
-          console.log("signup error", error.data.message);
-          toast.error(error.response.data.message)
-        });
-    }
+          toast.success(data.message);
+          navigate(USER.VERIFY);
+        }
+      } catch (error: any) {
+        const msg =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          "Signup failed. Please try again.";
+        toast.error(msg);
+      } finally {
+      setIsSubmitting(false);
+      }
   };
 
   return (
@@ -138,6 +148,7 @@ const UserSignup= () => {
           ) : null}
           <Input
               label="Phone"
+              type="number"
               onChange={handleChange}
               value={formValues.phone}
               name="phone"
@@ -195,8 +206,11 @@ const UserSignup= () => {
               fullWidth
               className="hover:shadow-lg transition-shadow duration-300"
               placeholder={undefined}
-              type="submit"  onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}          >
-            Sign Up
+              type="submit"
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+          >
+            {isSubmitting ? "Signing up..." : "Sign Up"}
           </Button>
         </CardBody>
       </form>
@@ -209,17 +223,18 @@ const UserSignup= () => {
               size="large"
               text="signup_with"
               onSuccess={response => {
-                gLogin("signup", response).then((data) => {
-                  console.log(data)
-                  if(data.message) {
-                    toast.success(data.message);
-                    navigate(`${USER.LOGIN}`);
-                  }
-                })
-                .catch((error) => {
-                  console.log("error", error)
-                  toast.error("User already exists. Please signin")
-                })
+                gLogin(response)
+                  .then((data) => {
+                    if(data) {
+                      dispatch(setUserInfo(data.userData));
+                      toast.success("Successfully signed up...!");
+                      navigate(`${USER.HOME}`);
+                    }
+                  })
+                  .catch((error) => {
+                    console.log("error", error)
+                    toast.error("User already exists. Please signin")
+                  })
               }}
               />
             </div>

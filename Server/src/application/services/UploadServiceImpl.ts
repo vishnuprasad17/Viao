@@ -3,20 +3,28 @@ import { UploadService } from "../../domain/interfaces/application interfaces/Up
 import crypto from "crypto";
 import sharp from "sharp";
 import { PutObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { BaseError } from "../../domain/errors/BaseError";
-
-const s3 = new S3Client({
-  credentials: {
-    accessKeyId: process.env.ACCESS_KEY!,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY!,
-  },
-  region: process.env.BUCKET_REGION!,
-});
 
 const randomImg = (bytes = 32) => crypto.randomBytes(bytes).toString("hex");
 
 @injectable()
 export class UploadServiceImpl implements UploadService {
+  private s3Client: S3Client;
+  private bucketName: string;
+
+  constructor() {
+    this.s3Client = new S3Client({
+      credentials: {
+        accessKeyId: process.env.ACCESS_KEY!,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+      },
+      region: process.env.BUCKET_REGION!,
+    });
+    
+    this.bucketName = process.env.BUCKET_NAME!;
+  }
+
   async upload(
     files:
       | { [fieldname: string]: Express.Multer.File[] }
@@ -47,14 +55,14 @@ export class UploadServiceImpl implements UploadService {
         ) {
           coverpicFile = files["coverpic"][0];
           const coverpicUploadParams = {
-            Bucket: process.env.BUCKET_NAME,
+            Bucket: this.bucketName,
             Key: coverpicFile?.originalname,
             Body: coverpicFile?.buffer,
             ContentType: coverpicFile?.mimetype,
           };
 
           const covercommand = new PutObjectCommand(coverpicUploadParams);
-          await s3.send(covercommand);
+          await this.s3Client.send(covercommand);
 
           coverpicUrl = `${process.env.IMAGE_URL}/${coverpicFile?.originalname}`;
         }
@@ -66,14 +74,14 @@ export class UploadServiceImpl implements UploadService {
         ) {
           logoFile = files["logo"][0];
           const logoUploadParams = {
-            Bucket: process.env.BUCKET_NAME,
+            Bucket: this.bucketName,
             Key: logoFile?.originalname,
             Body: logoFile?.buffer,
             ContentType: logoFile?.mimetype,
           };
 
           const logocommand = new PutObjectCommand(logoUploadParams);
-          await s3.send(logocommand);
+          await this.s3Client.send(logocommand);
 
           logoUrl = `${process.env.IMAGE_URL}/${logoFile?.originalname}`;
         }
@@ -98,14 +106,14 @@ export class UploadServiceImpl implements UploadService {
         const imgName = `${randomImg()}.jpg`;
 
         const params = {
-          Bucket: process.env.BUCKET_NAME!,
+          Bucket: this.bucketName,
           Key: imgName,
           Body: buffer,
           ContentType: file.mimetype,
         };
 
         const command = new PutObjectCommand(params);
-        await s3.send(command);
+        await this.s3Client.send(command);
 
         const imgUrl = `${process.env.IMAGE_URL}/${imgName}`;
         return imgUrl;
@@ -122,14 +130,14 @@ export class UploadServiceImpl implements UploadService {
     const image = randomImg();
         
     const params = {
-      Bucket: process.env.BUCKET_NAME!,
+      Bucket: this.bucketName,
       Key: image,
       Body: file.buffer,
       ContentType: file?.mimetype,
     };
         
     const command = new PutObjectCommand(params);
-    await s3.send(command);
+    await this.s3Client.send(command);
         
     const imageUrl=`${process.env.IMAGE_URL}/${image}`;
     
@@ -144,14 +152,14 @@ export class UploadServiceImpl implements UploadService {
     const image = randomImg();
   
     const params = {
-      Bucket: process.env.BUCKET_NAME!,
+      Bucket: this.bucketName,
       Key: image,
       Body: buffer,
       ContentType: file.mimetype,
     };
   
     const command = new PutObjectCommand(params);
-    await s3.send(command);
+    await this.s3Client.send(command);
   
     const imageUrl=`${process.env.IMAGE_URL}/${image}`;
 
@@ -160,13 +168,28 @@ export class UploadServiceImpl implements UploadService {
 
   async deletePost(imageName: string): Promise<boolean> {
     const params={
-      Bucket: process.env.BUCKET_NAME!,
+      Bucket: this.bucketName,
       Key: imageName,
     }
     
     const command=new DeleteObjectCommand(params);
-    await s3.send(command);
+    await this.s3Client.send(command);
     
     return true;
+  }
+
+  async getPresignedUploadUrl(fileName: string, fileType: string): Promise<{ uploadUrl: string, imageUrl: string, key: string}> {
+    const key = `chat-images/${crypto.randomUUID()}-${fileName}`;
+    
+    const command = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      ContentType: fileType,
+    });
+
+    const uploadUrl = await getSignedUrl(this.s3Client, command, { expiresIn: 300 }); // 5 min
+    const imageUrl = `${process.env.IMAGE_URL}/${key}`;
+
+    return { uploadUrl, imageUrl, key };
   }
 }

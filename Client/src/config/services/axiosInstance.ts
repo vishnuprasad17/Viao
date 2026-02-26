@@ -1,80 +1,130 @@
-import axios from 'axios';
-import { clearTokens, getRefreshToken, getToken, setTokens } from './authToken';
-import config from '../envConfig';
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import config from "../envConfig";
 
-type AuthRole = 'admin' | 'user' | 'vendor';
-type AppEndpoint = AuthRole | 'conversation' | 'message';
+type AuthRole = "admin" | "user" | "vendor";
 
-// Global flag to prevent multiple refresh attempts
-let isRefreshing = false;
+interface ErrorResponse {
+  error?: string;
+  message?: string;
+}
 
-export const createAxiosInstance = (endpoint: AppEndpoint, authRole?: AuthRole) => {
-  const baseUrl = `${config.BASE_URL}/${endpoint}`;
-  const instance = axios.create({ baseURL: baseUrl });
+// ✅ Accept explicit role instead of guessing from localStorage
+const detectActiveRole = (explicitRole?: AuthRole): AuthRole | null => {
+  if (explicitRole) return explicitRole;
+  // Fallback: check in priority order (vendor/admin before user to avoid misdetection)
+  const roles: AuthRole[] = ["vendor", "admin", "user"];
+  return roles.find((r) => localStorage.getItem(`persist:${r}`)) || null;
+};
 
-  // Request interceptor
-  instance.interceptors.request.use(config => {
-    const role = authRole || (endpoint as AuthRole);
-    if (['admin', 'user', 'vendor'].includes(role)) {
-      const token = getToken(role as AuthRole);
-      if (token) {
-        config.headers.Authorization = `Bearer ${token.trim()}`;
-      }
-    }
-    return config;
+const refreshState: Record<
+  AuthRole,
+  {
+    isRefreshing: boolean;
+    refreshPromise: Promise<void> | null;
+    failedQueue: Array<{
+      resolve: (value?: unknown) => void;
+      reject: (reason?: any) => void;
+    }>;
+  }
+> = {
+  user: { isRefreshing: false, refreshPromise: null, failedQueue: [] },
+  vendor: { isRefreshing: false, refreshPromise: null, failedQueue: [] },
+  admin: { isRefreshing: false, refreshPromise: null, failedQueue: [] },
+};
+
+const processQueue = (role: AuthRole, error?: any) => {
+  refreshState[role].failedQueue.forEach((p) =>
+    error ? p.reject(error) : p.resolve(),
+  );
+  refreshState[role].failedQueue = [];
+};
+
+const triggerLogout = (role: AuthRole) => {
+  localStorage.removeItem(`persist:${role}`);
+  window.dispatchEvent(new CustomEvent("auth:logout", { detail: { role } }));
+};
+
+export const createAxiosInstance = (endpoint: string, instanceRole?: AuthRole) => {
+  const instance = axios.create({
+    baseURL: `${config.BASE_URL}/${endpoint}`,
+    withCredentials: true,
+    headers: { "Content-Type": "application/json" },
   });
 
-  // Response interceptor
   instance.interceptors.response.use(
-    response => response,
-    async error => {
-      const originalRequest = error.config;
-      const role = authRole || (endpoint as AuthRole);
-      
-      if (error.response?.status === 401 && error.response?.message === 'Invalid token' && !originalRequest._retry) {
-        if (isRefreshing) {
-          return new Promise((resolve) => {
-            const interval = setInterval(() => {
-              if (!isRefreshing) {
-                clearInterval(interval);
-                resolve(instance(originalRequest));
-              }
-            }, 100);
-          });
-        }
+    (response) => response,
 
-        originalRequest._retry = true;
-        isRefreshing = true;
+    async (error: AxiosError<ErrorResponse>) => {
+      const originalRequest = error.config as InternalAxiosRequestConfig & {
+        _retry?: boolean;
+      };
 
-        try {
-          const refreshToken = getRefreshToken(role as AuthRole);
-          if (!refreshToken) throw new Error('No refresh token');
-          
-          const { data } = await axios.post(`${config.BASE_URL}/${role}/refresh`, 
-            { refreshToken },
-            { headers: { 'Content-Type': 'application/json' } }
-          );
+      if (!originalRequest) return Promise.reject(error);
 
-          setTokens(role as AuthRole, data.accessToken, data.refreshToken);
-          
-          // Update all waiting requests with new token
-          instance.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
-          originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-          
-          return instance(originalRequest);
-        } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
-          // Clear tokens and redirect to login
-          localStorage.removeItem(`persist:${role}`);
-          clearTokens(role);
-          return Promise.reject(error);
-        } finally {
-          isRefreshing = false;
-        }
+      // 🚫 Prevent refresh recursion
+      if (originalRequest.url?.includes("/refresh")) {
+        return Promise.reject(error);
       }
-      return Promise.reject(error);
-    }
+
+      // ✅ Use instanceRole if provided, fallback to detection
+      const role = detectActiveRole(instanceRole);
+      if (!role) return Promise.reject(error);
+
+      const state = refreshState[role];
+
+      if (error.response?.status !== 401 || originalRequest._retry) {
+        return Promise.reject(error);
+      }
+
+      originalRequest._retry = true;
+
+      // ✅ If already refreshing, queue this request
+      if (state.isRefreshing && state.refreshPromise) {
+        return new Promise((resolve, reject) => {
+          state.failedQueue.push({ resolve, reject });
+        })
+          .then(() => instance(originalRequest))
+          .catch((err) => Promise.reject(err));
+      }
+
+      state.isRefreshing = true;
+
+      state.refreshPromise = axios
+        .post(
+          `${config.BASE_URL}/${role}/refresh`,
+          {},
+          { withCredentials: true },
+        )
+        .then(() => {
+          processQueue(role);
+
+          // ✅ Notify socket manager to reconnect with correct role
+          window.dispatchEvent(
+            new CustomEvent("auth:refreshed", { detail: { role } }),
+          );
+        })
+        .catch((refreshError: AxiosError<ErrorResponse>) => {
+          processQueue(role, refreshError);
+
+          // ✅ Only logout on hard auth failures, not network errors
+          const status = refreshError.response?.status;
+          if (status === 401 || status === 403) {
+            triggerLogout(role);
+          }
+
+          throw refreshError;
+        })
+        .finally(() => {
+          state.isRefreshing = false;
+          state.refreshPromise = null;
+        });
+
+      return state.refreshPromise.then(() => instance(originalRequest));
+    },
   );
 
   return instance;
 };
+
+export const isAuthenticated = (): boolean => !!detectActiveRole();
+export const getUserRole = (): AuthRole | null => detectActiveRole();

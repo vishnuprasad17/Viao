@@ -1,12 +1,12 @@
 import { createAxiosInstance } from "./axiosInstance";
 
-const adminApi = createAxiosInstance("admin");
+const adminAxios = createAxiosInstance("admin", "admin");
 
 //Profile
 
 const getUsers = async (page : string | number, search: string) => {
     try {
-      const response = await adminApi.get(`/users?page=${page}&search=${search}`);
+      const response = await adminAxios.get(`/users?page=${page}&search=${search}`);
       return response;
     } catch (error) {
       throw error;
@@ -15,7 +15,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const blockUsers = async (userId: string) => {
     try {
-      const response = await adminApi.patch(`/block-unblock?userId=${userId}`);
+      const response = await adminAxios.patch(`/block-unblock?userId=${userId}`);
       return response;
     } catch (error) {
       throw error;
@@ -24,7 +24,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const getVendors = async (page: number, config: object) => {
     try {
-      const response = await adminApi.get(`/getvendors?page=${page}`, config);
+      const response = await adminAxios.get(`/getvendors?page=${page}`, config);
       return response;
     } catch (error) {
       throw error;
@@ -33,7 +33,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const getVendorProfile = async (Id: string | null) => {
     try {
-      const response = await adminApi.get(`/getvendor?vendorid=${Id}`);
+      const response = await adminAxios.get(`/getvendor?vendorid=${Id}`);
       return response;
     } catch (error) {
       throw error;
@@ -42,7 +42,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const blockVendors = async (Id: string | null) => {
     try {
-      const response = await adminApi.patch(`/vendorblock-unblock?VendorId=${Id}`);
+      const response = await adminAxios.patch(`/vendorblock-unblock?VendorId=${Id}`);
       return response;
     } catch (error) {
       throw error;
@@ -51,7 +51,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const updateVerify = async (data: object, config: object) => {
     try {
-      const response = await adminApi.put(`/update-verify-status`, data, config);
+      const response = await adminAxios.put(`/update-verify-status`, data, config);
       return response;
     } catch (error) {
       throw error;
@@ -61,7 +61,7 @@ const getUsers = async (page : string | number, search: string) => {
   //Vendor Types
   const getVendorTypes = async () => {
     try {
-      const response = await adminApi.get('/vendor-types');
+      const response = await adminAxios.get('/vendor-types');
       return response;
     } catch (error) {
       throw error;
@@ -70,7 +70,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const deleteVendorTypes = async (vendorTypeId: string, config: object) => {
     try {
-      const response = await adminApi.delete(`/delete-vendortype?id=${vendorTypeId}`, config);
+      const response = await adminAxios.delete(`/delete-vendortype?id=${vendorTypeId}`, config);
       return response;
     } catch (error) {
       throw error;
@@ -79,7 +79,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const addVendorTypes = async (formData: FormData, config: object) => {
     try {
-      const response = await adminApi.post('/add-type', formData, config);
+      const response = await adminAxios.post('/add-type', formData, config);
       return response;
     } catch (error) {
       throw error;
@@ -88,7 +88,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const getSingleVendorTypes = async (vendorTypeId: string) => {
     try {
-      const response = await adminApi.get(`/single-type?id=${vendorTypeId}`);
+      const response = await adminAxios.get(`/single-type?id=${vendorTypeId}`);
       return response;
     } catch (error) {
       throw error;
@@ -97,7 +97,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const updateVendorTypes = async (vendorTypeId: string, formData: FormData, config: object) => {
     try {
-      const response = await adminApi.put(`/update-type?id=${vendorTypeId}`, formData, config);
+      const response = await adminAxios.put(`/update-type?id=${vendorTypeId}`, formData, config);
       return response;
     } catch (error) {
       throw error;
@@ -108,7 +108,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const getPaymentDetails = async (page: number) => {
     try {
-      const response = await adminApi.get(`/all-payment-details?page=${page}`);
+      const response = await adminAxios.get(`/all-payment-details?page=${page}`);
       return response;
     } catch (error) {
       throw error;
@@ -117,7 +117,7 @@ const getUsers = async (page : string | number, search: string) => {
 
   const getAdminData = async (adminId: string | undefined) => {
     try {
-      const response = await adminApi.get(`/load-admin-data?adminId=${adminId}`);
+      const response = await adminAxios.get(`/load-admin-data?adminId=${adminId}`);
       return response;
     } catch (error) {
       throw error;
@@ -127,7 +127,7 @@ const getUsers = async (page : string | number, search: string) => {
   //Dashboard
   const getAnalytics = async (date: string) => {
     try {
-      const response = await adminApi.get(`/analytics?date=${date}`);
+      const response = await adminAxios.get(`/analytics?date=${date}`);
       return response;
     } catch (error) {
       throw error;

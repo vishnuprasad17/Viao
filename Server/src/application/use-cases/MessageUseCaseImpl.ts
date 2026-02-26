@@ -4,7 +4,7 @@ import { MessageUseCase } from "../../domain/interfaces/application interfaces/M
 import { MessageRepository } from "../../domain/interfaces/infrastructure interfaces/MessageRepository";
 import { ConversationRepository } from "../../domain/interfaces/infrastructure interfaces/ConversationRepository";
 import { Message } from "../../domain/entities/Message";
-import { MessageDTO } from "../../domain/dtos/MessageDTO";
+import { MessageDTO, PaginatedMessages } from "../../domain/dtos/MessageDTO";
 import { BaseError } from "../../domain/errors/BaseError";
 import { UpdateWriteOpResult } from "mongoose";
 
@@ -34,11 +34,26 @@ export class MessageUseCaseImpl implements MessageUseCase {
         return messageDto;
       }
     
-      async findMessages(conversationId: string): Promise<MessageDTO[]> {
-        const messages = await this.messageRepository.findByCondition({ conversationId });
+      async findMessages(conversationId: string, page: number = 1, limit: number = 50): Promise<PaginatedMessages> {
+        const total = await this.messageRepository.countDocuments({ conversationId });
+        const messages = await this.messageRepository.findMessagesWithPagination(
+            conversationId,
+            page,
+            limit
+        );
+
         const messageDtos = MessageDTO.fromDomainList(messages);
 
-        return messageDtos;
+        return {
+            data: messageDtos,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasMore: page * limit < total,
+            },
+        };
       }
     
       async updateStatus(msgId: string): Promise<MessageDTO> {
@@ -46,9 +61,10 @@ export class MessageUseCaseImpl implements MessageUseCase {
         if (!document) {
           throw new BaseError("Failed to delete message", 404);
         }
-        const messageDto = MessageDTO.fromDomain(document);
+        
+        await this.recalculateRecentMessage(document.conversationId);
 
-        return messageDto;
+        return MessageDTO.fromDomain(document);
       }
     
       async changeMessageView(msgId: string, id: string): Promise<MessageDTO> {
@@ -56,12 +72,31 @@ export class MessageUseCaseImpl implements MessageUseCase {
         if (!updatedMessage) {
           throw new BaseError("Failed to update message view", 404);
         }
-        const messageDto = MessageDTO.fromDomain(updatedMessage);
+        
+        await this.recalculateRecentMessage(updatedMessage.conversationId, id);
 
-        return messageDto;
+        return MessageDTO.fromDomain(updatedMessage);
       }
     
-      async changeReadStatus(chatId:string,senderId:string): Promise<UpdateWriteOpResult> {
-        return await this.messageRepository.updateReadStatus(chatId,senderId);
+      async changeReadStatus(chatId:string,viewerId:string): Promise<UpdateWriteOpResult> {
+        return await this.messageRepository.updateReadStatus(chatId,viewerId);
+      }
+
+      private async recalculateRecentMessage(
+        conversationId: string,
+        excludeUserId?: string
+      ): Promise<void> {
+        const lastMessage = await this.messageRepository.findLastVisibleMessage(
+          conversationId,
+          excludeUserId
+        );
+
+        const recentText = lastMessage
+          ? lastMessage.imageUrl
+            ? "📷 Photo"
+            : lastMessage.text || ""
+          : "";
+
+        await this.conversationRepository.findByIdAndUpdate(conversationId, recentText);
       }
 }

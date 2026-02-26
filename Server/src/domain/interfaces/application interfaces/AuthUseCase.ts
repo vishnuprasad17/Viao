@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request } from "express";
 import { UserDTO } from "../../dtos/UserDTO";
 import { VendorDTO } from "../../dtos/VendorDTO";
 import { AdminDTO } from "../../dtos/AdminDTO";
@@ -8,11 +8,11 @@ interface AuthUseCase {
   executeSignup(params: SignupParams): Promise<{ message: string; email: string }>;
   verify(params: VerifyParams): Promise<{user: UserDTO, accessToken: string, refreshToken: string} | {vendor: VendorDTO, accessToken: string, refreshToken: string}>;
   login (role: string, email: string, password: string): Promise<LoginResponse>;
-  forgotPwdOtp(role: string, email: string, session: Session & Partial<SessionData>): Promise<{message: string, email: string}>;
+  forgotPwdOtp(role: string, email: string, req: Request): Promise<{message: string, email: string}>;
   verifyOtp(receivedOtp: string, session: Session & Partial<SessionData>): Promise<{message: string}>;
-  reset(role: string, password: string, confirmPassword: string, session: Session & Partial<SessionData>): Promise<boolean>;
-  resend(sessionData: UserSession | VendorSession | OTP, otp: string): Promise<boolean>;
-  gRegister(token: string): Promise<{user: UserDTO, accessToken: string, refreshToken: string}>;
+  reset(role: string, password: string, confirmPassword: string, email: string): Promise<boolean>;
+  resendSignupOtp(req: Request, role: string): Promise<boolean>;
+  resendResetPasswordOtp(req: Request): Promise<boolean>;
   gLogin(token: string): Promise<LoginResponse>;
   createToken(role: string, refreshToken: string): Promise<{ accessToken: string, refreshToken: string }>;
   delete(role: string, refreshToken: string): Promise<number>
@@ -23,7 +23,7 @@ interface SignupParams {
   name: string;
   email: string;
   password: string;
-  phone: string;
+  phone: number;
   city?: string;
   vendor_type?: string;
   session: any;
@@ -58,7 +58,7 @@ interface VendorSession {
 }
 
 interface OTP {
-  otp: string | undefined;
+  otpCode: string | undefined;
   email: string;
   otpSetTimestamp: number;
   isExpired: boolean;

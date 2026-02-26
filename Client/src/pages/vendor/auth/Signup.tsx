@@ -54,6 +54,7 @@ const VendorSignupForm = () => {
     phone: "",
     confirm_password: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
@@ -92,20 +93,27 @@ const VendorSignupForm = () => {
       return
     }
     
-    if (Object.values(errors).every((error) => error === "")) {
-      console.log(formValues);
-      signup("vendor", {...formValues,vendor_type}, { withCredentials: true })
-        .then((data) => {
-          console.log(data);
-          if (data.email) {
-            toast.success(data.message);
-            navigate(`${VENDOR.VERIFY}`);
+    if (!Object.values(errors).every((error) => error === "")) return;
+
+    setIsSubmitting(true);
+    try {
+      const data = await signup("vendor", {...formValues,vendor_type}, { withCredentials: true })
+        if (data.email) {
+          if (data.otpExpiresAt) {
+            sessionStorage.setItem('otpExpiresAt', String(data.otpExpiresAt));
           }
-        })
-        .catch((error) => {
-          console.log("here", error);
-        });
-    }
+          toast.success(data.message);
+          navigate(VENDOR.VERIFY);
+        }
+        } catch (error: any) {
+        const msg =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          "Signup failed. Please try again.";
+        toast.error(msg);
+      } finally {
+      setIsSubmitting(false);
+      }
   };
 
   return (
@@ -249,6 +257,7 @@ const VendorSignupForm = () => {
               ) : null}
               <Input
                 label="Mobile"
+                type="number"
                 onChange={handleChange}
                 value={formValues.phone}
                 name="phone"
@@ -319,7 +328,7 @@ const VendorSignupForm = () => {
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               >
-                Sign Up
+                {isSubmitting ? "Signing up..." : "Sign Up"}
               </Button>
             </CardBody>
           </form>

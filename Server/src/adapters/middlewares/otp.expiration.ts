@@ -1,49 +1,63 @@
 import { Request, Response, NextFunction } from 'express';
 
-const otpValidityMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  const otpData = req.session.otp;
+const OTP_VALIDITY_MS   = 2 * 60 * 1000; // 2 minutes
+const GRACE_PERIOD_MS   = 5  * 1000;     // 5-second grace period to absorb network delay
 
-  // Check if OTP exists in the session
-  if (!otpData) {
-    res.status(400).json({ error: 'OTP not found in session. Please request a new OTP.' });
-    return;
-  }
+// Signup / verify OTP middleware
+export const signupOtpValidityMiddleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const role = req.role;
 
-  const currentTime = Date.now();
-  const otpTimestamp = otpData.otpSetTimestamp;
+    if (!role) {
+        return res.status(400).json({ error: 'Role not specified' });
+    }
 
-  // Check if OTP is expired (120 seconds)
-  if (currentTime - otpTimestamp > 120 * 1000) {
-    console.log('OTP expired');
-    req.session.otp.isExpired = true; // Mark OTP as expired
-  } else {
-    req.session.otp.isExpired = false; // OTP is still valid
-  }
+    const sessionData = role === 'user' ? req.session.user : req.session.vendor;
 
-  // Proceed to the handler
-  next();
+    if (!sessionData) {
+        return res.status(400).json({ error: 'Session expired. Please sign up again.' });
+    }
+
+    const elapsed = Date.now() - sessionData.otpSetTimestamp;
+
+    // Only block when elapsed exceeds validity + grace period
+    if (elapsed >= OTP_VALIDITY_MS + GRACE_PERIOD_MS) {
+        sessionData.isExpired = true;
+        return res.status(400).json({
+            error: 'OTP has expired. Please request a new one.',
+            otpExpiresAt: sessionData.otpSetTimestamp + OTP_VALIDITY_MS, // still send so client can sync
+            canResend: true
+        });
+    }
+
+    next();
 };
 
-const signupOtpValidityMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  const role = req.role;
-  const otpData = role === "user" ? req.session.user : req.session.vendor;
+// Forgot-password OTP middleware
+export const otpValidityMiddleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const otpData = req.session.otpData;
 
-  if (!otpData) {
-    console.log("No data")
-    res.status(400).json({ error: 'OTP not found in session. Please request a new OTP or Signup again.' });
-    return;
-  }
+    if (!otpData) {
+        return res.status(400).json({ error: 'Session expired. Please request OTP again.' });
+    }
 
-  const currentTime = Date.now();
-  const otpTimestamp = otpData.otpSetTimestamp;
+    const elapsed = Date.now() - otpData.otpSetTimestamp;
 
-  if (currentTime - otpTimestamp > 120 * 1000) {
-    console.log('OTP expired');
-    otpData.isExpired = true;
-  } else {
-    otpData.isExpired = false; // OTP is still valid
-  }
-  next();
-}
+    if (elapsed >= OTP_VALIDITY_MS + GRACE_PERIOD_MS) {
+        otpData.isExpired = true;
+        return res.status(400).json({
+            error: 'OTP has expired. Please request a new one.',
+            otpExpiresAt: otpData.otpSetTimestamp + OTP_VALIDITY_MS,
+            canResend: true
+        });
+    }
 
-export { otpValidityMiddleware, signupOtpValidityMiddleware };
+    next();
+};

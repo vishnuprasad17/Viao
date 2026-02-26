@@ -7,9 +7,12 @@ import { injectable } from "inversify";
 import { UpdateWriteOpResult } from "mongoose";
 
 @injectable()
-export class MessageRepositoryImpl extends BaseRepository<IMessage, Message> implements MessageRepository {
-  constructor(){
-    super(MessageModel)
+export class MessageRepositoryImpl
+  extends BaseRepository<IMessage, Message>
+  implements MessageRepository
+{
+  constructor() {
+    super(MessageModel);
   }
 
   // Implement mapping methods
@@ -22,18 +25,65 @@ export class MessageRepositoryImpl extends BaseRepository<IMessage, Message> imp
   }
 
   async changeMessageView(msgId: string, id: string): Promise<Message | null> {
-    const document = await MessageModel.findByIdAndUpdate(msgId,
-        { $push: { deletedIds: id } },
-        { new: true }
+    const document = await MessageModel.findByIdAndUpdate(
+      msgId,
+      { $push: { deletedIds: id } },
+      { returnDocument: "after" },
     );
 
-    return document? this.toDomain(document) : null;
+    return document ? this.toDomain(document) : null;
   }
 
-  async updateReadStatus(chatId:string,senderId:string): Promise<UpdateWriteOpResult>{
-    const status =  await MessageModel.updateMany({conversationId:chatId,senderId:senderId},{$set:{isRead:true}});
-
+  async updateReadStatus(
+    chatId: string,
+    viewerId: string,
+  ): Promise<UpdateWriteOpResult> {
+    const status = await MessageModel.updateMany(
+      {
+        conversationId: chatId,
+        senderId: { $ne: viewerId },
+        isRead: false,
+      },
+      { $set: { isRead: true } },
+    );
     return status;
   }
 
+  async findMessagesWithPagination(
+    conversationId: string,
+    page: number = 1,
+    limit: number = 50,
+  ): Promise<Message[]> {
+    const skip = (page - 1) * limit;
+    const sortOption: Record<string, -1> = {
+      createdAt: -1,
+    };
+
+    const documents = await MessageModel.find({ conversationId })
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+
+    return documents.reverse().map(this.toDomain);
+  }
+
+  async findLastVisibleMessage(
+    conversationId: string,
+    excludeUserId?: string,
+  ): Promise<Message | null> {
+    const query: Record<string, any> = {
+      conversationId,
+      isDeleted: false,
+    };
+
+    if (excludeUserId) {
+      query.deletedIds = { $nin: [excludeUserId] };
+    }
+
+    const document = await MessageModel.findOne(query)
+      .sort({ createdAt: -1 })
+      .limit(1);
+
+    return document ? this.toDomain(document) : null;
+  }
 }

@@ -4,7 +4,7 @@ import { VendorModel, IVendor } from "../mongooseModels/Vendor";
 import { mapToDomain, mapToDatabase } from "../mappers/vendorMapper";
 import { Vendor } from "../../../domain/entities/Vendor";
 import { injectable } from "inversify";
-import { FilterQuery } from "mongoose";
+import { BaseError } from "../../../domain/errors/BaseError";
 
 @injectable()
 export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implements VendorRepository {
@@ -42,7 +42,7 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
 
   async requestForVerification(vendorId:string){
   
-      const data=await VendorModel.findByIdAndUpdate(vendorId,{$set:{verificationRequest:true}}, { new: true });
+      const data=await VendorModel.findByIdAndUpdate(vendorId,{$set:{verificationRequest:true}}, { returnDocument: "after" });
       return data ? mapToDomain(data) : null;
     
   }
@@ -103,7 +103,7 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
     sortValue:number
   ): Promise<Vendor[]> {
       
-      const query: FilterQuery<VendorQuery> = { isActive: true };
+      const query: any = { isActive: true };
   
       if (search && search.trim()) {
         query.name = { $regex: new RegExp(search, 'i') };
@@ -206,7 +206,7 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
   }
 
   async updateBookingCount(id: string): Promise<boolean> {
-    const document = await VendorModel.findByIdAndUpdate(id, {$inc: { totalBooking: 1 }}, { new: true });
+    const document = await VendorModel.findByIdAndUpdate(id, {$inc: { totalBooking: 1 }}, { returnDocument: "after" });
 
     return true;
   }
@@ -222,4 +222,153 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
 
     return false;
   }
+  
+
+  // ==================== TOKEN MANAGEMENT METHODS ====================
+
+    async storeRefreshToken(
+        vendorId: string, 
+        sessionId: string, 
+        token: string, 
+        tokenFamily: string
+    ): Promise<void> {
+        try {
+            await VendorModel.findByIdAndUpdate(
+                vendorId,
+                {
+                    $push: {
+                        refreshTokens: {
+                            sessionId,
+                            token,
+                            tokenFamily,
+                            createdAt: new Date()
+                        }
+                    }
+                }
+            );
+        } catch (error) {
+            console.error('Error storing refresh token:', error);
+            throw new BaseError('Failed to store refresh token', 500);
+        }
+    }
+
+    async getRefreshToken(vendorId: string, sessionId: string): Promise<string | null> {
+        try {
+            const vendor = await VendorModel.findOne(
+                { 
+                    _id: vendorId, 
+                    'refreshTokens.sessionId': sessionId 
+                },
+                { 'refreshTokens.$': 1 }
+            ).lean();
+
+            return vendor?.refreshTokens?.[0]?.token || null;
+        } catch (error) {
+            console.error('Error getting refresh token:', error);
+            return null;
+        }
+    }
+
+    async updateRefreshToken(
+        vendorId: string, 
+        sessionId: string, 
+        newToken: string
+    ): Promise<void> {
+        try {
+            await VendorModel.updateOne(
+                { 
+                    _id: vendorId, 
+                    'refreshTokens.sessionId': sessionId 
+                },
+                { 
+                    $set: { 
+                        'refreshTokens.$.token': newToken,
+                        'refreshTokens.$.createdAt': new Date()
+                    } 
+                }
+            );
+        } catch (error) {
+            console.error('Error updating refresh token:', error);
+            throw new BaseError('Failed to update refresh token', 500);
+        }
+    }
+
+    async deleteRefreshToken(vendorId: string, sessionId: string): Promise<number> {
+        try {
+            const result = await VendorModel.updateOne(
+                { _id: vendorId },
+                { 
+                    $pull: { 
+                        refreshTokens: { sessionId } 
+                    } 
+                }
+            );
+            
+            return result.modifiedCount;
+        } catch (error) {
+            console.error('Error deleting refresh token:', error);
+            return 0;
+        }
+    }
+
+    async invalidateAllRefreshTokens(vendorId: string): Promise<void> {
+        try {
+            await VendorModel.findByIdAndUpdate(
+                vendorId,
+                { $set: { refreshTokens: [] } }
+            );
+            console.log(`Invalidated all refresh tokens for vendor: ${vendorId}`);
+        } catch (error) {
+            console.error('Error invalidating all refresh tokens:', error);
+            throw new BaseError('Failed to invalidate refresh tokens', 500);
+        }
+    }
+
+    async invalidateTokenFamily(vendorId: string, tokenFamily: string): Promise<void> {
+        try {
+            const result = await VendorModel.updateOne(
+                { _id: vendorId },
+                { 
+                    $pull: { 
+                        refreshTokens: { tokenFamily } 
+                    } 
+                }
+            );
+            
+            console.warn(`SECURITY: Invalidated token family ${tokenFamily} for vendor ${vendorId}`);
+            console.warn(`Tokens removed: ${result.modifiedCount > 0 ? 'Yes' : 'No'}`);
+        } catch (error) {
+            console.error('Error invalidating token family:', error);
+            throw new BaseError('Failed to invalidate token family', 500);
+        }
+    }
+
+    async cleanupExpiredTokens(vendorId: string): Promise<void> {
+        try {
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            
+            await VendorModel.updateOne(
+                { _id: vendorId },
+                { 
+                    $pull: { 
+                        refreshTokens: { 
+                            createdAt: { $lt: sevenDaysAgo } 
+                        } 
+                    } 
+                }
+            );
+        } catch (error) {
+            console.error('Error cleaning up expired tokens:', error);
+        }
+    }
+
+    async getActiveSessionCount(vendorId: string): Promise<number> {
+        try {
+            const vendor = await VendorModel.findById(vendorId).select('refreshTokens').lean();
+            return vendor?.refreshTokens?.length || 0;
+        } catch (error) {
+            console.error('Error getting active session count:', error);
+            return 0;
+        }
+    }
 }

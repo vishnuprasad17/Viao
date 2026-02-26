@@ -23,7 +23,7 @@ import VendorProfile from './components/admin/vendorList/VendorProfile';
 import Wallet from './pages/admin/profile/Wallet';
 import Notifications from './pages/admin/profile/Notifications';
 import { ADMIN } from './config/routes/admin.routes';
-import React from 'react';
+import GlobalSocketWrapper from './context/GlobalSocketWrapper';
 
 
 
@@ -61,9 +61,9 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <React.StrictMode>
+      <GlobalSocketWrapper>
         <RouterProvider router={router} />
-      </React.StrictMode>
+      </GlobalSocketWrapper>
     </PersistGate>
   </Provider>,
 );

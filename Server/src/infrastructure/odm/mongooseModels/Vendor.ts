@@ -1,6 +1,12 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-// Define the user-specific interface
+export interface IRefreshToken {
+    sessionId: string;
+    token: string;
+    tokenFamily: string;
+    createdAt: Date;
+}
+
 interface Lock {
     date: string;
     isLocked: boolean;
@@ -25,28 +31,52 @@ interface IVendor extends Document {
     logoUrl:string;
     bookedDates:Array<string>;
     totalRating:number;
-    locks:Lock[];  
+    locks:Lock[];
+    refreshTokens: IRefreshToken[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-// Define the User schema
+const refreshTokenSchema = new Schema<IRefreshToken>({
+    sessionId: {
+        type: String,
+        required: true,
+        index: true
+    },
+    token: {
+        type: String,
+        required: true
+    },
+    tokenFamily: {
+        type: String,
+        required: true,
+        index: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: 604800 // TTL index: automatically delete after 7 days (in seconds)
+    }
+});
+
 const VendorSchema: Schema = new Schema({
-    email :{type:String , required:true, unique:true},
+    email :{type:String , required:true, unique:true, lowercase: true, trim: true, index: true},
     password:{type:String, required:true}, 
-    name :{type:String , required:true},
-    phone :{type:Number , required:true , unique:true},
-    city:{type:String , required:true},
-    about:{type:String, default:""},
+    name :{type:String , required:true, trim: true},
+    phone :{type:Number , required:true , unique:true, index: true},
+    city:{type:String , required:true, trim: true},
+    about:{type:String, default:"", maxlength: 1000},
     logo:{type:String,default:""},
     coverpic:{type:String,default:""},
-    isVerified:{type:Boolean, default: false},
-    verificationRequest:{type:Boolean, default: false},
+    isVerified:{type:Boolean, default: false, index: true},
+    verificationRequest:{type:Boolean, default: false, index: true},
     totalBooking:{type:Number, default:0},
     vendor_type:{type:Schema.Types.ObjectId},
-    isActive:{type:Boolean, default: true},
+    isActive:{type:Boolean, default: true, index: true},
     coverpicUrl:{type:String,default:""},
     logoUrl:{type:String,default:""},
     bookedDates:{type:Array<String>},
-    totalRating:{type:Number,default:0},
+    totalRating:{type:Number,default:0, min:0, max:5},
     locks: [{
       date: {
         type: String,
@@ -56,7 +86,8 @@ const VendorSchema: Schema = new Schema({
         type: Boolean,
         default: false
       }
-    }]
+    }],
+    refreshTokens: [refreshTokenSchema]
 
 }, { timestamps: true }
 );

@@ -1,6 +1,6 @@
 import { createAxiosInstance } from "./axiosInstance";
 
-const vendorApi = createAxiosInstance("vendor");
+const vendorAxios = createAxiosInstance("vendor", "vendor");
 
 
 //Profile
@@ -8,8 +8,8 @@ const vendorApi = createAxiosInstance("vendor");
 const getVendor = async (vendorId: string | undefined, config?: object) => {
     try {
       const response = config
-        ? await vendorApi.get(`/getvendor?vendorid=${vendorId}`, config)
-        : await vendorApi.get(`/getvendor?vendorid=${vendorId}`);
+        ? await vendorAxios.get(`/getvendor?vendorid=${vendorId}`, config)
+        : await vendorAxios.get(`/getvendor?vendorid=${vendorId}`);
       return response;
     } catch (error) {
       throw error;
@@ -18,7 +18,7 @@ const getVendor = async (vendorId: string | undefined, config?: object) => {
   
 const verifyRequest = async (data: object, config: object) => {
   try {
-    const response = await vendorApi.post(`/verification-request`, data, config);
+    const response = await vendorAxios.post(`/verification-request`, data, config);
     return response;
   } catch (error) {
     throw error;
@@ -27,7 +27,7 @@ const verifyRequest = async (data: object, config: object) => {
 
 const updateProfile = async (vendorId: string | undefined, credential: object, config: object) => {
   try {
-    const response = await vendorApi.put(`/update-profile?vendorid=${vendorId}`, credential, config);
+    const response = await vendorAxios.put(`/update-profile?vendorid=${vendorId}`, credential, config);
     return response;
   } catch (error) {
     throw error;
@@ -36,7 +36,7 @@ const updateProfile = async (vendorId: string | undefined, credential: object, c
 
 const updatePassword = async (vendorId: string | undefined, credential: object, config: object) => {
   try {
-    const response = await vendorApi.patch(`/update-password?vendorid=${vendorId}`, credential, config);
+    const response = await vendorAxios.patch(`/update-password?vendorid=${vendorId}`, credential, config);
     return response;
   } catch (error) {
     throw error;
@@ -45,7 +45,7 @@ const updatePassword = async (vendorId: string | undefined, credential: object, 
 
 const getPost = async (vendorId: string | undefined, page: number, config: object) => {
   try {
-    const response = await vendorApi.get(`/posts?vendorid=${vendorId}&page=${page}`, config);
+    const response = await vendorAxios.get(`/posts?vendorid=${vendorId}&page=${page}`, config);
     return response;
   } catch (error) {
     throw error;
@@ -54,7 +54,7 @@ const getPost = async (vendorId: string | undefined, page: number, config: objec
 
 const deletePost = async (id: string, config: object) => {
   try {
-    const response = await vendorApi.delete(`/posts/${id}`, config);
+    const response = await vendorAxios.delete(`/posts/${id}`, config);
     return response;
   } catch (error) {
     throw error;
@@ -63,7 +63,7 @@ const deletePost = async (id: string, config: object) => {
 
 const addPost = async (vendorId: any, credential: object, config: object) => {
   try {
-    const response = await vendorApi.post(`/add-post?vendorid=${vendorId}`, credential, config);
+    const response = await vendorAxios.post(`/add-post?vendorid=${vendorId}`, credential, config);
     return response;
   } catch (error) {
     throw error;
@@ -72,7 +72,7 @@ const addPost = async (vendorId: any, credential: object, config: object) => {
 
 const getDate = async (vendorId: string | undefined,  config: object) => {
   try {
-    const response = await vendorApi.get(`/load-dates?vendorId=${vendorId}`, config);
+    const response = await vendorAxios.get(`/load-dates?vendorId=${vendorId}`, config);
     return response;
   } catch (error) {
     throw error;
@@ -81,7 +81,7 @@ const getDate = async (vendorId: string | undefined,  config: object) => {
 
 const addDate = async (credential: object, config: object) => {
   try {
-    const response = await vendorApi.post(`/add-dates`, credential, config);
+    const response = await vendorAxios.post(`/add-dates`, credential, config);
     return response;
   } catch (error) {
     throw error;
@@ -92,7 +92,7 @@ const addDate = async (credential: object, config: object) => {
 
 const createService = async (vendorId: string | undefined, data: { name: string; price: number }) => {
   try {
-    const response = await vendorApi.post(`add-service`, { vendorId, name: data.name, price: data.price });
+    const response = await vendorAxios.post(`add-service`, { vendorId, name: data.name, price: data.price });
     return response;
   } catch (error) {
     throw error;
@@ -101,7 +101,7 @@ const createService = async (vendorId: string | undefined, data: { name: string;
 
 const updateService = async (serviceId: string, data: { name: string; price: number }) => {
   try {
-    const response = await vendorApi.patch(`update-service?serviceId=${serviceId}`, { name: data.name, price: data.price });
+    const response = await vendorAxios.patch(`update-service?serviceId=${serviceId}`, { name: data.name, price: data.price });
     return response;
   } catch (error) {
     throw error;
@@ -110,7 +110,7 @@ const updateService = async (serviceId: string, data: { name: string; price: num
 
 const getServices = async (vendorId: string | undefined, page: number) => {
   try {
-    const response = await vendorApi.get(`/services?vendorId=${vendorId}&page=${page}`);
+    const response = await vendorAxios.get(`/services?vendorId=${vendorId}&page=${page}`);
     return response;
   } catch (error) {
     throw error;
@@ -119,7 +119,7 @@ const getServices = async (vendorId: string | undefined, page: number) => {
 
 const getServicesForPage = async (vendorId: string | undefined) => {
   try {
-    const response = await vendorApi.get(`/getservices?vendorId=${vendorId}`);
+    const response = await vendorAxios.get(`/getservices?vendorId=${vendorId}`);
     return response;
   } catch (error) {
     throw error;
@@ -128,7 +128,7 @@ const getServicesForPage = async (vendorId: string | undefined) => {
 
 const deleteService = async (serviceId: string) => {
   try {
-    const response = await vendorApi.delete(`/delete-service?serviceId=${serviceId}`);
+    const response = await vendorAxios.delete(`/delete-service?serviceId=${serviceId}`);
     return response;
   } catch (error) {
     throw error;
@@ -139,7 +139,7 @@ const deleteService = async (serviceId: string) => {
 
 const getBooking = async (vendorId: string | undefined, page: number, pageSize: number, search: string, paymentStatus: string) => {
   try {
-    const response = await vendorApi.get(`/booking-details?vendorId=${vendorId}&page=${page}&pageSize=${pageSize}&search=${search}&paymentStatus=${paymentStatus}`);
+    const response = await vendorAxios.get(`/booking-details?vendorId=${vendorId}&page=${page}&pageSize=${pageSize}&search=${search}&paymentStatus=${paymentStatus}`);
     return response;
   } catch (error) {
     throw error;
@@ -148,7 +148,7 @@ const getBooking = async (vendorId: string | undefined, page: number, pageSize: 
 
 const getSingleBooking = async (bookingId: string | null) => {
   try {
-    const response = await vendorApi.get(`/single-booking-details?bookingId=${bookingId}`);
+    const response = await vendorAxios.get(`/single-booking-details?bookingId=${bookingId}`);
     return response;
   } catch (error) {
     throw error;
@@ -157,7 +157,7 @@ const getSingleBooking = async (bookingId: string | null) => {
 
 const updateBookingStatus = async (bookingId: string | undefined, status: string | undefined) => {
   try {
-    const response = await vendorApi.put(`/update-booking-status?bookingId=${bookingId}`, { status });
+    const response = await vendorAxios.put(`/update-booking-status?bookingId=${bookingId}`, { status });
     return response;
   } catch (error) {
     throw error;
@@ -165,28 +165,19 @@ const updateBookingStatus = async (bookingId: string | undefined, status: string
 }
 
 //Chat
-const deleteForEveryone = async (data: object, config: object) => {
-  try {
-    const response = await vendorApi.patch("/delete-for-everyone", data, config);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const deleteForMe = async (data: object, config: object) => {
-  try {
-    const response = await vendorApi.patch("/delete-for-me", data, config);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+const getUserForChat = async (id: string | undefined) => {
+    try {
+      const response = await vendorAxios.get(`/getuser?userId=${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
 };
 
 //Review
 const getReviews = async (vendorId: string | undefined, page: number) => {
   try {
-    const response = await vendorApi.get(`/getReviews?vendorId=${vendorId}&page=${page}`);
+    const response = await vendorAxios.get(`/getReviews?vendorId=${vendorId}&page=${page}`);
     return response;
   } catch (error) {
     throw error;
@@ -195,7 +186,7 @@ const getReviews = async (vendorId: string | undefined, page: number) => {
 
 const getReviewStatistics = async (vendorId: string | undefined) => {
   try {
-    const response = await vendorApi.get(`/reviews/statistics?vendorId=${vendorId}`);
+    const response = await vendorAxios.get(`/reviews/statistics?vendorId=${vendorId}`);
     return response;
   } catch (error) {
     throw error;
@@ -204,7 +195,7 @@ const getReviewStatistics = async (vendorId: string | undefined) => {
 
 const addReply = async (reviewId: string, content: string) => {
   try {
-    const response = await vendorApi.put(`/add-review-reply?&reviewId=${reviewId}`, { content });
+    const response = await vendorAxios.put(`/add-review-reply?&reviewId=${reviewId}`, { content });
     return response;
   } catch (error) {
     throw error;
@@ -214,7 +205,7 @@ const addReply = async (reviewId: string, content: string) => {
 //Dashboard
 const getAnalytics = async (vendorId: string | undefined, date: string) => {
   try {
-    const response = await vendorApi.get(`/analytics?vendorId=${vendorId}&date=${date}`);
+    const response = await vendorAxios.get(`/analytics?vendorId=${vendorId}&date=${date}`);
     return response;
   } catch (error) {
     throw error;
@@ -239,8 +230,7 @@ export {
     getBooking,
     getSingleBooking,
     updateBookingStatus,
-    deleteForEveryone,
-    deleteForMe,
+    getUserForChat,
     getReviews,
     getReviewStatistics,
     addReply,

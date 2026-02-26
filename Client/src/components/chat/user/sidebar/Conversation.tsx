@@ -1,82 +1,113 @@
 import { Link } from "react-router-dom";
-import { getVendor } from "../../../../config/services/venderApi";
+import { getVendorForChat } from "../../../../config/services/userApi";
 import { useEffect, useState } from "react";
 import { Chats } from "../../../../interfaces/commonTypes";
 import { UserData } from "../../../../interfaces/userTypes";
 import { VendorData } from "../../../../interfaces/vendorTypes";
-import {  parseISO } from 'date-fns';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
+dayjs.extend(relativeTime);
 
 interface ConversationsProps {
-  conversation: Chats;
-  currentUser: Partial<UserData | null>;
-  currentchat:Chats | null
+    conversation: Chats;
+    currentUser: Partial<UserData | null>;
+    currentchat: Chats | null;
+    onlineStatus: Record<string, boolean>;
 }
-const formatMessageTime = (updatedAt:Date ) => {
-  const createdAtDate = parseISO(updatedAt.toString());
-  const now = new Date();
-  const differenceInDays = Math.floor((now.getTime() - createdAtDate.getTime()) / (1000 * 60 * 60 * 24));
 
-  if (differenceInDays === 0) {
-    return new Date(createdAtDate).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  } else if (differenceInDays === 1) {
-    return "yesterday";
-  } else {
-    return new Date(createdAtDate).toLocaleDateString();
-  }
+const formatMessageTime = (updatedAt: Date) => {
+    const now = dayjs();
+    const messageTime = dayjs(updatedAt);
+    const diffInHours = now.diff(messageTime, 'hour');
+    const diffInDays = now.diff(messageTime, 'day');
+
+    if (diffInHours < 1) {
+        return messageTime.format('h:mm A');
+    } else if (diffInDays === 0) {
+        return messageTime.format('h:mm A');
+    } else if (diffInDays === 1) {
+        return "Yesterday";
+    } else if (diffInDays < 7) {
+        return messageTime.format('ddd');
+    } else {
+        return messageTime.format('MMM D');
+    }
 };
 
-const Conversation:React.FC<ConversationsProps>=({ conversation, currentUser, currentchat }) => {
-  const [vendor, setVendor] = useState<VendorData>();
-  const friendId = conversation.members.find((m) => m !== currentUser?.id);
+const Conversation: React.FC<ConversationsProps> = ({ 
+    conversation, 
+    currentUser, 
+    currentchat,
+    onlineStatus 
+}) => {
+    const [vendor, setVendor] = useState<VendorData>();
+    const friendId = conversation.members.find((m) => m !== currentUser?.id);
+    const isOnline = friendId ? onlineStatus[friendId] : false;
+    const isActive = currentchat?.id === conversation.id;
 
-  useEffect(() => {
+    useEffect(() => {
+        const getUser = async () => {
+            try {
+                const res = await getVendorForChat(friendId);
+                setVendor(res.data.data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getUser();
+    }, [friendId]);
 
-    const getUser = async () => {
-      try {
-        await getVendor(friendId)
-          .then((res) => {
-            setVendor(res.data.data);
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getUser();
-  }, [currentUser, conversation, currentchat]);
-
-
-
-  return (
-    <div>
-      <div
-        className={`relative rounded-lg px-2 py-2 flex items-center space-x-3 mb-3 ${currentchat?.id === conversation.id ? "bg-gray-300" : "bg-gray-50"}`}
-      >
-        <div className="flex-shrink-0">
-          <img
-            className="h-10 w-10 rounded-full"
-            src={vendor?.logoUrl ? vendor.logoUrl : ""}
-            alt=""
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <Link to="" className="focus:outline-none">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-gray-700">{vendor?.name}</p>
-              <div className="text-gray-400 text-xs">{formatMessageTime(conversation?.updatedAt)}</div>
+    return (
+        <div
+            className={`relative rounded-lg px-3 py-3 flex items-center space-x-3 mb-2 cursor-pointer transition-all duration-200 hover:bg-gray-100 ${
+                isActive ? "bg-blue-50 border-l-4 border-blue-500" : "bg-white"
+            }`}
+        >
+            {/* Avatar with online indicator */}
+            <div className="flex-shrink-0 relative">
+                <img
+                    className="h-12 w-12 rounded-full object-cover"
+                    src={vendor?.logoUrl || "/default-avatar.png"}
+                    alt={vendor?.name || "Vendor"}
+                />
+                {/* Online status indicator */}
+                {isOnline && (
+                    <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-white"></span>
+                )}
             </div>
-            <div className="flex items-center justify-start">
-              <p className="text-sm text-gray-500 truncate">{conversation?.recentMessage?.slice(0,10)}</p>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+                <Link to="" className="focus:outline-none">
+                    <div className="flex items-center justify-between mb-1">
+                        <p className={`text-sm font-semibold truncate ${
+                            isActive ? "text-blue-600" : "text-gray-900"
+                        }`}>
+                            {vendor?.name || "Loading..."}
+                        </p>
+                        <div className="text-xs text-gray-500">
+                            {formatMessageTime(conversation?.updatedAt)}
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600 truncate max-w-[180px]">
+                            {conversation?.recentMessage?.slice(0, 30) || "No messages yet"}
+                            {conversation?.recentMessage && conversation.recentMessage.length > 30 && '...'}
+                        </p>
+                        
+                        {/* Unread count badge (if you have unread count) */}
+                        {/* {conversation.unreadCount > 0 && (
+                            <span className="ml-2 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                {conversation.unreadCount}
+                            </span>
+                        )} */}
+                    </div>
+                </Link>
             </div>
-          </Link>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Conversation;

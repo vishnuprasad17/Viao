@@ -31,6 +31,14 @@ export interface VendorRepository {
   cancelDate(id: string, date: string): Promise<Vendor | null>;
   updateBookingCount(id: string): Promise<boolean>;
   updateRating(id: string, rating: number): Promise<boolean>;
+  storeRefreshToken(vendorId: string, sessionId: string, token: string, tokenFamily: string): Promise<void>;
+  getRefreshToken(vendorId: string, sessionId: string): Promise<string | null>;
+  updateRefreshToken(vendorId: string, sessionId: string, newToken: string): Promise<void>;
+  deleteRefreshToken(vendorId: string, sessionId: string): Promise<number>;
+  invalidateAllRefreshTokens(vendorId: string): Promise<void>;
+  invalidateTokenFamily(vendorId: string, tokenFamily: string): Promise<void>;
+  cleanupExpiredTokens(vendorId: string): Promise<void>;
+  getActiveSessionCount(vendorId: string): Promise<number>;
 }
 
 export interface VendorQuery {

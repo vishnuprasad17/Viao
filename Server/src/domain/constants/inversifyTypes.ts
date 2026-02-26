@@ -59,8 +59,6 @@ const TYPES = {
     UploadService: Symbol.for("UploadService"),
     NotificationService: Symbol.for("NotificationService"),
     TokenService: Symbol.for("TokenService"),
-    //Redis
-    RedisRepository: Symbol.for("RedisRepository"),
   };
   
   export default TYPES;  

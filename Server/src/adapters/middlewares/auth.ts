@@ -1,35 +1,70 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { BaseError } from '../../domain/errors/BaseError';
-import dotenv from 'dotenv';
-import redisClient from '../../infrastructure/config/redis';
-import { TokenPayload } from '../../domain/interfaces/adapter interfaces/TokenService';
+import { CustomJwtPayload } from '../../types/jwt';
 
-dotenv.config();
-
-interface AuthenticatedRequest extends Request {
-    User: TokenPayload
-  }
-// Updated auth middleware
 export const authenticate = (allowedRoles: string[]) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
-      const token = req.headers.authorization?.split(' ')[1];
-      if (!token) return res.status(401).json({ message: 'No token provided' });
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            // Try to get token from all possible cookie names
+            let token: string | undefined;
+            let detectedRole: string | undefined;
 
-      // Verify JWT
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
+            for (const role of allowedRoles) {
+                const cookieToken = req.cookies[`accessToken_${role}`];
+                if (cookieToken) {
+                    token = cookieToken;
+                    detectedRole = role;
+                    break;
+                }
+            }
 
-      // Role check
-      if (!allowedRoles.includes(decoded.role)) {
-        console.log(decoded)
-        return res.status(401).json({ message: 'Invalid token' });
-      }
+            if (!token) {
+                throw new BaseError('Authentication required', 401);
+            }
 
-      // Redis session check
-      const storedToken = await redisClient.get(`${decoded.role}:${decoded.sessionId}`);
-      if (!storedToken) return res.status(401).json({ message: 'Session expired' });
+            // Verify token
+            const decoded = jwt.verify(
+                token,
+                process.env.JWT_ACCESS_SECRET!,
+                {
+                    issuer: 'viao-auth'
+                }
+            ) as CustomJwtPayload;
 
-      (req as AuthenticatedRequest).User = decoded;
-      next();
-  };
+            if (decoded.type !== 'access') {
+                throw new BaseError('Invalid token type', 401);
+            }
+
+            if (!allowedRoles.includes(decoded.role)) {
+                throw new BaseError('Insufficient permissions', 403);
+            }
+
+            req.user = decoded;
+            req.role = decoded.role;
+
+            next();
+        } catch (error) {
+            if (error instanceof jwt.TokenExpiredError) {
+                return res.status(401).json({ 
+                    error: 'Token expired',
+                    message: 'Invalid token' 
+                });
+            }
+            if (error instanceof jwt.JsonWebTokenError) {
+                return res.status(401).json({ 
+                    error: 'Invalid token',
+                    message: 'Invalid token'
+                });
+            }
+            if (error instanceof BaseError) {
+                return res.status(error.statusCode).json({ 
+                    error: error.message 
+                });
+            }
+            return res.status(500).json({ 
+                error: 'Internal server error' 
+            });
+        }
+    };
 };

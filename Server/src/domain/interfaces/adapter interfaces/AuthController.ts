@@ -9,7 +9,6 @@ export interface AuthController {
     resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
     resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
     pwdResendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
-    googleRegister(req: Request, res: Response, next: NextFunction): Promise<void>;
     googleLogin(req: Request, res: Response, next: NextFunction): Promise<void>;
     logout(req: Request, res: Response, next: NextFunction): Promise<void>;
     createToken(req: Request, res: Response, next: NextFunction): Promise<void>;

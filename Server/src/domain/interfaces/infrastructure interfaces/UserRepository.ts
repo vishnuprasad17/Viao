@@ -16,4 +16,12 @@ export interface UserRepository {
   addFavVendor(userId: string, vendorId: string): Promise<User | null>;
   refundToWallet(id: string, amount: number): Promise<boolean>;
   deductFromWallet(id: string, amount: number): Promise<boolean>;
+  storeRefreshToken(userId: string, sessionId: string, token: string, tokenFamily: string): Promise<void>;
+  getRefreshToken(userId: string, sessionId: string): Promise<string | null>;
+  updateRefreshToken(userId: string, sessionId: string, newToken: string): Promise<void>;
+  deleteRefreshToken(userId: string, sessionId: string): Promise<number>;
+  invalidateAllRefreshTokens(userId: string): Promise<void>;
+  invalidateTokenFamily(userId: string, tokenFamily: string): Promise<void>;
+  cleanupExpiredTokens(userId: string): Promise<void>;
+  getActiveSessionCount(userId: string): Promise<number>;
 }

@@ -30,6 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { USER } from "../../config/routes/user.routes";
 import NotificationIcon from "../../components/home/NotificationIcon";
 import { logoutFn } from "../../config/services/authApi";
+import socketManager from "../../config/socket/socketConfig";
 
 const NavbarComponent = () => {
   const [open, setOpen] = React.useState(0);
@@ -64,6 +65,7 @@ const NavbarComponent = () => {
     logoutFn("user")
       .then(() => {
         dispatch(logout());
+        socketManager.disconnect();
         navigate(`${USER.LOGIN}`);
       })
       .catch((error) => {

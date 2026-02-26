@@ -1,3 +1,4 @@
+import { authLimiter, otpLimiter, passwordResetLimiter, refreshTokenLimiter } from './../middlewares/ratelimitMiddleware';
 import { Router} from 'express';
 import { roleMiddleware } from '../middlewares/roleMiddleware';
 import { otpValidityMiddleware, signupOtpValidityMiddleware } from '../middlewares/otp.expiration';
@@ -37,18 +38,17 @@ export const userRoutes = (
     const router = Router();
 
     //Authentication routes
-    router.post('/signup', roleMiddleware("user"), authController.signup );
-    router.post("/verify", roleMiddleware("user"), signupOtpValidityMiddleware, authController.verifyOtp);
-    router.get("/resendOtp", roleMiddleware("user"), authController.resendOtp);
-    router.post('/login', roleMiddleware("user"), authController.login);
-    router.post("/getotp", roleMiddleware("user"), authController.forgotPassword);
-    router.get("/pwd-resendOtp", otpValidityMiddleware,authController.pwdResendOtp);
-    router.post("/verify-otp", otpValidityMiddleware, authController.verifyOtpForPassword);
-    router.post("/reset-password", roleMiddleware("user"), signupOtpValidityMiddleware, authController.resetPassword);
+    router.post('/signup', authLimiter, roleMiddleware("user"), authController.signup );
+    router.post("/verify", authLimiter, roleMiddleware("user"), signupOtpValidityMiddleware, authController.verifyOtp);
+    router.get("/resendOtp", otpLimiter, roleMiddleware("user"), authController.resendOtp);
+    router.post('/login', authLimiter, roleMiddleware("user"), authController.login);
+    router.post("/getotp", passwordResetLimiter,roleMiddleware("user"), authController.forgotPassword);
+    router.get("/pwd-resendOtp", otpLimiter,otpValidityMiddleware,authController.pwdResendOtp);
+    router.post("/verify-otp", authLimiter, otpValidityMiddleware, authController.verifyOtpForPassword);
+    router.post("/reset-password", passwordResetLimiter, roleMiddleware("user"), signupOtpValidityMiddleware, authController.resetPassword);
     router.post('/logout', roleMiddleware("user"), authController.logout)
-    router.post("/refresh", roleMiddleware("user"), authController.createToken);
-    router.post("/google/login", authController.googleLogin);
-    router.post("/google/register", authController.googleRegister);
+    router.post("/refresh", refreshTokenLimiter, roleMiddleware("user"), authController.createToken);
+    router.post("/google/login", authLimiter, authController.googleLogin);
 
     router.post("/send-message",userController.contactMessage)
     //Home
@@ -61,36 +61,34 @@ export const userRoutes = (
     router.get("/getservices", serviceController.getAllServices);
     router.post("/add-favorite-vendor", authenticate(["user"]), userController.addFavVendor);
     //Profile
-    router.put("/update-profile", upload.single("image"), userController.updateProfile)
-    router.post("/update-password", userController.updatePassword);
-    router.get("/get-favorite-vendor", vendorController.getFavoriteVendors);
-    router.delete("/delete-favorite-vendor", userController.deleteFavoriteVendor);
+    router.put("/update-profile", authenticate(["user"]), upload.single("image"), userController.updateProfile)
+    router.post("/update-password", authenticate(["user"]), userController.updatePassword);
+    router.get("/get-favorite-vendor", authenticate(["user"]), vendorController.getFavoriteVendors);
+    router.delete("/delete-favorite-vendor", authenticate(["user"]), userController.deleteFavoriteVendor);
     //Notification
-    router.get('/user-notifications',notificationController.getAllNotifications);
-    router.patch('/toggle-read',notificationController.toggleRead)
-    router.delete("/notification",notificationController.deleteNotification)
-    router.get("/notification-count", notificationController.getCount);
+    router.get('/user-notifications', authenticate(["user"]), notificationController.getAllNotifications);
+    router.patch('/toggle-read', authenticate(["user"]), notificationController.toggleRead)
+    router.delete("/notification", authenticate(["user"]), notificationController.deleteNotification)
+    router.get("/notification-count", authenticate(["user"]), notificationController.getCount);
     //Booking
-    router.post("/book-vendor", bookingController.bookVendor);
-    router.get("/single-booking", bookingController.getBookingsById);
-    router.get("/get-bookings", bookingController.getBookingsByUser);
-    router.put("/cancel-booking", bookingController.cancelBookingByUser);
-    router.get("/all-transaction-details", bookingController.getWalletDetails);
+    router.post("/book-vendor", authenticate(["user"]), bookingController.bookVendor);
+    router.get("/single-booking", authenticate(["user"]), bookingController.getBookingsById);
+    router.get("/get-bookings", authenticate(["user"]), bookingController.getBookingsByUser);
+    router.put("/cancel-booking", authenticate(["user"]), bookingController.cancelBookingByUser);
+    router.get("/all-transaction-details", authenticate(["user"]), bookingController.getWalletDetails);
     //Chat
-    router.patch("/delete-for-everyone", messageController.deleteMessage);
-    router.patch("/delete-for-me", messageController.changeViewMessage);
-    router.get("/getuser", userController.getUser);
+    router.get("/getvendor", authenticate(["user"]), vendorController.getVendor);
     //Review
-    router.post("/addVendorReview", reviewController.addReview);
+    router.post("/addVendorReview", authenticate(["user"]), reviewController.addReview);
     router.get("/getReviews",reviewController.getReviews);
-    router.get("/checkReviews", reviewController.checkIfUserReviewed);
-    router.patch("/update-review",reviewController.updateReview);
-    router.delete("/delete-review",reviewController.deleteReview);
+    router.get("/checkReviews", authenticate(["user"]), reviewController.checkIfUserReviewed);
+    router.patch("/update-review",authenticate(["user"]), reviewController.updateReview);
+    router.delete("/delete-review", authenticate(["user"]), reviewController.deleteReview);
     //Wallet
-    router.get("/load-wallet", userController.getWallet);
+    router.get("/load-wallet", authenticate(["user"]), userController.getWallet);
     //Payment
-    router.post("/create-checkout-session", paymentController.makePayment);
-    router.get("/add-payment", paymentController.addPayment);
+    router.post("/create-checkout-session", authenticate(["user"]), paymentController.makePayment);
+    router.get("/add-payment", authenticate(["user"]), paymentController.addPayment);
 
     return router;
 };

@@ -1,3 +1,4 @@
+import { refreshTokenLimiter, authLimiter } from './../middlewares/ratelimitMiddleware';
 import { authenticate } from './../middlewares/auth';
 import { Router} from 'express';
 import multer from 'multer';
@@ -29,9 +30,9 @@ export const adminRoutes = (
 ) => {
     const router = Router();
 
-    router.post('/login', roleMiddleware("admin"), authController.login);
+    router.post('/login', authLimiter, roleMiddleware("admin"), authController.login);
     router.post('/logout', roleMiddleware("admin"), authController.logout)
-    router.post("/refresh", roleMiddleware("admin"), authController.createToken);
+    router.post("/refresh", refreshTokenLimiter, roleMiddleware("admin"), authController.createToken);
     //user
     router.get('/users' , authenticate(['admin']), userController.allUsers);
     router.patch('/block-unblock' , authenticate(['admin']), userController.toggleBlock)
@@ -55,7 +56,7 @@ export const adminRoutes = (
     router.get("/load-admin-data", authenticate(['admin']), adminController.getAdminData);
     router.get("/all-payment-details", authenticate(['admin']), paymentController.getAllPayments);
     //dashboard
-    router.get("/analytics",adminController.getAnalytics);
+    router.get("/analytics", authenticate(['admin']), adminController.getAnalytics);
     
     return router;
 };

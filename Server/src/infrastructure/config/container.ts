@@ -21,7 +21,7 @@ import { NotificationControllerImpl } from "../../adapters/controllers/Notificat
 import { BookingController } from "../../domain/interfaces/adapter interfaces/BookingController";
 import { BookingControllerImpl } from "../../adapters/controllers/BookingControllerImpl";
 import { MessageController } from "../../domain/interfaces/adapter interfaces/MessageController";
-import { MessageControllerImpl } from "../../adapters/controllers/MessageController";
+import { MessageControllerImpl } from "../../adapters/controllers/MessageControllerImpl";
 import { ReviewController } from "../../domain/interfaces/adapter interfaces/ReviewController";
 import { ReviewControllerImpl } from "../../adapters/controllers/ReviewControllerImpl";
 import { PaymentController } from "../../domain/interfaces/adapter interfaces/PaymentController";
@@ -53,10 +53,6 @@ import { PaymentRepository } from "../../domain/interfaces/infrastructure interf
 import { PaymentRepositoryImpl } from "../odm/repositories/PaymentRepositoryImpl";
 import { ServiceRepository } from "../../domain/interfaces/infrastructure interfaces/ServiceRepository";
 import { ServiceRepositoryImpl } from "../odm/repositories/ServiceRepositoryImpl";
-
-// Redis Repository
-import { RedisRepository } from "../../domain/interfaces/infrastructure interfaces/RedisRepository";
-import { RedisRepositoryImpl } from "../redis/RedisRepositoryImpl";
 
 import { AdminUseCase } from "../../domain/interfaces/application interfaces/AdminUseCase";
 import { AdminUseCaseImpl } from "../../application/use-cases/AdminUseCaseImpl";
@@ -93,7 +89,7 @@ import { UploadService } from "../../domain/interfaces/application interfaces/Up
 import { UploadServiceImpl } from "../../application/services/UploadServiceImpl";
 import { NotificationService } from "../../domain/interfaces/application interfaces/NotificationService";
 import { NotificationServiceImpl } from "../../application/services/NotificationServiceImpl";
-import { TokenService } from "../../domain/interfaces/adapter interfaces/TokenService";
+import { TokenService } from "../../domain/interfaces/application interfaces/TokenService";
 import { TokenServiceImpl } from "../../application/services/TokenServiceImpl";
 
 const container = new Container();
@@ -111,9 +107,6 @@ container.bind<MessageRepository>(TYPES.MessageRepository).to(MessageRepositoryI
 container.bind<ReviewRepository>(TYPES.ReviewRepository).to(ReviewRepositoryImpl);
 container.bind<PaymentRepository>(TYPES.PaymentRepository).to(PaymentRepositoryImpl);
 container.bind<ServiceRepository>(TYPES.ServiceRepository).to(ServiceRepositoryImpl);
-
-// Bind redis repository
-container.bind<RedisRepository>(TYPES.RedisRepository).to(RedisRepositoryImpl);
 
 // Bind use cases
 container.bind<AdminUseCase>(TYPES.AdminUseCase).to(AdminUseCaseImpl);

@@ -23,7 +23,7 @@ export class ReviewRepositoryImpl extends BaseRepository<IReview, Review> implem
   async addReply(content: string, id: string) {
     const data = await ReviewModel.findByIdAndUpdate(id,
       { $push: { reply: content, replyAt: new Date() }},
-      { new: true }
+      { returnDocument: "after" }
     );
     return data ? this.toDomain(data) : null;
   }

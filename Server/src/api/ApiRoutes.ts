@@ -70,6 +70,7 @@ router.use("/vendor", vendorRoutes(
     bookingController,
     notificationController,
     messageController,
+    userController,
     reviewController
 ));
 router.use("/conversation", conversationRoutes(

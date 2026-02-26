@@ -189,11 +189,9 @@ const UserLogin = () => {
                 shape="circle"
                 size="large"
                 onSuccess={(response) => {
-                  gLogin("login", response)
+                  gLogin(response)
                     .then((data) => {
-                      console.log(data, "google @");
                       if (data) {
-                        //console.log(data);
                         dispatch(setUserInfo(data.userData));
                         toast.success("Successfully logged in...!");
                         navigate(`${USER.HOME}`);

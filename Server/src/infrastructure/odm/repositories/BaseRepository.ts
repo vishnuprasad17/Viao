@@ -31,7 +31,7 @@ export abstract class BaseRepository<TDocument extends mongoose.Document, TDomai
     async update(id:string, domain: Partial<TDomain>):Promise<TDomain|null>{
         const updatedDocument = await this.model.findByIdAndUpdate(id,
             this.toDatabase(domain as TDomain),
-            { new: true }
+            { returnDocument: "after" }
         );
         return updatedDocument? this.toDomain(updatedDocument) : null;
     }
@@ -54,7 +54,7 @@ export abstract class BaseRepository<TDocument extends mongoose.Document, TDomai
     async block(id: string, status: boolean): Promise<TDomain | null> {
         const updatedDocument = await this.model.findByIdAndUpdate(id,
             { isActive: status }, 
-            { new: true }
+            { returnDocument: "after" }
         );
         return updatedDocument? this.toDomain(updatedDocument) : null;
     }

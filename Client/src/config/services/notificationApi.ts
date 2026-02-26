@@ -3,7 +3,7 @@ import { createAxiosInstance} from './axiosInstance';
 type AuthRole = 'admin' | 'user' | 'vendor';
 
 const getNotification = async (role: string, roleId: any, page: number, config: object) => {
-    const authApi = createAxiosInstance(role as AuthRole);
+    const authApi = createAxiosInstance(role as AuthRole, role as AuthRole);
     try {  
       let endpoint = "";
       if (role === "admin") {
@@ -23,7 +23,7 @@ const getNotification = async (role: string, roleId: any, page: number, config: 
   };
 
   const toggleRead = async (role: string, data: object, config: object) => {
-    const authApi = createAxiosInstance(role as AuthRole);
+    const authApi = createAxiosInstance(role as AuthRole, role as AuthRole);
     try {
       const response = await authApi.patch(`/toggle-read`, data, config);
       return response;
@@ -33,7 +33,7 @@ const getNotification = async (role: string, roleId: any, page: number, config: 
   };
 
   const deleteNotification = async (role: string, id: string, roleId: string | undefined, config: object) => {
-    const authApi = createAxiosInstance(role as AuthRole);
+    const authApi = createAxiosInstance(role as AuthRole, role as AuthRole);
     try {
       const response = await authApi.delete(`/notification?id=${id}&recipient=${roleId}`, config);
       return response;

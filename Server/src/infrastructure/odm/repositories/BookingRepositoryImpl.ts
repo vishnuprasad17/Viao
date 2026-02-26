@@ -94,7 +94,7 @@ export class BookingRepositoryImpl extends BaseRepository<IBooking, Booking> imp
   }
 
   async updateBookingStatus(bookingId: string, status: string): Promise<Booking | null> {
-    const update = await BookingModel.findByIdAndUpdate(bookingId,{$set:{status: status}}, { new: true });
+    const update = await BookingModel.findByIdAndUpdate(bookingId,{$set:{status: status}}, { returnDocument: "after" });
 
     return update ? this.toDomain(update) : null;
   }

@@ -1,12 +1,12 @@
 import { UserData } from './../../interfaces/userTypes';
 import { createAxiosInstance } from "./axiosInstance";
 
-const userApi = createAxiosInstance("user");
+const userAxios = createAxiosInstance("user", "user");
 
 //Vendor Types
   const getVendorTypes = async () => {
     try {
-      const response = await userApi.get('/vendor-types');
+      const response = await userAxios.get('/vendor-types');
       return response;
     } catch (error) {
       throw error;
@@ -15,7 +15,7 @@ const userApi = createAxiosInstance("user");
 
   const getVendors = async (config: object) => {
     try {
-      const response = await userApi.get(`/getvendors?page=${""}&search=${""}&category=${""}&location=${""}&sort=${""}`, config);
+      const response = await userAxios.get(`/getvendors?page=${""}&search=${""}&category=${""}&location=${""}&sort=${""}`, config);
       return response;
     } catch (error) {
       throw error;
@@ -24,7 +24,7 @@ const userApi = createAxiosInstance("user");
 
   const getSuggestions = async (value: string) => {
     try {
-      const response = await userApi.get(`/suggestions?term=${value}`);
+      const response = await userAxios.get(`/suggestions?term=${value}`);
       return response;
     } catch (error) {
       throw error;
@@ -33,7 +33,7 @@ const userApi = createAxiosInstance("user");
 
   const getVendorPosts = async (id: string | null, page: number, pageSize: number) => {
     try {
-      const response = await userApi.get(`/posts?vendorid=${id}&page=${page}&pageSize=${pageSize}`);
+      const response = await userAxios.get(`/posts?vendorid=${id}&page=${page}&pageSize=${pageSize}`);
       return response;
     } catch (error) {
       throw error;
@@ -42,7 +42,7 @@ const userApi = createAxiosInstance("user");
 
   const getVendor = async (id: string) => {
     try {
-      const response = await userApi.get(`/getvendor?vendorid=${id}`);
+      const response = await userAxios.get(`/getvendor?vendorid=${id}`);
       return response;
     } catch (error) {
       throw error;
@@ -51,7 +51,7 @@ const userApi = createAxiosInstance("user");
 
   const getVendorServices = async (id: string) => {
     try {
-      const response = await userApi.get(`/getservices?vendorId=${id}`);
+      const response = await userAxios.get(`/getservices?vendorId=${id}`);
       return response;
     } catch (error) {
       throw error;
@@ -60,7 +60,7 @@ const userApi = createAxiosInstance("user");
 
   const addToFavourite = async (id: string, userId: string, config: object) => {
     try {
-      const response = await userApi.post(`/add-favorite-vendor?vendorId=${id}&userId=${userId}`, config);
+      const response = await userAxios.post(`/add-favorite-vendor?vendorId=${id}&userId=${userId}`, config);
       return response;
     } catch (error) {
       throw error;
@@ -69,7 +69,7 @@ const userApi = createAxiosInstance("user");
 
   const getLocations = async () => {
     try {
-      const response = await userApi.get('/get-locations');
+      const response = await userAxios.get('/get-locations');
       return response;
     } catch (error) {
       throw error;
@@ -78,7 +78,7 @@ const userApi = createAxiosInstance("user");
 
   const getAllVendors = async (search: string, page: number, category: string[], location: string[], sort: number | undefined) => {
     try {
-      const response = await userApi.get(`/getvendors?search=${search}&page=${page}&category=${category.join(",")}&location=${location.join(",")}&sort=${sort}`);
+      const response = await userAxios.get(`/getvendors?search=${search}&page=${page}&category=${category.join(",")}&location=${location.join(",")}&sort=${sort}`);
       return response;
     } catch (error) {
       throw error;
@@ -88,7 +88,7 @@ const userApi = createAxiosInstance("user");
 //Contact
 const contact = async (formValues: object, config: object) => {
   try {
-    const response = await userApi.post('/send-message', formValues, config);
+    const response = await userAxios.post('/send-message', formValues, config);
     return response.data;
   } catch (error) {
     throw error;
@@ -98,7 +98,7 @@ const contact = async (formValues: object, config: object) => {
 // Profile
 const updateProfile = async (user: UserData | null, formValues: object, config: object) => {
   try {
-    const response = await userApi.put(`/update-profile?userid=${user?.id}`, formValues, config);
+    const response = await userAxios.put(`/update-profile?userid=${user?.id}`, formValues, config);
     return response;
   } catch (error) {
     throw error;
@@ -108,7 +108,7 @@ const updateProfile = async (user: UserData | null, formValues: object, config: 
 //Change Password
 const changePwd = async (userId: string | undefined, formValues: object, config: object) => {
     try {
-      const response = await userApi.post(`/update-password?userid=${userId}`, formValues, config);
+      const response = await userAxios.post(`/update-password?userid=${userId}`, formValues, config);
       return response.data;
     } catch (error) {
       throw error;
@@ -118,7 +118,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
   //Favourites
   const getFavourites = async (userId: string | undefined, page: number, config: object) => {
     try {
-      const response = await userApi.get(`/get-favorite-vendor?userid=${userId}&page=${page}`, config);
+      const response = await userAxios.get(`/get-favorite-vendor?userid=${userId}&page=${page}`, config);
       return response.data;
     } catch (error) {
       throw error;
@@ -128,7 +128,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
   //Delete Favorites
   const deleteFavourite = async (userId: string | undefined, id: string, config: object) => {
     try {
-      const response = await userApi.delete(`/delete-favorite-vendor?vendorId=${id}&userId=${userId}`, config);
+      const response = await userAxios.delete(`/delete-favorite-vendor?vendorId=${id}&userId=${userId}`, config);
       return response.data;
     } catch (error) {
       throw error;
@@ -137,7 +137,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const notificationCount = async () => {
     try {
-      const response = await userApi.get('/notification-count');
+      const response = await userAxios.get('/notification-count');
       return response;
     } catch (error) {
       throw error;
@@ -148,7 +148,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const bookEvent = async (vendorId: string | null, userId: string | undefined, data: object, config: object) => {
     try {
-      const response = await userApi.post(`/book-vendor?vendorId=${vendorId}&userId=${userId}`, data, config);
+      const response = await userAxios.post(`/book-vendor?vendorId=${vendorId}&userId=${userId}`, data, config);
       return response;
     } catch (error) {
       throw error;
@@ -157,7 +157,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const getBooking = async (userId: string | undefined, page: number, config: object) => {
     try {
-      const response = await userApi.get(`/get-bookings?userId=${userId}&page=${page}`, config);
+      const response = await userAxios.get(`/get-bookings?userId=${userId}&page=${page}`, config);
       return response;
     } catch (error) {
       throw error;
@@ -166,7 +166,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const getSingleBooking = async (bookingId: string | null) => {
     try {
-      const response = await userApi.get(`/single-booking?bookingId=${bookingId}`);
+      const response = await userAxios.get(`/single-booking?bookingId=${bookingId}`);
       return response;
     } catch (error) {
       throw error;
@@ -175,7 +175,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const cancelBooking = async (bookingId: string | null) => {
     try {
-      const response = await userApi.put(`/cancel-booking?bookingId=${bookingId}`);
+      const response = await userAxios.put(`/cancel-booking?bookingId=${bookingId}`);
       return response;
     } catch (error) {
       throw error;
@@ -186,35 +186,8 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const getVendorForChat = async (id: string | undefined) => {
     try {
-      const response = await userApi.get(`/getvendor?vendorid=${id}`);
+      const response = await userAxios.get(`/getvendor?vendorid=${id}`);
       return response;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const getUserForChat = async (id: string | undefined) => {
-    try {
-      const response = await userApi.get(`/getuser?userId=${id}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const deleteForEveryone = async (data: object, config: object) => {
-    try {
-      const response = await userApi.patch("/delete-for-everyone", data, config);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const deleteForMe = async (data: object, config: object) => {
-    try {
-      const response = await userApi.patch("/delete-for-me", data, config);
-      return response.data;
     } catch (error) {
       throw error;
     }
@@ -224,7 +197,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const addReview = async (vendorId: string | undefined, userId: string, rating: number, content: string) => {
     try {
-      const response = await userApi.post(`/addVendorReview`, { vendorId, userId, rating, content });
+      const response = await userAxios.post(`/addVendorReview`, { vendorId, userId, rating, content });
       return response;
     } catch (error) {
       throw error;
@@ -233,7 +206,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const getReviews = async (vendorId: string, page: number, pageSize: number) => {
     try {
-      const response = await userApi.get(
+      const response = await userAxios.get(
         `/getReviews?vendorId=${vendorId}&page=${page}&pageSize=${pageSize}`
       );
       return response;
@@ -244,7 +217,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const checkIfUserReviewed = async (userId: string, vendorId: string) => {
     try {
-      const response = await userApi.get(`/checkReviews?userId=${userId}&vendorId=${vendorId}`);
+      const response = await userAxios.get(`/checkReviews?userId=${userId}&vendorId=${vendorId}`);
       return response;
     } catch (error) {
       throw error;
@@ -253,7 +226,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const updateReview = async(reviewId: string, content: string, rating: number) => {
     try {
-      const response = await userApi.patch(`/update-review?reviewId=${reviewId}`, { content, rating });
+      const response = await userAxios.patch(`/update-review?reviewId=${reviewId}`, { content, rating });
       return response;
     } catch (error) {
       throw error;
@@ -262,7 +235,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const deleteReview = async(reviewId: string) => {
     try {
-      const response = await userApi.delete(`/delete-review?reviewId=${reviewId}`);
+      const response = await userAxios.delete(`/delete-review?reviewId=${reviewId}`);
       return response;
     } catch (error) {
       throw error;
@@ -273,7 +246,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const loadWallet = async(userId: string | undefined) => {
     try {
-      const response = await userApi.get(`/load-wallet?userId=${userId}`);
+      const response = await userAxios.get(`/load-wallet?userId=${userId}`);
       return response;
     } catch (error) {
       throw error;
@@ -282,7 +255,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const getTransactionDetails = async(userId: string | undefined, page: number) => {
     try {
-      const response = await userApi.get(`/all-transaction-details?userId=${userId}&page=${page}`);
+      const response = await userAxios.get(`/all-transaction-details?userId=${userId}&page=${page}`);
       return response;
     } catch (error) {
       throw error;
@@ -293,7 +266,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const makePayment = async (userId: string | undefined, vendorId: string, bookingId: string, name: string, logoUrl: string, useWallet: boolean) => {
     try {
-      const response = await userApi.post(`/create-checkout-session`, { userId, vendorId, bookingId, name, logoUrl, useWallet});
+      const response = await userAxios.post(`/create-checkout-session`, { userId, vendorId, bookingId, name, logoUrl, useWallet});
       return response;
     } catch (error) {
       throw error;
@@ -302,7 +275,7 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
 
   const addPayment = async (session_id: string) => {
     try {
-      const response = await userApi.get(`/add-payment?sessionId=${session_id}`);
+      const response = await userAxios.get(`/add-payment?sessionId=${session_id}`);
       return response;
     } catch (error) {
       throw error;
@@ -332,9 +305,6 @@ const changePwd = async (userId: string | undefined, formValues: object, config:
     getSingleBooking,
     cancelBooking,
     getVendorForChat,
-    getUserForChat,
-    deleteForEveryone,
-    deleteForMe,
     addReview,
     getReviews,
     checkIfUserReviewed,

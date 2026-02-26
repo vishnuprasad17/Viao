@@ -80,6 +80,7 @@ export interface Messages {
   imageUrl: string;
   isRead: boolean;
   isDeleted: boolean;
+  status?: 'sending' | 'sent' | 'failed';
   deletedIds: string[];
   createdAt:number;
 }

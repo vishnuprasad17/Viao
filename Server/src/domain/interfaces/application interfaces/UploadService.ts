@@ -1,5 +1,3 @@
-
-
 export interface UploadService {
     upload(files: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | Express.Multer.File, context: "vendor" | "user"): Promise<{coverpicFile: string,
         coverpicUrl: string,
@@ -9,4 +7,5 @@ export interface UploadService {
     uploadType(file: Express.Multer.File): Promise<{ image: string, imageUrl: string}>;
     uploadPost(file: Express.Multer.File): Promise<{ image: string, imageUrl: string }>;
     deletePost(imageName: string): Promise<boolean>;
+    getPresignedUploadUrl(fileName: string, fileType: string): Promise<{ uploadUrl: string, imageUrl: string, key: string}>;
 }

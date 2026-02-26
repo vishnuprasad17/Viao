@@ -33,3 +33,14 @@ export class MessageDTO {
       return messages.map(message => new MessageDTO(message));
     }
   }
+
+  export interface PaginatedMessages {
+    data: MessageDTO[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+        hasMore: boolean;
+    };
+}
