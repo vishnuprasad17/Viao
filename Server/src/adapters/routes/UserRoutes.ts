@@ -11,7 +11,6 @@ import { VendorTypeController } from '../../domain/interfaces/adapter interfaces
 import { PostController } from '../../domain/interfaces/adapter interfaces/PostController';
 import { BookingController } from '../../domain/interfaces/adapter interfaces/BookingController';
 import { NotificationController } from '../../domain/interfaces/adapter interfaces/NotificationController';
-import { MessageController } from '../../domain/interfaces/adapter interfaces/MessageController';
 import { PaymentController } from '../../domain/interfaces/adapter interfaces/PaymentController';
 import { ReviewController } from '../../domain/interfaces/adapter interfaces/ReviewController';
 import { ServiceController } from '../../domain/interfaces/adapter interfaces/ServiceController';
@@ -30,14 +29,13 @@ export const userRoutes = (
     serviceController: ServiceController,
     bookingController: BookingController,
     notificationController: NotificationController,
-    messageController: MessageController,
     reviewController: ReviewController,
     paymentController: PaymentController
 
 ) => {
     const router = Router();
 
-    //Authentication routes
+    //Authentication
     router.post('/signup', authLimiter, roleMiddleware("user"), authController.signup );
     router.post("/verify", authLimiter, roleMiddleware("user"), signupOtpValidityMiddleware, authController.verifyOtp);
     router.get("/resendOtp", otpLimiter, roleMiddleware("user"), authController.resendOtp);
@@ -50,7 +48,9 @@ export const userRoutes = (
     router.post("/refresh", refreshTokenLimiter, roleMiddleware("user"), authController.createToken);
     router.post("/google/login", authLimiter, authController.googleLogin);
 
-    router.post("/send-message",userController.contactMessage)
+    //Contact
+    router.post("/send-message",userController.contactMessage);
+    
     //Home
     router.get("/getvendors", vendorController.getAllVendors);
     router.get("/suggestions", vendorController.getSearchSuggestions);
@@ -60,6 +60,7 @@ export const userRoutes = (
     router.get("/getvendor", vendorController.getVendor);
     router.get("/getservices", serviceController.getAllServices);
     router.post("/add-favorite-vendor", authenticate(["user"]), userController.addFavVendor);
+    
     //Profile
     router.put("/update-profile", authenticate(["user"]), upload.single("image"), userController.updateProfile)
     router.post("/update-password", authenticate(["user"]), userController.updatePassword);
@@ -70,22 +71,29 @@ export const userRoutes = (
     router.patch('/toggle-read', authenticate(["user"]), notificationController.toggleRead)
     router.delete("/notification", authenticate(["user"]), notificationController.deleteNotification)
     router.get("/notification-count", authenticate(["user"]), notificationController.getCount);
+
     //Booking
+    router.get("/load-dates", vendorController.loadDates);
     router.post("/book-vendor", authenticate(["user"]), bookingController.bookVendor);
     router.get("/single-booking", authenticate(["user"]), bookingController.getBookingsById);
     router.get("/get-bookings", authenticate(["user"]), bookingController.getBookingsByUser);
     router.put("/cancel-booking", authenticate(["user"]), bookingController.cancelBookingByUser);
-    router.get("/all-transaction-details", authenticate(["user"]), bookingController.getWalletDetails);
+    router.patch("/mark-payment-failed", authenticate(["user"]), bookingController.markPaymentFailed);
+
     //Chat
     router.get("/getvendor", authenticate(["user"]), vendorController.getVendor);
-    //Review
+    
+    //Reviews
     router.post("/addVendorReview", authenticate(["user"]), reviewController.addReview);
     router.get("/getReviews",reviewController.getReviews);
     router.get("/checkReviews", authenticate(["user"]), reviewController.checkIfUserReviewed);
     router.patch("/update-review",authenticate(["user"]), reviewController.updateReview);
     router.delete("/delete-review", authenticate(["user"]), reviewController.deleteReview);
+
     //Wallet
     router.get("/load-wallet", authenticate(["user"]), userController.getWallet);
+    router.get("/wallet-ledger", authenticate(["user"]), userController.getWalletLedger);
+
     //Payment
     router.post("/create-checkout-session", authenticate(["user"]), paymentController.makePayment);
     router.get("/add-payment", authenticate(["user"]), paymentController.addPayment);

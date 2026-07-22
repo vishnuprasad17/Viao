@@ -6,10 +6,31 @@ export interface BookingRepository {
 
   findBookingsByVendorId(vendorId: string, page: number, pageSize: number, searchTerm: string, paymentStatus: string): Promise<{bookings: Booking[], totalBookings: number}>;
   findBookingsByUserId(userId: string, page: number, pageSize: number): Promise<{bookings: Booking[], totalBookings: number}>;
-  findRefundForUser(userId: string, page: number, pageSize: number): Promise<{refund: Booking[], totalRefund: number}>;
   findBookingsByBookingId(bookingId: string): Promise<Booking[]>;
   updatePaymentStatus(bookingId: string): Promise<Booking | null>;
-  updateRefundAmount(bookingId:string, amount: number): Promise<boolean>;
   updateBookingStatus(bookingId: string, status: string): Promise<Booking | null>;
-  updatedeductedAmount(bookingId:string, amount: number): Promise<boolean>;
+  markPaymentFailed(bookingId: string, failedAt: Date, retryDeadline: Date): Promise<boolean>;
+  findExpiredPaymentPendingBookings(): Promise<Booking[]>;
+  updateAdminRemark(bookingId: string, remark: string): Promise<boolean>;
+  updateFinancialsOnWalletDeduction(bookingId: string, walletDeducted: number): Promise<boolean>;
+  updateFinancialsOnPaymentComplete(
+    bookingId: string,
+    data: {
+      walletDeducted: number;
+      stripeAmount: number;
+      adminCommissionPercent: number;
+      adminCommissionAmount: number;
+      vendorNetAmount: number;
+      modeOfPayment: string;
+    }
+  ): Promise<boolean>;
+  updateFinancialsOnCancellation(
+    bookingId: string,
+    data: {
+      cancellationScenario: "full_refund" | "partial_refund" | "no_refund";
+      refundToUser: number;
+      adminKeepsOnCancel: number;
+      vendorCompensationOnCancel: number;
+    }
+  ): Promise<boolean>;
 }

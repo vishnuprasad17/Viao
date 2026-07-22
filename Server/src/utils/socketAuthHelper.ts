@@ -14,26 +14,17 @@ export const socketAuthMiddleware = (io: Server) => {
         return next(new Error("ROLE_REQUIRED"));
       }
 
-      const rawCookie = socket.handshake.headers.cookie;
+      const cookies = socket.request.headers.cookie;
 
-      if (!rawCookie || rawCookie.trim() === "") {
-        console.warn(`⚠️ No cookie header for role=${role}, socket=${socket.id}`);
+      if (!cookies) {
         return next(new Error("AUTH_REQUIRED"));
       }
 
-      let parsedCookies: Record<string, string | undefined> = {};
-      try {
-        parsedCookies = cookie.parse(rawCookie);
-      } catch (parseError) {
-        console.error("Cookie parse error:", parseError);
-        return next(new Error("AUTH_REQUIRED"));
-      }
-
-      const cookieName = `accessToken_${role}`;
-      const token = parsedCookies[cookieName];
+      const parsed = cookie.parse(cookies);
+      const token = parsed[`accessToken_${role}`];
 
       if (!token) {
-        console.warn(`⚠️ No token found for cookie=${cookieName}`);
+        console.warn(`⚠️ No token found for cookie=accessToken_${role}`);
         return next(new Error("AUTH_REQUIRED"));
       }
 

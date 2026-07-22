@@ -4,6 +4,7 @@ import { initializeDatabase } from './infrastructure/config/database';
 import routes from './api/ApiRoutes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { startBookingCron } from './infrastructure/cron/startBookingCron';
 import { cleanExpiredBookedDates } from './infrastructure/cron/cleanExpiredBookedDates';
 import session from 'express-session';
 import { Request,Response,NextFunction } from 'express';
@@ -17,6 +18,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 const app = express();
 
 dotenv.config();
+startBookingCron();
 cleanExpiredBookedDates();
 
 const server = createServer(app);

@@ -1,0 +1,87 @@
+.viao-cal .react-datepicker {
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  width: 100%;
+}
+.viao-cal .react-datepicker__month-container {
+  width: 100%;
+}
+.viao-cal .react-datepicker__header {
+  background: transparent;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 8px 0 12px;
+}
+.viao-cal .react-datepicker__current-month {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.viao-cal .react-datepicker__day-name {
+  color: #9ca3af;
+  font-weight: 600;
+  font-size: 0.72rem;
+  width: 2.5rem;
+  line-height: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.viao-cal .react-datepicker__navigation-icon::before {
+  border-color: #6d28d9;
+}
+.viao-cal .react-datepicker__day {
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  margin: 2px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.12s ease;
+  cursor: pointer;
+}
+.viao-cal
+  .react-datepicker__day:hover:not(.viao-booked-day):not(
+    .react-datepicker__day--disabled
+  ) {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+.viao-cal .react-datepicker__day--disabled {
+  color: #e5e7eb !important;
+  cursor: default;
+}
+.viao-cal .react-datepicker__day--outside-month {
+  color: #e5e7eb !important;
+  pointer-events: none;
+}
+.viao-cal .viao-booked-day {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  cursor: not-allowed !important;
+  font-weight: 600;
+}
+.viao-cal .viao-selected-day {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  outline: 2px solid #f59e0b !important;
+  outline-offset: -2px;
+  font-weight: 700;
+}
+.viao-cal
+  .react-datepicker__day--today:not(.viao-booked-day):not(.viao-selected-day) {
+  background: #ede9fe;
+  color: #5b21b6;
+  font-weight: 700;
+}
+.viao-cal .react-datepicker__month {
+  padding: 8px 4px;
+}
+.viao-cal .react-datepicker__week {
+  display: flex;
+  justify-content: center;
+}

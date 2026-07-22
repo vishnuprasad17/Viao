@@ -8,10 +8,13 @@ import { UploadService } from '../../domain/interfaces/application interfaces/Up
 import { PasswordService } from '../../domain/interfaces/application interfaces/PasswordService';
 import { UserDTO } from '../../domain/dtos/UserDTO';
 import { UserUseCase } from '../../domain/interfaces/application interfaces/UserUseCase';
+import { WalletTransactionRepository } from '../../domain/interfaces/infrastructure interfaces/WalletTransactionRepository';
+import { WalletTransactionDTO } from '../../domain/dtos/WalletTransactionDto';
 
 @injectable()
 export class UserUseCaseImpl implements UserUseCase {
   constructor(@inject(TYPES.UserRepository) private userRepository: UserRepository,
+              @inject(TYPES.WalletTransactionRepository) private walletTxRepo: WalletTransactionRepository,
               @inject(TYPES.EmailService) private emailService: EmailService,
               @inject(TYPES.UploadService) private uploadService: UploadService,
               @inject(TYPES.PasswordService) private passwordService: PasswordService) {}
@@ -153,6 +156,28 @@ export class UserUseCaseImpl implements UserUseCase {
 
       return userDto;
   }
+
+  async getTransactions(
+      userId: string,
+      page: number,
+      pageSize: number
+    ): Promise<{ wallet: number; transactions: WalletTransactionDTO[]; totalPages: number }> {
+      const user = await this.userRepository.getById(userId);
+      if (!user) throw new BaseError("User not found.", 404);
+  
+      const { transactions, total } = await this.walletTxRepo.findByActor(
+        "user",
+        userId,
+        page,
+        pageSize
+      );
+
+      return {
+        wallet: user.wallet,
+        transactions: WalletTransactionDTO.fromDomainList(transactions),
+        totalPages: Math.ceil(total / pageSize)
+      };
+    }
 
   async getBalance(userId: string): Promise<number> {
     const user = await this.userRepository.getById(userId);

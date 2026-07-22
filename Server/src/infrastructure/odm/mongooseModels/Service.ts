@@ -6,6 +6,11 @@ interface IService extends Document {
   vendorId: Types.ObjectId;
   name: string;
   price: number;
+  advancePercentage: number;
+  minimumBookingNoticeInDays: number;
+  cancellationFullRefundBeforeDays: number;
+  cancellationPartialRefundBeforeDays?: number;
+  partialRefundPercentage?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +30,34 @@ const ServiceSchema: Schema = new Schema({
     type: Number,
     required: true,
     min: 0
+  },
+  advancePercentage: {
+    type: Number,
+    required: true,
+    default: 100,
+    min: 1,
+    max: 100
+  },
+  minimumBookingNoticeInDays: {
+    type: Number,
+    required: true,
+    default: 1,
+    min: 0
+  },
+  cancellationFullRefundBeforeDays: {
+    type: Number,
+    required: true,
+    default: 7
+  },
+  cancellationPartialRefundBeforeDays: {
+    type: Number,
+    default: null
+  },
+  partialRefundPercentage: {
+    type: Number,
+    default: null,
+    min: 0,
+    max: 100
   }
 }, { timestamps: true });
 

@@ -9,8 +9,9 @@ export interface BookingUseCase {
     pin: number,
     mobile: number,
     vendorId: string,
-    userId: string
-  ): Promise<{status: boolean, message: string}>;
+    userId: string,
+    userNote?: string
+  ): Promise<{status: boolean, message: string, bookingId?: string}>;
   getAllBookingsByVendor(
     vendorId: string,
     page: number,
@@ -23,7 +24,10 @@ export interface BookingUseCase {
     page: number,
     pageSize: number
   ): Promise<{ bookings: BookingDTO[]; totalPages: number }>;
-  getTransactions(userId: string, page: number, pageSize: number): Promise<{ wallet: number, transaction: BookingDTO[], totalPages: number }>;
   getAllBookingsById(bookingId: string): Promise<BookingDTO[]>;
-  updateStatusById(bookingId: string, status: string): Promise<BookingDTO>;
+  cancelBooking(bookingId: string): Promise<BookingDTO>;
+  markPaymentFailed(bookingId: string): Promise<BookingDTO>;
+  autoFailExpiredBookings(): Promise<number>;
+  updateAdminRemark(bookingId: string, remark: string): Promise<BookingDTO>;
+  markBookingCompleted(bookingId: string): Promise<BookingDTO>;
 }

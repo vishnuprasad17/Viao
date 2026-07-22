@@ -44,10 +44,11 @@ router.use("/admin", adminRoutes(
     vendorController,
     vendorTypeController,
     notificationController,
+    bookingController,
     paymentController,
     adminController,
     serviceController
-))
+));
 router.use("/user", userRoutes(
     authController,
     userController,
@@ -57,7 +58,6 @@ router.use("/user", userRoutes(
     serviceController,
     bookingController,
     notificationController,
-    messageController,
     reviewController,
     paymentController
 ));
@@ -69,7 +69,6 @@ router.use("/vendor", vendorRoutes(
     serviceController,
     bookingController,
     notificationController,
-    messageController,
     userController,
     reviewController
 ));

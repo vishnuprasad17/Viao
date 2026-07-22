@@ -1,3 +1,4 @@
+import { ServiceFormData } from "../../interfaces/commonTypes";
 import { createAxiosInstance } from "./axiosInstance";
 
 const vendorAxios = createAxiosInstance("vendor", "vendor");
@@ -6,210 +7,115 @@ const vendorAxios = createAxiosInstance("vendor", "vendor");
 //Profile
 
 const getVendor = async (vendorId: string | undefined, config?: object) => {
-    try {
-      const response = config
-        ? await vendorAxios.get(`/getvendor?vendorid=${vendorId}`, config)
-        : await vendorAxios.get(`/getvendor?vendorid=${vendorId}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  const response = config
+      ? await vendorAxios.get(`/getvendor?vendorid=${vendorId}`, config)
+      : await vendorAxios.get(`/getvendor?vendorid=${vendorId}`);
+    return response;
   };
   
 const verifyRequest = async (data: object, config: object) => {
-  try {
-    const response = await vendorAxios.post(`/verification-request`, data, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.post(`/verification-request`, data, config);
+  return response;
 };
 
 const updateProfile = async (vendorId: string | undefined, credential: object, config: object) => {
-  try {
-    const response = await vendorAxios.put(`/update-profile?vendorid=${vendorId}`, credential, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.put(`/update-profile?vendorid=${vendorId}`, credential, config);
+  return response;
 };
 
 const updatePassword = async (vendorId: string | undefined, credential: object, config: object) => {
-  try {
-    const response = await vendorAxios.patch(`/update-password?vendorid=${vendorId}`, credential, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.patch(`/update-password?vendorid=${vendorId}`, credential, config);
+  return response;
 };
 
 const getPost = async (vendorId: string | undefined, page: number, config: object) => {
-  try {
-    const response = await vendorAxios.get(`/posts?vendorid=${vendorId}&page=${page}`, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/posts?vendorid=${vendorId}&page=${page}`, config);
+  return response;
 };
 
 const deletePost = async (id: string, config: object) => {
-  try {
-    const response = await vendorAxios.delete(`/posts/${id}`, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.delete(`/posts/${id}`, config);
+  return response;
 };
 
 const addPost = async (vendorId: any, credential: object, config: object) => {
-  try {
-    const response = await vendorAxios.post(`/add-post?vendorid=${vendorId}`, credential, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.post(`/add-post?vendorid=${vendorId}`, credential, config);
+  return response;
 };
 
 const getDate = async (vendorId: string | undefined,  config: object) => {
-  try {
-    const response = await vendorAxios.get(`/load-dates?vendorId=${vendorId}`, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/load-dates?vendorId=${vendorId}`, config);
+  return response;
 };
 
-const addDate = async (credential: object, config: object) => {
-  try {
-    const response = await vendorAxios.post(`/add-dates`, credential, config);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+const bulkBlockDates = async (vendorId: string, dates: string[]) => {
+  const response = await vendorAxios.post('/bulk-block-dates', { vendorId, dates });
+  return response;
 };
 
 // Services
 
-const createService = async (vendorId: string | undefined, data: { name: string; price: number }) => {
-  try {
-    const response = await vendorAxios.post(`add-service`, { vendorId, name: data.name, price: data.price });
-    return response;
-  } catch (error) {
-    throw error;
-  }
-}
+const createService = async (vendorId: string | undefined, data: ServiceFormData) => {
+  return await vendorAxios.post(`add-service`, { vendorId, ...data });
+};
 
-const updateService = async (serviceId: string, data: { name: string; price: number }) => {
-  try {
-    const response = await vendorAxios.patch(`update-service?serviceId=${serviceId}`, { name: data.name, price: data.price });
-    return response;
-  } catch (error) {
-    throw error;
-  }
-}
+const updateService = async (serviceId: string, data: ServiceFormData) => {
+  return await vendorAxios.patch(`update-service?serviceId=${serviceId}`, data);
+};
 
 const getServices = async (vendorId: string | undefined, page: number) => {
-  try {
-    const response = await vendorAxios.get(`/services?vendorId=${vendorId}&page=${page}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-}
-
-const getServicesForPage = async (vendorId: string | undefined) => {
-  try {
-    const response = await vendorAxios.get(`/getservices?vendorId=${vendorId}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/services?vendorId=${vendorId}&page=${page}`);
+  return response;
 }
 
 const deleteService = async (serviceId: string) => {
-  try {
-    const response = await vendorAxios.delete(`/delete-service?serviceId=${serviceId}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.delete(`/delete-service?serviceId=${serviceId}`);
+  return response;
 }
 
 //Booking
 
 const getBooking = async (vendorId: string | undefined, page: number, pageSize: number, search: string, paymentStatus: string) => {
-  try {
-    const response = await vendorAxios.get(`/booking-details?vendorId=${vendorId}&page=${page}&pageSize=${pageSize}&search=${search}&paymentStatus=${paymentStatus}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/booking-details?vendorId=${vendorId}&page=${page}&pageSize=${pageSize}&search=${search}&paymentStatus=${paymentStatus}`);
+  return response;
 }
 
 const getSingleBooking = async (bookingId: string | null) => {
-  try {
-    const response = await vendorAxios.get(`/single-booking-details?bookingId=${bookingId}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/single-booking-details?bookingId=${bookingId}`);
+  return response;
 }
 
-const updateBookingStatus = async (bookingId: string | undefined, status: string | undefined) => {
-  try {
-    const response = await vendorAxios.put(`/update-booking-status?bookingId=${bookingId}`, { status });
-    return response;
-  } catch (error) {
-    throw error;
-  }
+const markBookingCompleted = async (bookingId: string) => {
+  const response = await vendorAxios.patch(`/mark-booking-completed?bookingId=${bookingId}`);
+  return response;
 }
 
 //Chat
 const getUserForChat = async (id: string | undefined) => {
-    try {
-      const response = await vendorAxios.get(`/getuser?userId=${id}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await vendorAxios.get(`/getuser?userId=${id}`);
+    return response;
 };
 
 //Review
 const getReviews = async (vendorId: string | undefined, page: number) => {
-  try {
-    const response = await vendorAxios.get(`/getReviews?vendorId=${vendorId}&page=${page}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/getReviews?vendorId=${vendorId}&page=${page}`);
+  return response;
 }
 
 const getReviewStatistics = async (vendorId: string | undefined) => {
-  try {
-    const response = await vendorAxios.get(`/reviews/statistics?vendorId=${vendorId}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/reviews/statistics?vendorId=${vendorId}`);
+  return response;
 }
 
 const addReply = async (reviewId: string, content: string) => {
-  try {
-    const response = await vendorAxios.put(`/add-review-reply?&reviewId=${reviewId}`, { content });
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.put(`/add-review-reply?&reviewId=${reviewId}`, { content });
+  return response;
 }
 
 //Dashboard
 const getAnalytics = async (vendorId: string | undefined, date: string) => {
-  try {
-    const response = await vendorAxios.get(`/analytics?vendorId=${vendorId}&date=${date}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response = await vendorAxios.get(`/analytics?vendorId=${vendorId}&date=${date}`);
+  return response;
 }
 
 export {
@@ -221,15 +127,14 @@ export {
     deletePost,
     addPost,
     getDate,
-    addDate,
+    bulkBlockDates,
     createService,
     updateService,
     getServices,
-    getServicesForPage,
     deleteService,
     getBooking,
     getSingleBooking,
-    updateBookingStatus,
+    markBookingCompleted,
     getUserForChat,
     getReviews,
     getReviewStatistics,

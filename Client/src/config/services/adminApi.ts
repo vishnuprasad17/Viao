@@ -5,133 +5,88 @@ const adminAxios = createAxiosInstance("admin", "admin");
 //Profile
 
 const getUsers = async (page : string | number, search: string) => {
-    try {
-      const response = await adminAxios.get(`/users?page=${page}&search=${search}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get(`/users?page=${page}&search=${search}`);
+    return response;
   };
 
   const blockUsers = async (userId: string) => {
-    try {
-      const response = await adminAxios.patch(`/block-unblock?userId=${userId}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.patch(`/block-unblock?userId=${userId}`);
+    return response;
   };
 
   const getVendors = async (page: number, config: object) => {
-    try {
-      const response = await adminAxios.get(`/getvendors?page=${page}`, config);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get(`/getvendors?page=${page}`, config);
+    return response;
   };
 
   const getVendorProfile = async (Id: string | null) => {
-    try {
-      const response = await adminAxios.get(`/getvendor?vendorid=${Id}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get(`/getvendor?vendorid=${Id}`);
+    return response;
   };
 
   const blockVendors = async (Id: string | null) => {
-    try {
-      const response = await adminAxios.patch(`/vendorblock-unblock?VendorId=${Id}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.patch(`/vendorblock-unblock?VendorId=${Id}`);
+    return response;
   };
 
   const updateVerify = async (data: object, config: object) => {
-    try {
-      const response = await adminAxios.put(`/update-verify-status`, data, config);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.put(`/update-verify-status`, data, config);
+    return response;
   };
 
   //Vendor Types
   const getVendorTypes = async () => {
-    try {
-      const response = await adminAxios.get('/vendor-types');
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get('/vendor-types');
+    return response;
   };
 
   const deleteVendorTypes = async (vendorTypeId: string, config: object) => {
-    try {
-      const response = await adminAxios.delete(`/delete-vendortype?id=${vendorTypeId}`, config);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.delete(`/delete-vendortype?id=${vendorTypeId}`, config);
+    return response;
   };
 
   const addVendorTypes = async (formData: FormData, config: object) => {
-    try {
-      const response = await adminAxios.post('/add-type', formData, config);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.post('/add-type', formData, config);
+    return response;
   };
 
   const getSingleVendorTypes = async (vendorTypeId: string) => {
-    try {
-      const response = await adminAxios.get(`/single-type?id=${vendorTypeId}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get(`/single-type?id=${vendorTypeId}`);
+    return response;
   };
 
   const updateVendorTypes = async (vendorTypeId: string, formData: FormData, config: object) => {
-    try {
-      const response = await adminAxios.put(`/update-type?id=${vendorTypeId}`, formData, config);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.put(`/update-type?id=${vendorTypeId}`, formData, config);
+    return response;
   };
 
   // Wallet
 
   const getPaymentDetails = async (page: number) => {
-    try {
-      const response = await adminAxios.get(`/all-payment-details?page=${page}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get(`/all-payment-details?page=${page}`);
+    return response;
   }
 
   const getAdminData = async (adminId: string | undefined) => {
-    try {
-      const response = await adminAxios.get(`/load-admin-data?adminId=${adminId}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get(`/load-admin-data?adminId=${adminId}`);
+    return response;
   }
+
+  const getAdminWalletLedger = async (adminId: string | undefined, page: number) => {
+      const response = await adminAxios.get(`/wallet-ledger?adminId=${adminId}&page=${page}&pageSize=10`);
+      return response;
+  }
+
+  //Bookings
+
+  const updateBookingRemark = async (bookingId: string, remark: string) => {
+    return await adminAxios.patch(`/booking-remark?bookingId=${bookingId}`, { remark });
+  };
 
   //Dashboard
   const getAnalytics = async (date: string) => {
-    try {
-      const response = await adminAxios.get(`/analytics?date=${date}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await adminAxios.get(`/analytics?date=${date}`);
+    return response;
   }
 
 
@@ -149,5 +104,7 @@ const getUsers = async (page : string | number, search: string) => {
     updateVendorTypes,
     getPaymentDetails,
     getAdminData,
+    getAdminWalletLedger,
+    updateBookingRemark,
     getAnalytics,
   }

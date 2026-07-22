@@ -22,6 +22,7 @@ export const USER = {
     VIEW_VENDOR: "/view-vendor",
     BOOK_EVENT: "/book-event",
     PAYMENT_SUCCESS: "/payment-success",
+    PAYMENT_FAILED: "/payment-failed",
     ABOUT:"/about",
     CONTACT:"/contact",
   };

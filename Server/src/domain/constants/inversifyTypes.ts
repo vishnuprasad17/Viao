@@ -52,6 +52,8 @@ const TYPES = {
     PaymentRepository: Symbol.for("PaymentRepository"),
     PaymentUseCase: Symbol.for("PaymentUseCase"),
     PaymentController: Symbol.for("PaymentController"),
+    //Wallet Transaction
+    WalletTransactionRepository: Symbol.for("WalletTransactionRepository"),
     //Services
     EmailService: Symbol.for("EmailService"),
     OtpService: Symbol.for("OtpService"),
@@ -61,4 +63,4 @@ const TYPES = {
     TokenService: Symbol.for("TokenService"),
   };
   
-  export default TYPES;  
+  export default TYPES;

@@ -36,7 +36,7 @@ export class NotificationRepositoryImpl extends BaseRepository<INotification, No
     async changeReadStatus(id: string, status: boolean) {
       const updatedNotification = await NotificationModel.findByIdAndUpdate(id,
         { $set: { read: status }},
-        { new: true}
+        { returnDocument: "after"}
       )
 
       return updatedNotification ? this.toDomain(updatedNotification) : null;

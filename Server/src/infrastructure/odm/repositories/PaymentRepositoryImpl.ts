@@ -41,6 +41,14 @@ export class PaymentRepositoryImpl
     return { payment, count };
   }
 
+  async findByBookingId(bookingId: string): Promise<Payment | null> {
+    const document = await PaymentModel.findOne({
+      bookingId: new Types.ObjectId(bookingId),
+    });
+
+    return document ? mapToDomain(document) : null;
+  }
+
   async getAdminRevenueDetails(start: Date, end: Date,
     groupBy:
       | {

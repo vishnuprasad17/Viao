@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Typography } from "@material-tailwind/react";
+import { Button, Input, Textarea, Typography } from "@material-tailwind/react";
 import Select from "react-select";
 import Footer from "../../layout/user/footer";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { validate } from "../../validations/home/BookingValidation";
-import { bookEvent } from "../../config/services/userApi";
+import { bookEvent, getDate, getVendorServices } from "../../config/services/userApi";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import UserRootState from "../../redux/rootstate/UserState";
 import { useSelector } from "react-redux";
-import { USER } from "../../config/routes/user.routes";
-import { getDate, getServicesForPage } from "../../config/services/venderApi";
 import { Service } from "../../interfaces/commonTypes";
+import PaymentModal from "../../components/user/profile/PaymentModal";
 
 interface FormValues {
   serviceId: string;
@@ -22,6 +21,7 @@ interface FormValues {
   city: string;
   pin: string;
   mobile: string;
+  userNote: string;
 }
 
 const initialValues: FormValues = {
@@ -31,6 +31,7 @@ const initialValues: FormValues = {
   city: "",
   pin: "",
   mobile: "",
+  userNote: "",
 };
 
 interface SelectOption {
@@ -40,6 +41,7 @@ interface SelectOption {
 
 const BookingForm: React.FC = () => {
   const user = useSelector((state: UserRootState) => state.user.userdata);
+  const isLoggedIn = Boolean(user);
   const [minDate, setMinDate] = useState<Date>(() => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
@@ -51,9 +53,25 @@ const BookingForm: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
   const [formValues, setFormValues] = useState(initialValues);
-  const [formErrors, setFormErrors] = useState<FormValues>(initialValues);
+  const [formErrors, setFormErrors] =
+    useState<Omit<FormValues, "userNote">>(initialValues);
   const [bookedDates, setBookedDates] = useState<Date[]>([]);
   const [events, setEvents] = useState<Service[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Payment modal state
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [createdBookingId, setCreatedBookingId] = useState<string | null>(null);
+
+  const selectedService = events.find(
+    (s) => s.id.toString() === formValues.serviceId,
+  );
+  const advanceAmount = selectedService
+    ? Math.round(
+        (selectedService.price * (selectedService.advancePercentage ?? 100)) /
+          100,
+      )
+    : null;
 
   useEffect(() => {
     getDate(id as string, { withCredentials: true })
@@ -66,48 +84,58 @@ const BookingForm: React.FC = () => {
       })
       .catch(console.error);
 
-    getServicesForPage(id as string)
-      .then((response) => {
-        setEvents(response.data.services);
-        console.log(response);
-      })
+    getVendorServices(id as string)
+      .then((response) => setEvents(response.data.services))
       .catch(console.error);
   }, [id]);
+
+  // Update minDate when service changes (based on minimumBookingNoticeInDays)
+  useEffect(() => {
+    if (selectedService?.minimumBookingNoticeInDays) {
+      const date = new Date();
+      date.setDate(date.getDate() + selectedService.minimumBookingNoticeInDays);
+      date.setHours(0, 0, 0, 0);
+      setMinDate(date);
+    } else {
+      const date = new Date();
+      date.setDate(date.getDate() + 1);
+      date.setHours(0, 0, 0, 0);
+      setMinDate(date);
+    }
+  }, [formValues.serviceId]);
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
-    const errors = validate({ ...formValues, [name]: value });
-    setFormErrors((prevErrors) => ({ ...prevErrors, ...errors }));
+    if (name !== "userNote") {
+      const errors = validate({ ...formValues, [name]: value });
+      setFormErrors((prev) => ({ ...prev, ...errors }));
+    }
   };
 
   const handleServiceChange = (value: string | undefined) => {
     const selectedValue = value || "";
     setFormValues({ ...formValues, serviceId: selectedValue });
     const errors = validate({ ...formValues, serviceId: selectedValue });
-    setFormErrors((prevErrors) => ({
-      ...prevErrors,
-      serviceId: errors.serviceId,
-    }));
+    setFormErrors((prev) => ({ ...prev, serviceId: errors.serviceId }));
   };
 
   const selectOptions: SelectOption[] = events.map((service) => ({
-    value: service.id.toString(), // Ensure value is a string
-    label: `${service.name} - ₹${service.price.toLocaleString()}`, // Display name and price
+    value: service.id.toString(),
+    label: `${service.name} - ₹${service.price.toLocaleString()} (Pay ₹${Math.round(
+      (service.price * (service.advancePercentage ?? 100)) / 100,
+    ).toLocaleString()} now)`,
   }));
 
   const handleDateChange = (date: Date | null) => {
     if (!date) return;
-
     const adjustTimezone = (d: Date) => {
       const newDate = new Date(d);
       newDate.setMinutes(newDate.getMinutes() - newDate.getTimezoneOffset());
       return newDate;
     };
-
     const adjustedDate = adjustTimezone(date);
     const dateString = adjustedDate.toISOString().split("T")[0];
-
     setFormValues((prev) => ({ ...prev, date: dateString }));
     setFormErrors((prev) => ({
       ...prev,
@@ -115,18 +143,16 @@ const BookingForm: React.FC = () => {
     }));
   };
 
-  const isDateBooked = (date: Date) => {
-    return bookedDates.some(
-      (bookedDate) =>
-        date.getFullYear() === bookedDate.getFullYear() &&
-        date.getMonth() === bookedDate.getMonth() &&
-        date.getDate() === bookedDate.getDate()
+  const isDateBooked = (date: Date) =>
+    bookedDates.some(
+      (d) =>
+        date.getFullYear() === d.getFullYear() &&
+        date.getMonth() === d.getMonth() &&
+        date.getDate() === d.getDate(),
     );
-  };
 
-  const dayClassName = (date: Date) => {
-    return isDateBooked(date) ? "booked-date" : "";
-  };
+  const dayClassName = (date: Date) =>
+    isDateBooked(date) ? "booked-date" : "";
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,14 +160,30 @@ const BookingForm: React.FC = () => {
     setFormErrors(errors);
     if (Object.values(errors).some((error) => error)) return;
 
+    if (!isLoggedIn) {
+      toast.error("Please log in to create a booking.");
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
+      // Step 1 — create booking, get bookingId back
       const response = await bookEvent(id, user?.id, formValues, {
         withCredentials: true,
       });
-      toast.success(response.data.message);
-      navigate(`${USER.PROFILE}${USER.BOOKING_DETAILS}`);
+      const { bookingId } = response.data;
+
+      setCreatedBookingId(bookingId);
+      toast.success("Booking created! Choose your payment method below.");
+      setPaymentModalOpen(true);
     } catch (error: any) {
-      toast.error(error.response?.data.message || "Booking failed");
+      toast.error(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Booking failed",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -161,7 +203,52 @@ const BookingForm: React.FC = () => {
               >
                 Event Booking
               </Typography>
+
               <form onSubmit={submitHandler} className="space-y-4">
+                {/* Service */}
+                <div>
+                  <Select
+                    options={selectOptions}
+                    value={selectOptions.find(
+                      (o) => o.value === formValues.serviceId,
+                    )}
+                    onChange={(opt) => handleServiceChange(opt?.value || "")}
+                    placeholder="Select a service"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
+                  {formErrors.serviceId && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {formErrors.serviceId}
+                    </p>
+                  )}
+
+                  {/* Advance amount preview */}
+                  {selectedService && advanceAmount !== null && (
+                    <div className="mt-2 p-3 bg-deep-purple-50 rounded-lg border border-deep-purple-100">
+                      <p className="text-sm text-deep-purple-700">
+                        <span className="font-semibold">
+                          Advance to pay now:
+                        </span>{" "}
+                        ₹{advanceAmount.toLocaleString()}
+                        {selectedService.advancePercentage !== 100 && (
+                          <span className="text-gray-500">
+                            {" "}
+                            ({selectedService.advancePercentage}% of ₹
+                            {selectedService.price.toLocaleString()})
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Full cancellation refund if cancelled{" "}
+                        {selectedService.cancellationFullRefundBeforeDays}+ days
+                        before event.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Date */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Booking Date
@@ -193,26 +280,7 @@ const BookingForm: React.FC = () => {
                   )}
                 </div>
 
-                {/* Other form fields */}
-                <div>
-                  <Select
-                    options={selectOptions}
-                    value={selectOptions.find(
-                      (option) => option.value === formValues.serviceId
-                    )}
-                    onChange={(selectedOption) => {
-                      handleServiceChange(selectedOption?.value || "");
-                    }}
-                    placeholder="Select a service"
-                    className="react-select-container"
-                    classNamePrefix="react-select"
-                  />
-                  {formErrors.serviceId && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {formErrors.serviceId}
-                    </p>
-                  )}
-                </div>
+                {/* Name */}
                 <div>
                   <Input
                     label="Name"
@@ -231,6 +299,8 @@ const BookingForm: React.FC = () => {
                     </p>
                   )}
                 </div>
+
+                {/* City */}
                 <div>
                   <Input
                     label="Place"
@@ -249,6 +319,8 @@ const BookingForm: React.FC = () => {
                     </p>
                   )}
                 </div>
+
+                {/* Pin */}
                 <div>
                   <Input
                     label="Pin"
@@ -267,6 +339,8 @@ const BookingForm: React.FC = () => {
                     </p>
                   )}
                 </div>
+
+                {/* Mobile */}
                 <div>
                   <Input
                     label="Mobile"
@@ -286,50 +360,43 @@ const BookingForm: React.FC = () => {
                   )}
                 </div>
 
+                {/* User Note — optional */}
+                <div>
+                  <Textarea
+                    label="Notes / Special Requests (optional)"
+                    name="userNote"
+                    value={formValues.userNote}
+                    onChange={handleChange}
+                    rows={3}
+                    className="!border-gray-300"
+                    placeholder="Any special requests or notes for the vendor..."
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
+                  />
+                </div>
+
                 <Button
                   type="submit"
                   fullWidth
+                  disabled={isSubmitting || !isLoggedIn}
                   className="mt-6 bg-deep-purple-500 hover:bg-deep-purple-600 focus:ring-2 focus:ring-deep-purple-500 focus:ring-offset-2"
                   placeholder={undefined}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                 >
-                  Confirm Booking
+                  {!isLoggedIn ? "Login to book" : isSubmitting ? "Processing..." : "Book & Pay Now"}
                 </Button>
               </form>
+
               <style>{`
-        .react-datepicker {
-          font-family: 'Inter', sans-serif;
-          border: 1px solid #e5e7eb;
-          border-radius: 0.75rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .react-datepicker__header {
-          background-color: #f5f3ff;
-          border-bottom: none;
-          border-radius: 0.75rem 0.75rem 0 0;
-        }
-        .react-datepicker__day--selected {
-          background-color: #6366f1;
-          color: white;
-        }
-        .booked-date {
-          background-color: #fecaca !important;
-          color: #991b1b !important;
-          position: relative;
-        }
-        .booked-date::after {
-          position: absolute;
-          right: 2px;
-          top: 0;
-          font-size: 0.8em;
-        }
-        .react-datepicker__day--disabled:not(.booked-date) {
-          color: #d1d5db;
-          background-color: #f9fafb;
-        }
-      `}</style>
+                .react-datepicker { font-family: 'Inter', sans-serif; border: 1px solid #e5e7eb; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+                .react-datepicker__header { background-color: #f5f3ff; border-bottom: none; border-radius: 0.75rem 0.75rem 0 0; }
+                .react-datepicker__day--selected { background-color: #6366f1; color: white; }
+                .booked-date { background-color: #fecaca !important; color: #991b1b !important; position: relative; }
+                .react-datepicker__day--disabled:not(.booked-date) { color: #d1d5db; background-color: #f9fafb; }
+              `}</style>
             </div>
+
             <div className="hidden md:flex items-center justify-center p-6 bg-deep-purple-50">
               <img
                 src="/imgs/booking/book-form.svg"
@@ -340,6 +407,24 @@ const BookingForm: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal — opens after booking is created */}
+      {createdBookingId && selectedService && advanceAmount !== null && (
+        <PaymentModal
+          open={paymentModalOpen}
+          onClose={() => setPaymentModalOpen(false)}
+          bookingId={createdBookingId}
+          vendorId={id ?? ""}
+          vendorName={selectedService.name}
+          vendorLogoUrl=""
+          advanceAmount={advanceAmount}
+          onSuccess={() => {
+            setPaymentModalOpen(false);
+            navigate(`/booking/confirmation?id=${createdBookingId}`);
+          }}
+        />
+      )}
+
       <div className="bg-white">
         <Footer />
       </div>

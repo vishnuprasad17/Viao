@@ -8,7 +8,14 @@ import { IService } from "../mongooseModels/Service";
         document._id.toString(),
         document.vendorId.toString(),
         document.name,
-        document.price
+        document.price,
+        document.advancePercentage ?? 100,
+        document.minimumBookingNoticeInDays ?? 1,
+        document.cancellationFullRefundBeforeDays ?? 7,
+        document.cancellationPartialRefundBeforeDays ?? null,
+        document.partialRefundPercentage ?? null,
+        document.createdAt,
+        document.updatedAt
     );
 }
 
@@ -17,6 +24,11 @@ import { IService } from "../mongooseModels/Service";
     return {
     name: domain.name,
     price: domain.price,
-    vendorId: new Types.ObjectId(domain.vendorId as string)
+    vendorId: new Types.ObjectId(domain.vendorId as string),
+    advancePercentage: domain.advancePercentage,
+    minimumBookingNoticeInDays: domain.minimumBookingNoticeInDays,
+    cancellationFullRefundBeforeDays: domain.cancellationFullRefundBeforeDays,
+    cancellationPartialRefundBeforeDays: domain.cancellationPartialRefundBeforeDays ?? undefined,
+    partialRefundPercentage: domain.partialRefundPercentage ?? undefined,
     };
   };

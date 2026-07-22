@@ -23,6 +23,7 @@ import About from "./pages/home/About";
 import Contact from "./pages/home/Contact";
 import Loader from "./components/common/Loader";
 import ScrollToTopButton from "./components/home/ScrollToTopBtn";
+import PaymentFailed from "./pages/home/PaymentFailed";
 
 
 const App: React.FC = () => {
@@ -69,6 +70,7 @@ const App: React.FC = () => {
             <Route path={`${USER.PROFILE}/*`} element={<Profile />} />
             <Route path={USER.BOOK_EVENT} element={<BookingForm />} />
             <Route path={USER.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
+            <Route path={USER.PAYMENT_FAILED} element={<PaymentFailed />} />
             <Route path={USER.CHAT} element={<Chat />} />
           </Route>
          

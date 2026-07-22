@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import ErrorBoundary from './pages/ErrorBoundary';
 import App from './App';
+import './App.css'
 import './index.css';
 import {
   createBrowserRouter,

@@ -1,4 +1,4 @@
-import { ConversationDTO } from "../dtos/ConversationDTO";
+import { ConversationDTO } from "../../dtos/ConversationDTO";
 
 export interface ConversationUseCase {
     createConversation(senderId: string, receiverId: string): Promise<ConversationDTO>;

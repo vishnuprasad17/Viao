@@ -7,14 +7,17 @@ import { BookingController } from "../../domain/interfaces/adapter interfaces/Bo
 
 @injectable()
 export class BookingControllerImpl implements BookingController {
-    constructor(@inject(TYPES.BookingUseCase) private bookingUseCase: BookingUseCase) {}
+  constructor(
+    @inject(TYPES.BookingUseCase) private bookingUseCase: BookingUseCase,
+  ) {}
 
-    bookVendor = asyncHandler("BookAVendor")(async (req: Request, res: Response): Promise<void> => {
-        const vendorId = req.query.vendorId as string;
-        const userId = req.query.userId as string;
-        const { serviceId, name, city,
-              date, pin, mobile } = req.body;
-        const { status, message } = await this.bookingUseCase.addBooking(
+  bookVendor = asyncHandler("BookAVendor")(async (req: Request, res: Response): Promise<void> => {
+      const vendorId = req.query.vendorId as string;
+      const userId = req.query.userId as string;
+      const { serviceId, name, city, date, pin, mobile, userNote } = req.body;
+
+      const { status, message, bookingId } =
+        await this.bookingUseCase.addBooking(
           serviceId,
           name,
           city,
@@ -22,67 +25,101 @@ export class BookingControllerImpl implements BookingController {
           parseInt(pin),
           parseInt(mobile),
           vendorId,
-          userId
-        );
-        if(!status) {
-          res.status(400).json({ error: message});
-        }
-        res.status(201).json({message: message});
-      })
-    
-    getBookingsByVendor = asyncHandler("GetBookingsByVendor")(async (req: Request, res: Response): Promise<void> => {
-        const vendorId: string = req.query.vendorId as string;
-        const page: number = parseInt(req.query.page as string) || 1;
-        const pageSize: number = parseInt(req.query.pageSize as string) || 6;
-        const searchTerm: string = req.query.search as string || '';
-        const paymentStatus: string = req.query.paymentStatus as string || 'all';
-        const result = await this.bookingUseCase.getAllBookingsByVendor(vendorId, page, pageSize, searchTerm, paymentStatus);
-
-        res.status(201).json(result);
-      })
-        
-    getBookingsByUser = asyncHandler("GetBookingsByUser")(async (req: Request, res: Response): Promise<void> => {
-        const userId: string = req.query.userId as string;
-        const page: number = parseInt(req.query.page as string) || 1;
-        const pageSize: number = parseInt(req.query.pageSize as string) || 6;
-        const result = await this.bookingUseCase.getAllBookingsByUser(userId, page, pageSize);
-              
-        res.status(201).json(result);
-      })
-
-    getWalletDetails = asyncHandler("GetRefundDetails")(async(req: Request, res: Response): Promise<void> => {
-        const userId: string = req.query.userId as string;
-        const page: number = parseInt(req.query.page as string) || 1;
-        const pageSize: number = parseInt(req.query.pageSize as string) || 4;
-        const { wallet, transaction, totalPages } = await this.bookingUseCase.getTransactions(
           userId,
-          page,
-          pageSize
-          );
+          userNote ?? null,
+        );
 
-          res.status(201).json({ wallet: wallet, transaction: transaction, totalPages: totalPages });
-      })
+      if (!status) {
+        res.status(400).json({ error: message });
+        return;
+      }
 
-    getBookingsById = asyncHandler("GetBookingsById")(async(req: Request, res: Response): Promise<void> => {
-        const bookingId: string = req.query.bookingId as string;
-        const bookings = await this.bookingUseCase.getAllBookingsById(bookingId);
+      res.status(201).json({ message, bookingId });
+    },
+  );
 
-        res.status(201).json({ bookings });
-      })
-    
-    updateStatus = asyncHandler("UpdateBookingStatus")(async(req: Request, res: Response): Promise<void> => {
-        const bookingId: string = req.query.bookingId as string;
-        const status = req.body.status;
-        const bookings = await this.bookingUseCase.updateStatusById(bookingId, status);
-        
-        res.status(201).json({ bookings });
-      })
-    
-    cancelBookingByUser = asyncHandler("CancelBookingByUser")(async(req: Request, res: Response): Promise<void> => {
-        const bookingId: string = req.query.bookingId as string;
-          const status = "Cancelled";
-          const bookings = await this.bookingUseCase.updateStatusById(bookingId, status);
+  getBookingsByVendor = asyncHandler("GetBookingsByVendor")(async (req: Request, res: Response): Promise<void> => {
+      const vendorId = req.query.vendorId as string;
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 6;
+      const searchTerm = (req.query.search as string) || "";
+      const paymentStatus = (req.query.paymentStatus as string) || "all";
 
-          res.status(201).json({ bookings });
-      })
+      const result = await this.bookingUseCase.getAllBookingsByVendor(
+        vendorId,
+        page,
+        pageSize,
+        searchTerm,
+        paymentStatus,
+      );
+
+      res.status(200).json(result);
+    },
+  );
+
+  getBookingsByUser = asyncHandler("GetBookingsByUser")(async (req: Request, res: Response): Promise<void> => {
+      const userId = req.query.userId as string;
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 6;
+
+      const result = await this.bookingUseCase.getAllBookingsByUser(
+        userId,
+        page,
+        pageSize,
+      );
+
+      res.status(200).json(result);
+    },
+  );
+
+  getBookingsById = asyncHandler("GetBookingsById")(async (req: Request, res: Response): Promise<void> => {
+      const bookingId = req.query.bookingId as string;
+      const bookings = await this.bookingUseCase.getAllBookingsById(bookingId);
+
+      res.status(200).json({ bookings });
+    },
+  );
+
+  cancelBookingByUser = asyncHandler("CancelBookingByUser")(async (req: Request, res: Response): Promise<void> => {
+      const bookingId = req.query.bookingId as string;
+      const booking = await this.bookingUseCase.cancelBooking(bookingId);
+
+      res.status(200).json({ booking });
+    },
+  );
+
+  markPaymentFailed = asyncHandler("MarkPaymentFailed")(async (req: Request, res: Response): Promise<void> => {
+      const bookingId = req.query.bookingId as string;
+      const booking = await this.bookingUseCase.markPaymentFailed(bookingId);
+
+      res.status(200).json({ booking });
+    },
+  );
+
+  updateAdminRemark = asyncHandler("UpdateAdminRemark")(async (req: Request, res: Response): Promise<void> => {
+      const bookingId = req.query.bookingId as string;
+      const { remark } = req.body;
+
+      if (!remark || typeof remark !== "string") {
+        res.status(400).json({ error: "Remark is required." });
+        return;
+      }
+
+      const booking = await this.bookingUseCase.updateAdminRemark(
+        bookingId,
+        remark,
+      );
+
+      res.status(200).json({ booking });
+    },
+  );
+
+  markBookingCompleted = asyncHandler("MarkBookingCompleted")(async (req: Request, res: Response): Promise<void> => {
+      const bookingId = req.query.bookingId as string;
+
+      const booking = await this.bookingUseCase.markBookingCompleted(bookingId);
+
+      res.status(200).json({ booking });
+    },
+  );
 }

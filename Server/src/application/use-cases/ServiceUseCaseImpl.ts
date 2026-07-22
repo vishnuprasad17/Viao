@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { ServiceUseCase } from "../../domain/interfaces/application interfaces/ServiceUseCase";
+import { ServiceCreateData, ServiceUpdateData, ServiceUseCase } from "../../domain/interfaces/application interfaces/ServiceUseCase";
 import TYPES from "../../domain/constants/inversifyTypes";
 import { VendorRepository } from "../../domain/interfaces/infrastructure interfaces/VendorRepository";
 import { BaseError } from "../../domain/errors/BaseError";
@@ -12,7 +12,7 @@ export class ServiceUseCaseImpl implements ServiceUseCase {
     constructor(@inject(TYPES.ServiceRepository) private serviceRepository: ServiceRepository,
                 @inject(TYPES.VendorRepository) private vendorRepository: VendorRepository) {}
 
-    async create(vendorId: string, name: string, price: number): Promise<boolean> {
+    async create(vendorId: string, data: ServiceCreateData): Promise<boolean> {
         const vendorData = await this.vendorRepository.getById(vendorId);
         if (!vendorData) {
             return false;
@@ -20,9 +20,15 @@ export class ServiceUseCaseImpl implements ServiceUseCase {
         const service = new Service(
             "",
             vendorId,
-            name,
-            price
+            data.name,
+            data.price,
+            data.advancePercentage ?? 100,
+            data.minimumBookingNoticeInDays ?? 1,
+            data.cancellationFullRefundBeforeDays ?? 7,
+            data.cancellationPartialRefundBeforeDays ?? null,
+            data.partialRefundPercentage ?? null
         );
+
         await this.serviceRepository.create(service);
 
         return true;
@@ -43,34 +49,38 @@ export class ServiceUseCaseImpl implements ServiceUseCase {
         return serviceDtos;
     }
 
-    async updateService(id: string, name: string, price: number): Promise<ServiceDTO | null> {
+    async updateService(id: string, data: ServiceUpdateData): Promise<ServiceDTO | null> {
         const existing = await this.serviceRepository.getById(id);
-        if (price) {
-            console.log(price);
-        }
-        if (!existing) {
-            return null;
-        }
-        const update = {
-            name: name || existing.name,
-            price: price || existing.price,
-        };
-        
-        existing.updateFields(update);
+        if (!existing) return null;
+
+        existing.updateFields({
+          name: data.name ?? existing.name,
+          price: data.price ?? existing.price,
+          advancePercentage: data.advancePercentage ?? existing.advancePercentage,
+          minimumBookingNoticeInDays:
+            data.minimumBookingNoticeInDays ?? existing.minimumBookingNoticeInDays,
+          cancellationFullRefundBeforeDays:
+            data.cancellationFullRefundBeforeDays ?? existing.cancellationFullRefundBeforeDays,
+          cancellationPartialRefundBeforeDays:
+            data.cancellationPartialRefundBeforeDays !== undefined
+             ? data.cancellationPartialRefundBeforeDays
+             : existing.cancellationPartialRefundBeforeDays,
+          partialRefundPercentage:
+            data.partialRefundPercentage !== undefined
+             ? data.partialRefundPercentage
+             : existing.partialRefundPercentage,
+        });
+
         const serviceData = await this.serviceRepository.update(id, existing);
         if (!serviceData) {
-            throw new BaseError("Review not found.", 404);
+            throw new BaseError("Service not found.", 404);
         }
 
         return ServiceDTO.fromDomain(serviceData);
     }
 
     async deleteService(id: string): Promise<boolean> {
-        const deletedService = await this.serviceRepository.delete(id);
-        if (!deletedService) {
-            return false;
-        }
-              
-        return true;
+        const deleted = await this.serviceRepository.delete(id);
+        return !!deleted;
     }
 }

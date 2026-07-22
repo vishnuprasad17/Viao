@@ -48,7 +48,7 @@ export class UserControllerImpl implements UserController{
         } else {
           res.status(400).json({ message: "No vendors in favorites." });
         }
-      })
+      });
 
     allUsers = asyncHandler("AllUsers")(async (req: Request, res: Response): Promise<void> => {
         const { page = 1, limit = 6, search = "" } = req.query;
@@ -58,7 +58,7 @@ export class UserControllerImpl implements UserController{
         const { users, totalUsers } = await this.userUseCase.getUsers(pageNumber, limitNumber, search.toString());
     
         res.status(200).json({ users, totalUsers });
-      })
+      });
 
     toggleBlock = asyncHandler("BlockUser")(async (req: Request, res: Response): Promise<void> => {
         const userId: string | undefined = req.query.userId as string | undefined;
@@ -71,9 +71,8 @@ export class UserControllerImpl implements UserController{
         res.status(200).json({
           message: `User ${status} successfully.`,
           process: updated.isActive === false ? "block" : "unblock",
+        });
       });
-        
-      })
 
     addFavVendor = asyncHandler("AddFavouriteVendor")(async (req: Request, res: Response): Promise<void> => {
         const vendorId: string = req.query.vendorId as string;
@@ -93,15 +92,26 @@ export class UserControllerImpl implements UserController{
         } else {
           res.status(200).json({ message: "vendor removed from favorites",fav:false,userData: data });
         }    
-      })
+      });
 
     getUser = asyncHandler("GetUserForChat")(async (req: Request, res: Response): Promise<void> => {
             
-          const userId:string = req.query.userId as string;
+        const userId:string = req.query.userId as string;
       
-          const data = await this.userUseCase.findUser(userId);
-          res.status(200).json(data);
-      })
+        const data = await this.userUseCase.findUser(userId);
+        res.status(200).json(data);
+      });
+
+    getWalletLedger = asyncHandler("GetWalletLedger")(async (req: Request, res: Response): Promise<void> => {
+        const userId = req.query.userId as string;
+        const page = parseInt(req.query.page as string) || 1;
+        const pageSize = parseInt(req.query.pageSize as string) || 10;
+      
+        const { wallet, transactions, totalPages } =
+        await this.userUseCase.getTransactions(userId, page, pageSize);
+      
+        res.status(200).json({ wallet, transactions, totalPages });
+      });
 
     getWallet = asyncHandler("GetWallet")(async (req: Request, res: Response): Promise<void> => {
             

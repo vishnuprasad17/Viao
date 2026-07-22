@@ -1,23 +1,39 @@
 import { Service } from "../entities/Service";
 
 export class ServiceDTO {
-    id: string;
-    vendorId: string;
-    name: String;
-    price: number;
-  
-    constructor(service: Service) {
-        this.id = service.id;
-        this.vendorId = service.vendorId;
-        this.name = service.name;
-        this.price = service.price;
-    }
-  
-    static fromDomain(service: Service): ServiceDTO {
-      return new ServiceDTO(service);
-    }
-  
-    static fromDomainList(services: Service[]): ServiceDTO[] {
-      return services.map(service => new ServiceDTO(service));
-    }
+  constructor(
+    public id: string,
+    public vendorId: string,
+    public name: string,
+    public price: number,
+    public advancePercentage: number,
+    public minimumBookingNoticeInDays: number,
+    public cancellationFullRefundBeforeDays: number,
+    public cancellationPartialRefundBeforeDays: number | null,
+    public partialRefundPercentage: number | null,
+    public advanceAmount: number,
+    public createdAt?: Date,
+    public updatedAt?: Date
+  ) {}
+
+  static fromDomain(service: Service): ServiceDTO {
+    return new ServiceDTO(
+      service.id,
+      service.vendorId,
+      service.name,
+      service.price,
+      service.advancePercentage,
+      service.minimumBookingNoticeInDays,
+      service.cancellationFullRefundBeforeDays,
+      service.cancellationPartialRefundBeforeDays,
+      service.partialRefundPercentage,
+      service.getAdvanceAmount(),
+      service.createdAt,
+      service.updatedAt
+    );
   }
+
+  static fromDomainList(services: Service[]): ServiceDTO[] {
+    return services.map(ServiceDTO.fromDomain);
+  }
+}

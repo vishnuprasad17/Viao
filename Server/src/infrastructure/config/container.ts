@@ -53,6 +53,8 @@ import { PaymentRepository } from "../../domain/interfaces/infrastructure interf
 import { PaymentRepositoryImpl } from "../odm/repositories/PaymentRepositoryImpl";
 import { ServiceRepository } from "../../domain/interfaces/infrastructure interfaces/ServiceRepository";
 import { ServiceRepositoryImpl } from "../odm/repositories/ServiceRepositoryImpl";
+import { WalletTransactionRepository } from "../../domain/interfaces/infrastructure interfaces/WalletTransactionRepository";
+import { WalletTransactionRepositoryImpl } from "../odm/repositories/WalletTransactionRepositoryImpl";
 
 import { AdminUseCase } from "../../domain/interfaces/application interfaces/AdminUseCase";
 import { AdminUseCaseImpl } from "../../application/use-cases/AdminUseCaseImpl";
@@ -107,6 +109,7 @@ container.bind<MessageRepository>(TYPES.MessageRepository).to(MessageRepositoryI
 container.bind<ReviewRepository>(TYPES.ReviewRepository).to(ReviewRepositoryImpl);
 container.bind<PaymentRepository>(TYPES.PaymentRepository).to(PaymentRepositoryImpl);
 container.bind<ServiceRepository>(TYPES.ServiceRepository).to(ServiceRepositoryImpl);
+container.bind<WalletTransactionRepository>(TYPES.WalletTransactionRepository).to(WalletTransactionRepositoryImpl);
 
 // Bind use cases
 container.bind<AdminUseCase>(TYPES.AdminUseCase).to(AdminUseCaseImpl);

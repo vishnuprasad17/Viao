@@ -11,23 +11,81 @@ export class ServiceControllerImpl implements ServiceController {
 
     createService = asyncHandler("CreateAService")(async(req: Request, res: Response): Promise<void> => {
         const vendorId: string = req.body.vendorId as string;
-        const name: string = req.body.name as string;
-        const price: number = req.body.price as number;
-        const status = await this.serviceUseCase.create(vendorId, name, price);
+        const {
+          name,
+          price,
+          advancePercentage,
+          minimumBookingNoticeInDays,
+          cancellationFullRefundBeforeDays,
+          cancellationPartialRefundBeforeDays,
+          partialRefundPercentage,
+        } = req.body;
+
+        const status = await this.serviceUseCase.create(vendorId, {
+          name,
+          price: Number(price),
+          advancePercentage: Number(advancePercentage) || 100,
+          minimumBookingNoticeInDays: Number(minimumBookingNoticeInDays) || 1,
+          cancellationFullRefundBeforeDays:
+            Number(cancellationFullRefundBeforeDays) || 7,
+          cancellationPartialRefundBeforeDays:
+            cancellationPartialRefundBeforeDays != null
+              ? Number(cancellationPartialRefundBeforeDays)
+              : null,
+          partialRefundPercentage:
+            partialRefundPercentage != null
+              ? Number(partialRefundPercentage)
+              : null,
+        });
 
         if (!status) {
-            res
-              .status(400)
-              .json({ error: `couldn't add service, some error occured` });
+            res.status(400).json({ error: "Couldn't add service." });
             return;
         }
-        res.status(200).json({ message: "service added successfully.." });
+        res.status(200).json({ message: "Service added successfully.." });
     });
 
     updateService = asyncHandler("UpdateService")(async(req: Request, res: Response): Promise<void> => {
         const serviceId = req.query.serviceId as string;
-        const { name, price } = req.body;
-        const updated = await this.serviceUseCase.updateService(serviceId, name, price);
+        const {
+          name,
+          price,
+          advancePercentage,
+          minimumBookingNoticeInDays,
+          cancellationFullRefundBeforeDays,
+          cancellationPartialRefundBeforeDays,
+          partialRefundPercentage,
+        } = req.body;
+
+        const updated = await this.serviceUseCase.updateService(serviceId, {
+          name,
+          price: price !== undefined ? Number(price) : undefined,
+          advancePercentage:
+            advancePercentage !== undefined
+              ? Number(advancePercentage)
+              : undefined,
+          minimumBookingNoticeInDays:
+            minimumBookingNoticeInDays !== undefined
+              ? Number(minimumBookingNoticeInDays)
+              : undefined,
+          cancellationFullRefundBeforeDays:
+            cancellationFullRefundBeforeDays !== undefined
+              ? Number(cancellationFullRefundBeforeDays)
+              : undefined,
+          cancellationPartialRefundBeforeDays:
+            cancellationPartialRefundBeforeDays !== undefined
+              ? cancellationPartialRefundBeforeDays === null ||
+                cancellationPartialRefundBeforeDays === ""
+                ? null
+                : Number(cancellationPartialRefundBeforeDays)
+              : undefined,
+          partialRefundPercentage:
+            partialRefundPercentage !== undefined
+              ? partialRefundPercentage === null || partialRefundPercentage === ""
+                ? null
+                : Number(partialRefundPercentage)
+              : undefined,
+        });
 
         if (!updated) {
         res.status(404).json({ message: "Service not found" });
@@ -41,6 +99,7 @@ export class ServiceControllerImpl implements ServiceController {
         const vendorId: string = req.query.vendorId as string;
         const page: number = parseInt(req.query.page as string) || 1;
         const pageSize: number = parseInt(req.query.pageSize as string) || 9;
+        
         const { services, totalPages } = await this.serviceUseCase.getServicesByVendor(vendorId,page,pageSize);
 
         res.status(200).json({services,totalPages});
@@ -58,9 +117,9 @@ export class ServiceControllerImpl implements ServiceController {
         const deleted = await this.serviceUseCase.deleteService(serviceId);
 
         if (!deleted) {
-          res.status(404).json({ message: "Review not found." });
+          res.status(404).json({ message: "Service not found." });
           return;
         }
-        res.status(200).json({ message: "Review deleted successfully!" });
+        res.status(200).json({ message: "Service deleted successfully!" });
     });
 }

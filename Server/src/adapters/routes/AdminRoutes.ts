@@ -11,6 +11,7 @@ import { NotificationController } from '../../domain/interfaces/adapter interfac
 import { PaymentController } from '../../domain/interfaces/adapter interfaces/PaymentController';
 import { AdminController } from '../../domain/interfaces/adapter interfaces/AdminController';
 import { ServiceController } from '../../domain/interfaces/adapter interfaces/ServiceController';
+import { BookingController } from '../../domain/interfaces/adapter interfaces/BookingController';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -23,6 +24,7 @@ export const adminRoutes = (
     vendorController: VendorController,
     vendorTypeController: VendorTypeController,
     notificationController: NotificationController,
+    bookingController: BookingController,
     paymentController: PaymentController,
     adminController: AdminController,
     serviceController: ServiceController
@@ -30,31 +32,42 @@ export const adminRoutes = (
 ) => {
     const router = Router();
 
+    //Auth
     router.post('/login', authLimiter, roleMiddleware("admin"), authController.login);
-    router.post('/logout', roleMiddleware("admin"), authController.logout)
+    router.post('/logout', roleMiddleware("admin"), authController.logout);
     router.post("/refresh", refreshTokenLimiter, roleMiddleware("admin"), authController.createToken);
-    //user
+    
+    //Users
     router.get('/users' , authenticate(['admin']), userController.allUsers);
-    router.patch('/block-unblock' , authenticate(['admin']), userController.toggleBlock)
-    //Vendor
-    router.patch('/vendorblock-unblock', authenticate(['admin']), vendorController.toggleBlock)
-    router.get('/getvendor', authenticate(['admin']), vendorController.getVendor)
+    router.patch('/block-unblock' , authenticate(['admin']), userController.toggleBlock);
+
+    //Vendors
+    router.patch('/vendorblock-unblock', authenticate(['admin']), vendorController.toggleBlock);
+    router.get('/getvendor', authenticate(['admin']), vendorController.getVendor);
     router.get('/getvendors' , vendorController.getAllVendors );
     router.get('/getservices', serviceController.getAllServices);
     router.put('/update-verify-status', authenticate(['admin']), vendorController.updateVerifyStatus);
-    //vendorType
+    
+    //Vendor Types
     router.get('/vendor-types' , vendorTypeController.getVendorTypes);
-    router.delete('/delete-vendortype', authenticate(['admin']), vendorTypeController.deleteVendorType)
+    router.delete('/delete-vendortype', authenticate(['admin']), vendorTypeController.deleteVendorType);
     router.post('/add-type' , authenticate(['admin']), upload.single("image"), vendorTypeController.addVendorType);
-    router.get("/single-type", vendorTypeController.loadSingleType)
-    router.put("/update-type", authenticate(['admin']), upload.single("image"), vendorTypeController.updateType)
+    router.get("/single-type", vendorTypeController.loadSingleType);
+    router.put("/update-type", authenticate(['admin']), upload.single("image"), vendorTypeController.updateType);
+
     //Notification
     router.get('/admin-notifications', notificationController.getAllNotifications);
-    router.patch('/toggle-read', authenticate(['admin']), notificationController.toggleRead)
-    router.delete("/notification", notificationController.deleteNotification)
-    //Payment
+    router.patch('/toggle-read', authenticate(['admin']), notificationController.toggleRead);
+    router.delete("/notification", notificationController.deleteNotification);
+
+    //Wallet / Payments
     router.get("/load-admin-data", authenticate(['admin']), adminController.getAdminData);
     router.get("/all-payment-details", authenticate(['admin']), paymentController.getAllPayments);
+    router.get("/wallet-ledger", authenticate(["admin"]), adminController.getWalletLedger);
+
+    //Bookings (admin)
+    router.patch("/booking-remark", authenticate(['admin']), bookingController.updateAdminRemark);
+    
     //dashboard
     router.get("/analytics", authenticate(['admin']), adminController.getAnalytics);
     
