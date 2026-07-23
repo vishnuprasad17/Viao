@@ -129,6 +129,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </span>
               </li>
             </Link>
+            <Link to={ADMIN.BOOKINGS}>
+              <li
+                className={`${path.pathname == ADMIN.BOOKINGS || path.pathname == ADMIN.BOOKINGS ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 
+              mt-2
+              `}
+              >
+                <i className="fa-solid fa-calendar-days"></i>
+                <span
+                  className={`${!open && "hidden"} origin-left duration-200`}
+                >
+                  Bookings
+                </span>
+              </li>
+            </Link>
             <Link to={ADMIN.WALLET}>
               <li
                 className={`${path.pathname == ADMIN.WALLET ? "bg-gray-300 text-gray-800" : "text-gray-900"} flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-sm items-center gap-x-4 

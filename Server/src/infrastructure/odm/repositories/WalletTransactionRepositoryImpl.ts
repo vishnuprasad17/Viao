@@ -60,4 +60,16 @@ export class WalletTransactionRepositoryImpl
 
     return docs.map((d) => mapToDomain(d));
   }
+
+  async findByBookingIds(
+    bookingIds: string[],
+    types?: string[]
+  ): Promise<WalletTransaction[]> {
+    const query: any = { bookingId: { $in: bookingIds } };
+    if (types && types.length > 0) {
+      query.type = { $in: types };
+    }
+    const documents = await WalletTransactionModel.find(query).exec();
+    return documents.map((d) => this.toDomain(d)); // adjust to your actual mapper name
+  }
 }

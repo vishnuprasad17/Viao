@@ -174,16 +174,16 @@ const ViewBooking = () => {
                       placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>Total Amount:</Typography>
                     <Typography variant="small" className="text-xs md:text-sm font-bold text-blue-600"
                       placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                      ₹{booking?.amount?.toLocaleString()}
+                      ₹{booking?.totalServicePrice?.toLocaleString()}
                     </Typography>
                   </div>
-                  {booking && booking?.advanceAmount > 0 && booking?.advanceAmount !== booking?.amount && (
+                  {booking && booking?.chargeAmount > 0 && booking?.chargeAmount !== booking?.totalServicePrice && (
                     <div className="flex justify-between items-center">
                       <Typography variant="small" className="text-xs md:text-sm"
                         placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>Advance Collected:</Typography>
                       <Typography variant="small" className="text-xs md:text-sm font-bold text-purple-600"
                         placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-                        ₹{booking?.advanceAmount?.toLocaleString()}
+                        ₹{booking?.chargeAmount?.toLocaleString()}
                       </Typography>
                     </div>
                   )}

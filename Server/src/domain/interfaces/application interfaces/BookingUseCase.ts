@@ -12,6 +12,17 @@ export interface BookingUseCase {
     userId: string,
     userNote?: string
   ): Promise<{status: boolean, message: string, bookingId?: string}>;
+  getAllBookingsForAdmin(
+    page: number,
+    pageSize: number,
+    searchTerm: string,
+    paymentStatus: string,
+    vendorId?: string,
+    year?: number,
+    month?: number
+  ): Promise<{ bookings: any[]; totalPages: number }>;
+  payVendorCommission(bookingId: string): Promise<{ status: boolean; message: string }>;
+  getVerifiedVendorsForFilter(): Promise<{ id: string; name: string }[]>;
   getAllBookingsByVendor(
     vendorId: string,
     page: number,

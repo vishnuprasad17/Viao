@@ -130,6 +130,148 @@ export class BookingUseCaseImpl implements BookingUseCase {
     };
   }
 
+  private isCommissionEligible(booking: Booking): boolean {
+  if (booking.payment_status !== "Completed") return false;
+  if (booking.status === "completed") return true;
+  if (
+    booking.status === "cancelled" &&
+    (booking.financials?.cancellationScenario === "partial_refund" ||
+      booking.financials?.cancellationScenario === "no_refund")
+  ) {
+    return true;
+  }
+  return false;
+}
+
+private getVendorCommissionAmount(booking: Booking): number {
+  if (!this.isCommissionEligible(booking)) return 0;
+  if (booking.status === "cancelled") {
+    return booking.financials?.vendorCompensationOnCancel ?? 0;
+  }
+  return booking.financials?.vendorNetAmount ?? 0;
+}
+
+async getAllBookingsForAdmin(
+  page: number,
+  pageSize: number,
+  searchTerm: string,
+  paymentStatus: string,
+  vendorId?: string,
+  year?: number,
+  month?: number
+): Promise<{ bookings: any[]; totalPages: number }> {
+  const { bookings, totalBookings } =
+    await this.bookingRepository.findAllBookingsForAdmin(
+      page,
+      pageSize,
+      searchTerm,
+      paymentStatus,
+      vendorId,
+      year,
+      month
+    );
+
+  const eligibleIds = bookings
+    .filter((b) => this.isCommissionEligible(b))
+    .map((b) => b.id);
+
+  const paidTx = eligibleIds.length
+    ? await this.walletTransactionRepository.findByBookingIds(
+        eligibleIds,
+        ["vendor_compensation_paid"]
+      )
+    : [];
+
+  const paidBookingIds = new Set(paidTx.map((t) => t.bookingId.toString()));
+
+  const enriched = bookings.map((booking) => {
+    const dto = BookingDTO.fromDomain(booking);
+    const commissionAmount = this.getVendorCommissionAmount(booking);
+    return {
+      ...dto,
+      vendorCommission: commissionAmount,
+      commissionPaid: paidBookingIds.has(booking.id),
+      commissionPayable: commissionAmount > 0,
+    };
+  });
+
+  const totalPages = Math.ceil(totalBookings / pageSize);
+  return { bookings: enriched, totalPages };
+}
+
+async payVendorCommission(
+  bookingId: string
+): Promise<{ status: boolean; message: string }> {
+  const booking = await this.bookingRepository.getById(bookingId);
+  if (!booking) throw new BaseError("Booking not found.", 404);
+
+  if (!this.isCommissionEligible(booking)) {
+    throw new BaseError(
+      "This booking is not eligible for vendor commission payout.",
+      400
+    );
+  }
+
+  const amount = this.getVendorCommissionAmount(booking);
+  if (amount <= 0) {
+    throw new BaseError("No commission due for this booking.", 400);
+  }
+
+  const existingPaid = await this.walletTransactionRepository.findByBookingIds(
+    [bookingId],
+    ["vendor_compensation_paid"]
+  );
+  if (existingPaid.length > 0) {
+    throw new BaseError("Commission has already been paid out.", 400);
+  }
+
+  const [admin, vendor] = await Promise.all([
+    this.adminRepository.findOne({}),
+    this.vendorRepository.getById(booking.vendorId as string),
+  ]);
+  if (!admin) throw new BaseError("Admin not found.", 404);
+  if (!vendor) throw new BaseError("Vendor not found.", 404);
+
+  // Debit admin wallet
+  await this.adminRepository.refundFromWallet(amount);
+  const balanceAfter = admin.wallet - amount;
+
+  const paymentDetails = await this.paymentRepository.findByBookingId(bookingId);
+
+  const payoutTransaction = new WalletTransaction(
+    "",
+    "admin",
+    admin.id,
+    "debit",
+    "vendor_compensation_paid",
+    amount,
+    balanceAfter,
+    bookingId,
+    paymentDetails?.id ?? null,
+    `Vendor compensation paid out — ${booking.eventName} (${vendor.name})`,
+    {
+      eventName: booking.eventName,
+      vendorName: vendor.name,
+      cancellationScenario: booking.financials?.cancellationScenario ?? undefined,
+    },
+    new Date()
+  );
+  await this.walletTransactionRepository.create(payoutTransaction);
+
+  const notification = await this.notificationService.createNotification(
+    booking.vendorId as string,
+    `Payout of ₹${amount} for "${booking.eventName}" has been processed.`,
+    Types.STATUS
+  );
+  await this.notificationRepository.create(notification);
+
+  return { status: true, message: "Vendor commission paid successfully." };
+}
+
+async getVerifiedVendorsForFilter(): Promise<{ id: string; name: string }[]> {
+  return this.vendorRepository.findVerifiedVendorsMinimal();
+}
+
   async getAllBookingsByVendor(
     vendorId: string,
     page: number,
@@ -229,7 +371,9 @@ export class BookingUseCaseImpl implements BookingUseCase {
           `Refund paid to ${user.name} — ${booking.eventName} (${scenario})`,
           {
             eventName: booking.eventName,
+            vendorName: (booking.vendorId as any)?.name ?? "",
             userName: user.name,
+            modeOfPayment: "Wallet",
             cancellationScenario: scenario,
           },
           new Date()
@@ -251,6 +395,7 @@ export class BookingUseCaseImpl implements BookingUseCase {
           {
             eventName: booking.eventName,
             vendorName: (booking.vendorId as any)?.name ?? "",
+            modeOfPayment: "Wallet",
             cancellationScenario: scenario,
           },
           new Date()
@@ -281,7 +426,9 @@ export class BookingUseCaseImpl implements BookingUseCase {
             ` Refund paid to ${user.name} — ${booking.eventName} (${scenario})`,
             {
               eventName: booking.eventName,
+              vendorName: (booking.vendorId as any)?.name ?? "",
               userName: user.name,
+              modeOfPayment: "Wallet",
               cancellationScenario: scenario,
             },
             new Date()
@@ -303,6 +450,7 @@ export class BookingUseCaseImpl implements BookingUseCase {
             {
               eventName: booking.eventName,
               vendorName: (booking.vendorId as any)?.name ?? "",
+              modeOfPayment: "Wallet",
               cancellationScenario: scenario,
             },
             new Date()

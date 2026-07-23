@@ -59,8 +59,7 @@ const VendorLoginForm = () => {
           navigate(`${VENDOR.DASHBOARD}`);
         })
         .catch((error) => {
-          toast.error(error.response?.data?.message);
-          console.log(error);
+          toast.error(error.response?.data?.message ?? "Invalid credentials. Please try again.");
         });
     },
   });

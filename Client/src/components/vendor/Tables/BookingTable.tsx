@@ -182,7 +182,7 @@ const BookingTable = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Amount:</span>
                     <span className="text-gray-800 dark:text-gray-200">
-                      ₹{item.amount?.toLocaleString()}
+                      ₹{item.totalServicePrice?.toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ const BookingTable = () => {
                     <td className="py-4 px-6">{item.name}</td>
                     <td className="py-4 px-6">{item.city}</td>
                     <td className="py-4 px-6">{item.date}</td>
-                    <td className="py-4 px-6">₹{item.amount?.toLocaleString()}</td>
+                    <td className="py-4 px-6">₹{item.totalServicePrice?.toLocaleString()}</td>
                     <td className="py-4 px-6">
                       <span className={clsx(
                         "text-xs font-medium px-2 py-1 rounded-full",

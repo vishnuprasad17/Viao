@@ -57,6 +57,39 @@ export class BookingControllerImpl implements BookingController {
     },
   );
 
+  getAllBookings = asyncHandler("GetAllBookings")(async (req: Request, res: Response): Promise<void> => {
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 6;
+      const searchTerm = (req.query.search as string) || "";
+      const paymentStatus = (req.query.paymentStatus as string) || "all";
+      const vendorId = (req.query.vendorId as string) || undefined;
+      const year = req.query.year ? parseInt(req.query.year as string) : undefined;
+      const month = req.query.month ? parseInt(req.query.month as string) : undefined;
+
+      const result = await this.bookingUseCase.getAllBookingsForAdmin(
+        page,
+        pageSize,
+        searchTerm,
+        paymentStatus,
+        vendorId,
+        year,
+        month
+      );
+
+      res.status(200).json(result);
+  });
+
+  payVendorCommission = asyncHandler("PayVendorCommission")(async (req: Request, res: Response): Promise<void> => {
+      const { bookingId } = req.body;
+      const result = await this.bookingUseCase.payVendorCommission(bookingId);
+      res.status(200).json(result);
+  });
+
+  getVerifiedVendors = asyncHandler("GetVerifiedVendors")(async (req: Request, res: Response): Promise<void> => {
+      const vendors = await this.bookingUseCase.getVerifiedVendorsForFilter();
+      res.status(200).json({ vendors });
+  });
+
   getBookingsByUser = asyncHandler("GetBookingsByUser")(async (req: Request, res: Response): Promise<void> => {
       const userId = req.query.userId as string;
       const page = parseInt(req.query.page as string) || 1;

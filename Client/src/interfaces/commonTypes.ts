@@ -69,6 +69,33 @@ export interface Booking {
   retrySecondsRemaining: number,
 }
 
+export interface DetailedBooking {
+  id: string;
+  name: string;
+  date: string;
+  eventName: string;
+  city: string;
+  pin: number;
+  mobile: number,
+  vendorId: string | VendorData,
+  userId: { id: string; name: string } | string;
+  status: string,
+  payment_status: string,
+  totalServicePrice: number,
+  chargeAmount: number,
+  refundToUser: number,
+  createdAt: Date,
+  userNote: string | null,
+  adminRemark: string | null,
+  vendorCommission: number;
+  commissionPaid: boolean;
+  commissionPayable: boolean;
+  paymentFailedAt: Date | null,
+  retryDeadline: Date | null,
+  retryAllowed: boolean,
+  retrySecondsRemaining: number,
+}
+
 export interface Payment {
   id: string;
   amount: number;

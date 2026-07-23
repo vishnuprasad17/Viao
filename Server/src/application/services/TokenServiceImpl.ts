@@ -8,7 +8,7 @@ dotenv.config();
 
 @injectable()
 export class TokenServiceImpl implements TokenService {
-    private readonly ACCESS_TOKEN_EXPIRY = '15m'; // 15 minutes
+    private readonly ACCESS_TOKEN_EXPIRY = '2h'; // 2 hours
     private readonly REFRESH_TOKEN_EXPIRY = '7d'; // 7 days
     private readonly JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
     private readonly JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;

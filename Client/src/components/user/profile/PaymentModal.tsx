@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import UserRootState from "../../../redux/rootstate/UserState";
 import { loadWallet, makePayment } from "../../../config/services/userApi";
+import { USER } from "../../../config/routes/user.routes";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface PaymentModalProps {
@@ -34,6 +36,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [walletBalance, setWalletBalance] = useState(0);
   const [useWallet, setUseWallet] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const navigate = useNavigate();
 
   // Fetch live wallet balance every time modal opens
   useEffect(() => {
@@ -72,6 +76,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         toast.success("Payment completed using wallet balance!");
         onClose();
         onSuccess();
+
+        navigate(`${USER.BOOKING_DETAILS}`)
       } else if (response.data.url) {
         window.location.href = response.data.url;
       }

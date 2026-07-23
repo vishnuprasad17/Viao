@@ -7,6 +7,7 @@ import Pagination from "../../common/Pagination";
 import { USER } from "../../../config/routes/user.routes";
 import { Booking } from "../../../interfaces/commonTypes";
 import { Typography } from "@material-tailwind/react";
+import { VendorData } from "../../../interfaces/vendorTypes";
 
 const BookingDetails = () => {
   const user = useSelector((state: UserRootState) => state.user.userdata);
@@ -56,8 +57,8 @@ const BookingDetails = () => {
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}
                     >
-                      <Link to={`${USER.VIEW_VENDOR}?id=${item?.vendorId.id}`}>
-                        {item?.vendorId.name}
+                      <Link to={`${USER.VIEW_VENDOR}?id=${(item?.vendorId as VendorData)?.id}`}>
+                        {(item?.vendorId as VendorData)?.name}
                       </Link>
                     </Typography>
                   </div>
@@ -170,9 +171,9 @@ const BookingDetails = () => {
                         onPointerLeaveCapture={undefined}
                       >
                         <Link
-                          to={`${USER.VIEW_VENDOR}?id=${item?.vendorId.id}`}
+                          to={`${USER.VIEW_VENDOR}?id=${(item?.vendorId as VendorData)?.id}`}
                         >
-                          {item?.vendorId.name}
+                          {(item?.vendorId as VendorData)?.name}
                         </Link>
                       </Typography>
                     </td>

@@ -61,17 +61,20 @@ export class VendorControllerImpl implements VendorController {
         res.status(200).json({ bookedDates });
       });
         
-    addDates = asyncHandler("AddDates")(async (req: Request, res: Response): Promise<void> => {
+    bulkBlockDates = asyncHandler("BulkBlockDates")(async (req: Request, res: Response): Promise<void> => {
         const vendorId: string = req.body.vendorId as string;
-        const status = req.body.status;
-        const date = req.body.date;
-        const bookedDates = await this.vendorUseCase.addDateAvailability(
-          vendorId,
-          status,
-          date
-        );
-        
-        res.status(200).json({ bookedDates, message: "Date status updated!" });
+        const dates: string[] = req.body.dates; // array of "YYYY-MM-DD" strings
+
+        if (!Array.isArray(dates) || dates.length === 0) {
+          res.status(400).json({ error: "dates array is required." });
+          return;
+        }
+
+        const bookedDates = await this.vendorUseCase.bulkBlockDates(vendorId, dates);
+        res.status(200).json({
+          bookedDates,
+          message: `${dates.length} date(s) blocked successfully!`,
+        });
       });
     
     getAllVendors = asyncHandler("GetAllVendors")(async (req: Request, res: Response): Promise<void> => {

@@ -73,14 +73,36 @@ const getUsers = async (page : string | number, search: string) => {
   }
 
   const getAdminWalletLedger = async (adminId: string | undefined, page: number) => {
-      const response = await adminAxios.get(`/wallet-ledger?adminId=${adminId}&page=${page}&pageSize=10`);
-      return response;
+    const response = await adminAxios.get(`/wallet-ledger?adminId=${adminId}&page=${page}&pageSize=10`);
+    return response;
   }
 
   //Bookings
 
+  const getBooking = async (page: number, pageSize: number, search: string, paymentStatus: string, vendorId?: string, year?: number, month?: number) => {
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize),
+      search,
+      paymentStatus,
+    });
+    if (vendorId) params.append("vendorId", vendorId);
+    if (year) params.append("year", String(year));
+    if (month) params.append("month", String(month));
+
+    return await adminAxios.get(`/booking-details?${params.toString()}`);
+  };
+
   const updateBookingRemark = async (bookingId: string, remark: string) => {
     return await adminAxios.patch(`/booking-remark?bookingId=${bookingId}`, { remark });
+  };
+
+  const payVendorCommission = async (bookingId: string) => {
+    return await adminAxios.post(`/booking-pay-commission`, { bookingId });
+  };
+
+  const getVerifiedVendors = async () => {
+    return await adminAxios.get(`/vendors-verified`);
   };
 
   //Dashboard
@@ -105,6 +127,9 @@ const getUsers = async (page : string | number, search: string) => {
     getPaymentDetails,
     getAdminData,
     getAdminWalletLedger,
+    getBooking,
+    payVendorCommission,
+    getVerifiedVendors,
     updateBookingRemark,
     getAnalytics,
   }

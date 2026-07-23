@@ -6,6 +6,8 @@ export const ADMIN = {
     VENDOR: "/admin/vendor",
     USERS: "/admin/users",
     VENDORS: "/admin/vendors",
+    BOOKINGS: "/admin/bookings",
+    VIEW_BOOKING: "/admin/view-booking",
     WALLET: "/admin/wallet",
     NOTIFICATION: "/admin/notifications",
   };

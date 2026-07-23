@@ -74,7 +74,7 @@ export const vendorRoutes = (
     //Booking
     router.get("/booking-details", authenticate(["vendor"]), bookingController.getBookingsByVendor);
     router.get("/single-booking-details", authenticate(["vendor"]), bookingController.getBookingsById);
-    router.put("/mark-booking-completed", authenticate(["vendor"]), bookingController.markBookingCompleted);
+    router.patch("/mark-booking-completed", authenticate(["vendor"]), bookingController.markBookingCompleted);
 
     //Notification
     router.get('/vendor-notifications', authenticate(["vendor"]), notificationController.getAllNotifications);

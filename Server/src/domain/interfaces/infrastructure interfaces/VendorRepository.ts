@@ -13,7 +13,7 @@ export interface VendorRepository {
   updateVendorPassword(password: string, email: string): Promise<{ success: boolean; message: string }>;
   requestForVerification(vendorId: string): Promise<Vendor | null>;
   updateVerificationStatus(vendorId: string, status: string): Promise<Vendor | null>;
-  changeDateAvailability(vendorId: string, status: string, date: string): Promise<string[] | undefined>;
+  bulkBlockDates(vendorId: string, dates: string[]): Promise<string[]>;
   getFavVendors(favs: string[], page: number, pageSize: number): Promise<{ favVendors: Vendor[], count:number }>;
   findAllVendors(
     page: number,
@@ -23,6 +23,7 @@ export interface VendorRepository {
     location: string,
     sortValue: number
   ): Promise<Vendor[]>;
+  findVerifiedVendorsMinimal(): Promise<{ id: string; name: string }[]>;
   getVendorSuggestions(term: string): Promise<{ id: string, name: string, city: string, logoUrl: string }[]>;
   findAllLocations(): Promise<string[]>;
   lockDate(id: string, date: string): Promise<boolean>;

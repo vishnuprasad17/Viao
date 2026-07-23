@@ -66,7 +66,10 @@ export const adminRoutes = (
     router.get("/wallet-ledger", authenticate(["admin"]), adminController.getWalletLedger);
 
     //Bookings (admin)
+    router.get("/booking-details", authenticate(["admin"]), bookingController.getAllBookings);
     router.patch("/booking-remark", authenticate(['admin']), bookingController.updateAdminRemark);
+    router.post("/booking-pay-commission", authenticate(["admin"]), bookingController.payVendorCommission);
+    router.get("/vendors-verified", authenticate(["admin"]), bookingController.getVerifiedVendors);
     
     //dashboard
     router.get("/analytics", authenticate(['admin']), adminController.getAnalytics);

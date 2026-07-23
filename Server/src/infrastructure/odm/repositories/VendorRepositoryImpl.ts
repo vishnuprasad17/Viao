@@ -49,31 +49,21 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
 
   async updateVerificationStatus(vendorId:string,status:string){
 
-      const data=await VendorModel.findByIdAndUpdate(vendorId,{$set:{verificationRequest:false,isVerified: status === "Accepted"}}, { new: true});
+      const data=await VendorModel.findByIdAndUpdate(vendorId,{$set:{verificationRequest:false,isVerified: status === "Accepted"}}, { returnDocument: "after" });
       return data ? mapToDomain(data) : null;
    
   }
 
 
-  async changeDateAvailability(vendorId:string,status:string,date:string){
-    try {
-      const vendor=await VendorModel.findOne({_id:vendorId});
-      let bookedDates=vendor?.bookedDates;
-      if(status==="Available"){
-        if(bookedDates?.includes(date)){
-          bookedDates = bookedDates.filter((bookedDate) => bookedDate !== date);
-        }
-      } else if (status === "Unavailable"){
-        if (!bookedDates?.includes(date)) {
-          bookedDates?.push(date);
-        }
-      }
-      await vendor?.updateOne({ bookedDates });
-      return bookedDates
-    } catch (error) {
-      throw error
-    }
-  }
+  async bulkBlockDates(vendorId: string, dates: string[]): Promise<string[]> {
+      const vendor = await VendorModel.findOneAndUpdate(
+        { _id: vendorId },
+        { $addToSet: { bookedDates: { $each: dates } } },
+        { returnDocument: "after" }
+      );
+      if (!vendor) throw new Error("Vendor not found");
+      return vendor.bookedDates;
+}
 
   async getFavVendors(favs:string[], page: number, pageSize: number) {
     try {
@@ -127,8 +117,15 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
       //console.log(vendors);
   
       const result = vendors.map((vendor) => this.toDomain(vendor));
-      console.log(result);
       return result;
+  }
+
+  async findVerifiedVendorsMinimal(): Promise<{ id: string; name: string }[]> {
+    const vendors = await VendorModel.find({ isVerified: true, isActive: true })
+      .select("name")
+      .sort({ name: 1 })
+      .lean();
+    return vendors.map((v) => ({ id: v._id.toString(), name: v.name }));
   }
 
   async getVendorSuggestions(term: string): Promise<{ id: string, name: string, city: string, logoUrl: string }[]> {
@@ -191,7 +188,7 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
   async bookDate(id: string, date: string) {
     const updatedDocument = await VendorModel.findByIdAndUpdate(id,
       { $push: { bookedDates: date } },
-      { new: true}
+      { returnDocument: "after" }
     );
     return updatedDocument? this.toDomain(updatedDocument) : null;
   }
@@ -199,7 +196,7 @@ export class VendorRepositoryImpl extends BaseRepository<IVendor, Vendor> implem
   async cancelDate(id: string, date: string): Promise<Vendor | null> {
     const updatedDocument = await VendorModel.findByIdAndUpdate(id,
       { $pull: { bookedDates: date } },
-      { new: true}
+      { returnDocument: "after" }
     );
 
     return updatedDocument? this.toDomain(updatedDocument) : null;

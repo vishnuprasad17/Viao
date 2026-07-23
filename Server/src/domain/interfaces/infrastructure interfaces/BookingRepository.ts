@@ -4,6 +4,15 @@ export interface BookingRepository {
   getById(id: string): Promise<Booking | null>;
   countDocuments(condition?:Record<string,unknown>):Promise<number>;
 
+  findAllBookingsForAdmin(
+  page: number,
+  pageSize: number,
+  searchTerm: string,
+  paymentStatus: string,
+  vendorId?: string,
+  year?: number,
+  month?: number
+): Promise<{ bookings: Booking[]; totalBookings: number }>;
   findBookingsByVendorId(vendorId: string, page: number, pageSize: number, searchTerm: string, paymentStatus: string): Promise<{bookings: Booking[], totalBookings: number}>;
   findBookingsByUserId(userId: string, page: number, pageSize: number): Promise<{bookings: Booking[], totalBookings: number}>;
   findBookingsByBookingId(bookingId: string): Promise<Booking[]>;
@@ -33,4 +42,42 @@ export interface BookingRepository {
       vendorCompensationOnCancel: number;
     }
   ): Promise<boolean>;
+  getAdminRevenueDetails(start: Date, end: Date,
+    groupBy:
+      | {
+          day: {
+            $isoDayOfWeek: string;
+          };
+        }
+      | {
+          month: {
+            $month: string;
+          };
+        }
+      | {
+          year: {
+            $year: string;
+          };
+        },
+    sortField: string
+  ): Promise<Array<{ _id: { [key: string]: number }; totalRevenue: number }>>;
+  getVendorRevenueDetails(vendorId: string, start: Date, end: Date,
+    groupBy: 
+      | {
+          day: {
+            $isoDayOfWeek: string;
+          };
+        }
+      | {
+          month: {
+            $month: string;
+          };
+        }
+      | {
+          year: {
+            $year: string;
+          };
+        },
+    sortField: string
+  ): Promise<{ _id: { day?: number; month?: number; year?: number }; totalRevenue: number }[]>;
 }

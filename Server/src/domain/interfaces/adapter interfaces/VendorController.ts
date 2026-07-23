@@ -6,7 +6,7 @@ export interface VendorController {
     updateProfile(req: Request, res: Response, next: NextFunction): Promise<void>;
     updatePassword(req: Request, res: Response, next: NextFunction): Promise<void>;
     loadDates(req: Request, res: Response, next: NextFunction): Promise<void>;
-    addDates(req: Request, res: Response, next: NextFunction): Promise<void>;
+    bulkBlockDates(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAllVendors(req: Request, res: Response, next: NextFunction): Promise<void>;
     getSearchSuggestions(req: Request, res: Response, next: NextFunction): Promise<void>;
     toggleBlock(req: Request, res: Response, next: NextFunction): Promise<void>;

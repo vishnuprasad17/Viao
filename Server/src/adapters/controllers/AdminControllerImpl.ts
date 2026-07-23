@@ -18,7 +18,21 @@ export class AdminControllerImpl implements AdminController {
         const adminData = await this.adminUseCase.getData(adminId);
         
         res.status(200).json({ adminData });
-      })
+      });
+
+    getWalletLedger = asyncHandler("GetAdminWalletLedger")(async (req: Request, res: Response): Promise<void> => {
+        const { adminId } = req.query as { adminId: string };
+        const page = parseInt(req.query.page as string) || 1;
+        const pageSize = parseInt(req.query.pageSize as string) || 10;
+
+        if (!adminId) {
+          res.status(400).json({ message: "Admin ID is required." });
+          return;
+        }
+
+        const result = await this.adminUseCase.getTransactions(adminId, page, pageSize);
+        res.status(200).json(result);
+      });
     
     getAnalytics =asyncHandler("GetRevenue")(async(req: Request, res: Response): Promise<void> => {
         const dateType = req.query.date as string;

@@ -10,7 +10,7 @@ import { UploadService } from "../../domain/interfaces/application interfaces/Up
 import { PasswordService } from '../../domain/interfaces/application interfaces/PasswordService';
 import { Types } from '../../domain/constants/notificationTypes';
 import { UserRepository } from '../../domain/interfaces/infrastructure interfaces/UserRepository';
-import { PaymentRepository } from '../../domain/interfaces/infrastructure interfaces/PaymentRepository';
+import { BookingRepository } from '../../domain/interfaces/infrastructure interfaces/BookingRepository';
 import { VendorDTO } from '../../domain/dtos/VendorDTO';
 import { AnalyticsResponse, Suggestion, VendorUseCase } from '../../domain/interfaces/application interfaces/VendorUseCase';
 import { ReviewRepository } from '../../domain/interfaces/infrastructure interfaces/ReviewRepository';
@@ -22,7 +22,7 @@ export class VendorUseCaseImpl implements VendorUseCase {
                 @inject(TYPES.UploadService) private uploadService: UploadService,
                 @inject(TYPES.AdminRepository) private adminRepository: AdminRepository,
                 @inject(TYPES.UserRepository) private userRepository: UserRepository,
-                @inject(TYPES.PaymentRepository) private paymentRepository: PaymentRepository,
+                @inject(TYPES.BookingRepository) private bookingRepository: BookingRepository,
                 @inject(TYPES.PasswordService) private passwordService: PasswordService,
                 @inject(TYPES.NotificationRepository) private notificationRepository: NotificationRepository,
                 @inject(TYPES.NotificationService) private notificationService: NotificationService,
@@ -140,17 +140,13 @@ export class VendorUseCaseImpl implements VendorUseCase {
       return vendor.bookedDates;
     }
 
-    async addDateAvailability(vendorId: string, status: string, date: string): Promise<string[]> {
-            const data = await this.vendorRepository.changeDateAvailability(
-              vendorId,
-              status,
-              date
-            );
-            if (!data) {
-              throw new BaseError("Failed to update vendor date availability", 500);
-            }
-            return data;
-        }
+    async bulkBlockDates(vendorId: string, dates: string[]): Promise<string[]> {
+      if (!dates || dates.length === 0) {
+        throw new BaseError("No dates provided.", 400);
+      }
+      const data = await this.vendorRepository.bulkBlockDates(vendorId, dates);
+      return data;
+    }
 
     async getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<{ vendorData: VendorDTO[], totalPages: number }> {
             const vendors = await this.vendorRepository.findAllVendors(
@@ -170,9 +166,6 @@ export class VendorUseCaseImpl implements VendorUseCase {
 
       async getSuggestions(term: string): Promise<Suggestion[]> {
         const suggestions = await this.vendorRepository.getVendorSuggestions(term);
-        if (term) {
-          console.log(suggestions, "term: ", term);
-        }
 
         return suggestions;
       }
@@ -270,7 +263,7 @@ export class VendorUseCaseImpl implements VendorUseCase {
               return null;
           }
     
-          const revenueData = await this.paymentRepository.getVendorRevenueDetails(vendorId, start, end, groupBy, sortField);
+          const revenueData = await this.bookingRepository.getVendorRevenueDetails(vendorId, start, end, groupBy, sortField);
           const revenueArray = Array.from({ length: arrayLength }, (_, index) => {
             const item = revenueData.find((r) => {
               if (dateType === "week") {

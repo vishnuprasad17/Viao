@@ -31,10 +31,15 @@ const TYPE_BADGE_CLASSES: Record<WalletTxType, string> = {
   vendor_compensation_paid:   "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
 };
  
-const formatDate = (iso: string) => {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
-};
+const formatDate = (date: string | Date) =>
+  new Date(date).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 
 const Wallet = () => {
   const user = useSelector((state: UserRootState) => state.user.userdata);
@@ -48,7 +53,7 @@ const Wallet = () => {
       try {
         const response = await getTransactionDetails(user?.id, page);
         // API returns { wallet, transaction: WalletTransaction[], totalPages }
-        setTransactions(response.data.transaction);
+        setTransactions(response.data.transactions);
         setTotalPages(response.data.totalPages);
         setTotalBalance(response.data.wallet);
       } catch (error) {
@@ -62,7 +67,7 @@ const Wallet = () => {
     <div className="p-4 md:p-8">
       {/* ── Wallet Balance Card ───────────────────────────────────────────── */}
       <div className="max-w-2xl mx-auto mb-8">
-        <div className="bg-gradient-to-r from-purple-600 to-blue-500 rounded-2xl p-6 shadow-xl">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-6 shadow-xl">
           <div className="flex items-center justify-between text-white">
             <div>
               <Typography variant="h6" className="font-normal opacity-80"
@@ -74,9 +79,9 @@ const Wallet = () => {
                 ₹{totalBalance.toLocaleString("en-IN")}
               </Typography>
             </div>
-            <div className="bg-white/10 p-4 rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-yellow-500 p-4 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="white"
+                viewBox="0 0 24 24" stroke="black" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
@@ -86,7 +91,7 @@ const Wallet = () => {
       </div>
  
       {/* ── Transaction List ─────────────────────────────────────────────── */}
-      {transactions.length > 0 ? (
+      {transactions?.length > 0 ? (
         <div className="bg-white rounded-xl shadow-lg dark:bg-gray-800 overflow-hidden">
  
           {/* Mobile */}
@@ -131,7 +136,7 @@ const Wallet = () => {
                   </div>
                 </div>
                 <p className="text-xs text-gray-400 dark:text-gray-500">
-                  {formatDate(tx.createdAt.toISOString())}
+                  {formatDate(tx.createdAt)}
                 </p>
               </div>
             ))}
@@ -172,7 +177,7 @@ const Wallet = () => {
                       {tx.modeOfPayment ?? "—"}
                     </td>
                     <td className="py-3 px-5 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                      {formatDate(tx.createdAt.toISOString())}
+                      {formatDate(tx.createdAt)}
                     </td>
                     <td className={clsx(
                       "py-3 px-5 font-semibold text-sm whitespace-nowrap",

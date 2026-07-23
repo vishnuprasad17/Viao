@@ -28,6 +28,7 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Booking } from "../../../interfaces/commonTypes";
 import PaymentModal from "./PaymentModal";
+import { VendorData } from "../../../interfaces/vendorTypes";
 
 function Icon() {
   return (
@@ -101,6 +102,7 @@ const SingleBooking = () => {
     try {
       const response = await getSingleBooking(id);
       setBooking(response.data.bookings[0]);
+      console.log("Fetched booking:", response.data.bookings[0]);
     } catch (error) {
       console.error("Error fetching booking:", error);
     }
@@ -127,7 +129,7 @@ const SingleBooking = () => {
     if (booking.payment_status !== "Completed") {
       return "This action cannot be undone.";
     }
-    const advance = booking.advanceAmount || booking.amount;
+    const advance = booking.chargeAmount || booking.totalServicePrice;
     return `Cancellation policy applies. Up to ₹${advance.toLocaleString()} may be refunded based on timing. Check the service policy for details.`;
   };
 
@@ -364,7 +366,7 @@ const SingleBooking = () => {
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                   >
-                    {booking?.vendorId?.name}
+                    {(booking?.vendorId as VendorData)?.name}
                   </Typography>
                 </div>
                 <div className="flex items-center gap-3">
@@ -375,7 +377,7 @@ const SingleBooking = () => {
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                   >
-                    {booking?.vendorId?.phone}
+                    {(booking?.vendorId as VendorData)?.phone}
                   </Typography>
                 </div>
                 <div className="flex items-center gap-3">
@@ -386,7 +388,7 @@ const SingleBooking = () => {
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                   >
-                    {booking?.vendorId?.email}
+                    {(booking?.vendorId as VendorData)?.email}
                   </Typography>
                 </div>
               </div>
@@ -440,12 +442,12 @@ const SingleBooking = () => {
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
                   >
-                    ₹{booking?.amount?.toLocaleString()}
+                    ₹{booking?.totalServicePrice?.toLocaleString()}
                   </Typography>
                 </div>
                 {booking &&
-                  booking?.advanceAmount > 0 &&
-                  booking?.advanceAmount !== booking?.amount && (
+                  booking?.chargeAmount > 0 &&
+                  booking?.chargeAmount !== booking?.totalServicePrice && (
                     <div className="flex justify-between">
                       <Typography
                         variant="lead"
@@ -462,7 +464,7 @@ const SingleBooking = () => {
                         onPointerEnterCapture={undefined}
                         onPointerLeaveCapture={undefined}
                       >
-                        ₹{booking?.advanceAmount?.toLocaleString()}
+                        ₹{booking?.chargeAmount?.toLocaleString()}
                       </Typography>
                     </div>
                   )}
@@ -492,7 +494,7 @@ const SingleBooking = () => {
 
                 {/* Refund info if cancelled */}
                 {booking?.status === "cancelled" &&
-                  booking?.refundAmount > 0 && (
+                  booking?.refundToUser > 0 && (
                     <div className="flex justify-between">
                       <Typography
                         variant="lead"
@@ -509,12 +511,12 @@ const SingleBooking = () => {
                         onPointerEnterCapture={undefined}
                         onPointerLeaveCapture={undefined}
                       >
-                        ₹{booking?.refundAmount?.toLocaleString()}
+                        ₹{booking?.refundToUser?.toLocaleString()}
                       </Typography>
                     </div>
                   )}
                 {booking?.status === "cancelled" &&
-                  booking?.refundAmount === 0 &&
+                  booking?.refundToUser === 0 &&
                   booking?.payment_status === "Completed" && (
                     <div className="mt-2 p-2 bg-red-50 rounded text-sm text-red-700">
                       No refund applicable based on cancellation policy.
@@ -632,10 +634,10 @@ const SingleBooking = () => {
           open={paymentModalOpen}
           onClose={() => setPaymentModalOpen(false)}
           bookingId={booking.id}
-          vendorId={booking.vendorId.id}
-          vendorName={booking.vendorId.name}
-          vendorLogoUrl={booking.vendorId.logoUrl ?? ""}
-          advanceAmount={booking.advanceAmount || booking.amount}
+          vendorId={(booking.vendorId as VendorData).id}
+          vendorName={(booking.vendorId as VendorData).name}
+          vendorLogoUrl={(booking.vendorId as VendorData).logoUrl ?? ""}
+          advanceAmount={booking.chargeAmount || booking.totalServicePrice}
           onSuccess={() => {
             setPaymentModalOpen(false);
             fetchBooking();

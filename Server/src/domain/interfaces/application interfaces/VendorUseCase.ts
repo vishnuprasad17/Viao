@@ -6,7 +6,7 @@ export interface VendorUseCase {
     update(vendorId: string, data: any, files: { [fieldname: string]: Express.Multer.File[]; } | Express.Multer.File[] | undefined): Promise<VendorDTO>;
     updatePwd(currentPassword: string, newPassword: string, vendorId: string): Promise<boolean>;
     getBookedDates(vendorId: string): Promise<string[]>;
-    addDateAvailability(vendorId: string, status: string, date: string): Promise<string[]>;
+    bulkBlockDates(vendorId: string, dates: string[]): Promise<string[]>
     getVendors(page: number, limit: number, search: string, category: string, location: string, sortValue: number): Promise<{ vendorData: VendorDTO[], totalPages: number }>;
     getSuggestions(term: string): Promise<Suggestion[]>;
     toggleVendorBlock(vendorId: string): Promise<VendorDTO | null>;
