@@ -59,3 +59,9 @@ export class BookingDTO {
     return bookings.map(BookingDTO.fromDomain);
   }
 }
+
+export type ExtendedBookingDTO = BookingDTO & {
+  vendorCommission: number;
+  commissionPaid: boolean;
+  commissionPayable: boolean;
+};

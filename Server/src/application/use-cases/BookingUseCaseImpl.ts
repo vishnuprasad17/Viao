@@ -7,7 +7,7 @@ import { Booking, BookingFinancials } from "../../domain/entities/Booking";
 import { Types } from "../../domain/constants/notificationTypes";
 import { NotificationService } from "../../domain/interfaces/application interfaces/NotificationService";
 import { NotificationRepository } from "../../domain/interfaces/infrastructure interfaces/NotificationRepository";
-import { BookingDTO } from "../../domain/dtos/BookingDTO";
+import { BookingDTO, ExtendedBookingDTO } from "../../domain/dtos/BookingDTO";
 import { BookingUseCase } from "../../domain/interfaces/application interfaces/BookingUseCase";
 import { PaymentRepository } from "../../domain/interfaces/infrastructure interfaces/PaymentRepository";
 import { AdminRepository } from "../../domain/interfaces/infrastructure interfaces/AdminRepository";
@@ -159,7 +159,7 @@ async getAllBookingsForAdmin(
   vendorId?: string,
   year?: number,
   month?: number
-): Promise<{ bookings: any[]; totalPages: number }> {
+): Promise<{ bookings: ExtendedBookingDTO[]; totalPages: number }> {
   const { bookings, totalBookings } =
     await this.bookingRepository.findAllBookingsForAdmin(
       page,
@@ -278,7 +278,7 @@ async getVerifiedVendorsForFilter(): Promise<{ id: string; name: string }[]> {
     pageSize: number,
     searchTerm: string,
     paymentStatus: string
-  ): Promise<{ bookings: BookingDTO[]; totalPages: number }> {
+  ): Promise<{ bookings: ExtendedBookingDTO[]; totalPages: number }> {
     const { bookings, totalBookings } =
       await this.bookingRepository.findBookingsByVendorId(
         vendorId,
@@ -287,8 +287,32 @@ async getVerifiedVendorsForFilter(): Promise<{ id: string; name: string }[]> {
         searchTerm,
         paymentStatus
       );
+
+    const eligibleIds = bookings
+    .filter((b) => this.isCommissionEligible(b))
+    .map((b) => b.id);
+
+    const paidTx = eligibleIds.length
+      ? await this.walletTransactionRepository.findByBookingIds(
+        eligibleIds,
+        ["vendor_compensation_paid"]
+      )
+      : [];
+
+    const paidBookingIds = new Set(paidTx.map((t) => t.bookingId.toString()));
+
+    const enriched = bookings.map((booking) => {
+      const dto = BookingDTO.fromDomain(booking);
+      const commissionAmount = this.getVendorCommissionAmount(booking);
+      return {
+        ...dto,
+        vendorCommission: commissionAmount,
+        commissionPaid: paidBookingIds.has(booking.id),
+        commissionPayable: commissionAmount > 0,
+    };
+  });
     const totalPages = Math.ceil(totalBookings / pageSize);
-    return { bookings: BookingDTO.fromDomainList(bookings), totalPages };
+    return { bookings: enriched, totalPages };
   }
 
   async getAllBookingsByUser(

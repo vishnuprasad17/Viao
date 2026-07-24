@@ -132,6 +132,8 @@ const NotifyCard = () => {
                       to={`${
                         data.type === "BOOKING" || data.type === "PAYMENT"
                           ? VENDOR.BOOKING_HISTORY
+                          : data.type === "STATUS"
+                          ? VENDOR.BOOKING_HISTORY
                           : data.type === "REJECTED"
                           ? VENDOR.EDIT_PROFILE
                           : data.type === "REVIEW"

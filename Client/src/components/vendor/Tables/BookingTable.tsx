@@ -7,13 +7,13 @@ import Pagination from "../../common/Pagination";
 import { VENDOR } from "../../../config/routes/vendor.routes";
 import { Typography, Input, Select, Option, Button } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Booking } from "../../../interfaces/commonTypes";
+import { DetailedBooking } from "../../../interfaces/commonTypes";
 import clsx from "clsx";
 import debounce from "lodash/debounce";
 
 const BookingTable = () => {
   const vendorData = useSelector((state: VendorRootState) => state.vendor.vendordata);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<DetailedBooking[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -71,6 +71,24 @@ const BookingTable = () => {
         status === "Pending",
       "bg-red-100 text-red-600 dark:bg-red-800/30 dark:text-red-400":
         status === "Failed",
+    }
+  );
+
+  // Determine commission status label from vendorCommission / commissionPaid / commissionPayable
+  const getCommissionStatus = (item: DetailedBooking): string | null => {
+    if (!item.vendorCommission) return null;
+    if (item.commissionPaid) return "Paid";
+    if (item.commissionPayable && !item.commissionPaid) return "Pending Payment";
+    return null;
+  };
+
+  const commissionBadgeClass = (status: string | null) => clsx(
+    "inline-flex text-xs font-medium px-2 py-1 rounded-full",
+    {
+      "bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-400":
+        status === "Paid",
+      "bg-amber-100 text-amber-600 dark:bg-amber-800/30 dark:text-amber-400":
+        status === "Pending Payment",
     }
   );
 
@@ -150,7 +168,9 @@ const BookingTable = () => {
         <div className="w-full">
           {/* Mobile View */}
           <div className="grid gap-4 md:hidden">
-            {bookings.map((item) => (
+            {bookings.map((item) => {
+              const commissionStatus = getCommissionStatus(item);
+              return (
               <div key={item.id} className="bg-white rounded-xl shadow-lg p-6 dark:bg-boxdark transition-shadow hover:shadow-xl">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -185,31 +205,47 @@ const BookingTable = () => {
                       ₹{item.totalServicePrice?.toLocaleString()}
                     </span>
                   </div>
+                  {item.vendorCommission ? (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Vendor Compensation:</span>
+                      <span className="text-gray-800 dark:text-gray-200">
+                        ₹{item.vendorCommission?.toLocaleString()}
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="mt-4 flex justify-between items-center">
-                  <span className={clsx(
-                    "text-xs font-medium px-2 py-1 rounded-full",
-                    {
-                      "bg-green-100 text-green-800": item.status === "Accepted",
-                      "bg-red-100 text-red-800": ["Rejected", "Cancelled"].includes(item.status),
-                      "bg-blue-100 text-blue-800": item.status === "Pending"
-                    }
-                  )}>
-                    {item.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={clsx(
+                      "text-xs font-medium px-2 py-1 rounded-full",
+                      {
+                        "bg-green-100 text-green-800": item.status === "Accepted",
+                        "bg-red-100 text-red-800": ["Rejected", "Cancelled"].includes(item.status),
+                        "bg-blue-100 text-blue-800": item.status === "Pending"
+                      }
+                    )}>
+                      {item.status}
+                    </span>
+                    {commissionStatus && (
+                      <span className={commissionBadgeClass(commissionStatus)}>
+                        {commissionStatus}
+                      </span>
+                    )}
+                  </div>
                   <ViewButton bookingId={item.id} />
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Desktop View */}
           <div className="hidden md:block rounded-xl border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-blue-600 to-purple-500 text-white">
+              <thead className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
                 <tr>
-                  {["Event", "Client", "Place", "Date", "Amount", "Status", "Payment", "Actions"].map((header) => (
+                  {["Event", "Client", "Place", "Date", "Amount", "Status", "Payment", "Vendor Compensation", "Commission Status", "Actions"].map((header) => (
                     <th key={header} className="py-4 px-6 text-left font-semibold text-sm">
                       {header}
                     </th>
@@ -217,7 +253,9 @@ const BookingTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((item) => (
+                {bookings.map((item) => {
+                  const commissionStatus = getCommissionStatus(item);
+                  return (
                   <tr key={item.id} className="border-b border-stroke dark:border-strokedark hover:bg-gray-50 dark:hover:bg-boxdark/80">
                     <td className="py-4 px-6">{item.eventName}</td>
                     <td className="py-4 px-6">{item.name}</td>
@@ -242,10 +280,23 @@ const BookingTable = () => {
                       </span>
                     </td>
                     <td className="py-4 px-6">
+                      {item.vendorCommission ? `₹${item.vendorCommission?.toLocaleString()}` : "—"}
+                    </td>
+                    <td className="py-4 px-6">
+                      {commissionStatus ? (
+                        <span className={commissionBadgeClass(commissionStatus)}>
+                          {commissionStatus}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td className="py-4 px-6">
                       <ViewButton bookingId={item.id} />
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

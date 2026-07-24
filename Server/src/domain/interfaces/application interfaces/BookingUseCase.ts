@@ -1,4 +1,4 @@
-import { BookingDTO } from "../../dtos/BookingDTO";
+import { BookingDTO, ExtendedBookingDTO } from "../../dtos/BookingDTO";
 
 export interface BookingUseCase {
   addBooking(
@@ -20,7 +20,7 @@ export interface BookingUseCase {
     vendorId?: string,
     year?: number,
     month?: number
-  ): Promise<{ bookings: any[]; totalPages: number }>;
+  ): Promise<{ bookings: ExtendedBookingDTO[]; totalPages: number }>;
   payVendorCommission(bookingId: string): Promise<{ status: boolean; message: string }>;
   getVerifiedVendorsForFilter(): Promise<{ id: string; name: string }[]>;
   getAllBookingsByVendor(
@@ -29,7 +29,7 @@ export interface BookingUseCase {
     pageSize: number,
     searchTerm: string,
     paymentStatus: string
-  ): Promise<{ bookings: BookingDTO[]; totalPages: number }>;
+  ): Promise<{ bookings: ExtendedBookingDTO[]; totalPages: number }>;
   getAllBookingsByUser(
     userId: string,
     page: number,
